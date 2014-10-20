@@ -42,12 +42,18 @@ public class Tests {
 		
 		ConnectionManager mgr = new ConnectionManager();
 		Connection conn = mgr.connectToClient(myClient);
-		System.exit(0);
+
 		// 2- initialize an Object broker object, it gives you access to all object methods
 		
 		ObjectBroker broker = new ObjectBroker(conn,false);
-		IFolder myFolder = broker.folders.getFolderByName("BSP.TESTS");
+		IFolder myFolder = broker.folders.getFavoritesFolder();
+		FolderList list = broker.folders.getFolderContent(myFolder);
 		
+		for(FolderListItem item : list){
+			System.out.println("DEBUG: " + item.getName()+":"+item.getType());
+		}
+		
+		//broker.common.createObjectLink("RM.UX_APP.UX_APP.DEPLOYWARFILE", broker.folders.getFavoritesFolder());
 
 		//broker.users.moveUserToClient("BSP.LALA", "BSP", 330);
 		

@@ -71,6 +71,29 @@ public class Folders extends ObjectTemplate{
 		 }
 		 return null;
 	}
+	public IFolder getVersionNoFolderFolder() throws IOException{
+		 ArrayList<IFolder> allFolders = getAllFolders(false);
+		 for(IFolder folder : allFolders){
+			 if(folder.getType().equalsIgnoreCase("NFOLD")){return folder;}
+		 }
+		 return null;
+	}
+	public IFolder getFavoritesFolder() throws IOException{
+		 ArrayList<IFolder> allFolders = getAllFolders(false);
+		 for(IFolder folder : allFolders){
+			
+			 if(folder.getType().equalsIgnoreCase("FAV")){return folder;}
+		 }
+		 return null;
+	}
+	public IFolder getRecentFolder() throws IOException{
+		 ArrayList<IFolder> allFolders = getAllFolders(false);
+		 for(IFolder folder : allFolders){
+			
+			 if(folder.getType().equalsIgnoreCase("RCNT")){return folder;}
+		 }
+		 return null;
+	}
 	public IFolder getRecycleBinFolder() throws IOException{
 		 ArrayList<IFolder> allFolders = getAllFolders(false);
 		 for(IFolder folder : allFolders){
@@ -92,6 +115,25 @@ public class Folders extends ObjectTemplate{
 		 ArrayList<IFolder> allFolders = getAllFolders(true);
 		 for(IFolder folder : allFolders){
 			 if(folder.getName().equalsIgnoreCase(FolderName)){return folder;}
+		 }
+		 return null;
+	}
+	
+	// below method takes as an input either "AEV10 - 0005/UC4.APPLICATIONS/JFORUM_BREN"
+	// or simply: "0005/UC4.APPLICATIONS/JFORUM_BREN"
+	public IFolder getFolderByFullPathName(String FolderName) throws IOException{
+		 ArrayList<IFolder> allFolders = getAllFolders(true);
+		 for(IFolder folder : allFolders){
+			 String FullPath = "";
+			 // the IFolder.fullpath() method ALWAYS returns the system name before the path (ex: "AEV10 - 0005/UC4.APPLICATIONS/JFORUM_BREN")
+			 // therefore it is necessary to modify it for comparison.. if the FolderName passed does not also contain the system name..
+			 if(!FolderName.contains(" - ")){
+				 FullPath = folder.fullPath().split(" - ")[1];
+			 }else{
+				 FullPath = folder.fullPath();
+			 }
+			 
+			 if(FullPath.equalsIgnoreCase(FolderName)){return folder;}
 		 }
 		 return null;
 	}

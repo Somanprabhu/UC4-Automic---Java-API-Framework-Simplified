@@ -32,6 +32,7 @@ import com.uc4.communication.requests.ExportObject;
 import com.uc4.communication.requests.FolderList;
 import com.uc4.communication.requests.GetReplaceList;
 import com.uc4.communication.requests.ImportObject;
+import com.uc4.communication.requests.LinkTo;
 import com.uc4.communication.requests.MoveObject;
 import com.uc4.communication.requests.OpenObject;
 import com.uc4.communication.requests.RenameObject;
@@ -63,6 +64,7 @@ public class Common extends ObjectTemplate{
 	*
 	
 	**/
+
 	public void restoreObjectVersions(VersionControlListItem VersionControlObject) throws IOException{
 		RestoreObjectVersion req = new RestoreObjectVersion(VersionControlObject);
 		connection.sendRequestAndWait(req);
@@ -132,7 +134,9 @@ public class Common extends ObjectTemplate{
 	public List<SearchResultItem> searchObject(String ObjectName) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		SearchObject ser = new SearchObject();
-		ser.unselectAllObjectTypes();
+		// BUG: All filters unselected?!
+		ser.selectAllObjectTypes();
+		//ser.unselectAllObjectTypes();
 		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
 		ser.setName(ObjectName);
 		ser.setTypeJOBS(true);

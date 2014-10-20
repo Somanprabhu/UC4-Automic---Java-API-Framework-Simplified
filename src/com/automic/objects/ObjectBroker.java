@@ -23,6 +23,8 @@ public class ObjectBroker {
 	public Clients clients;
 	public FileTransfers fileTransfers;
 	public Agents agents;
+	public Links links;
+	public Executions executions;
 	//public Users users;
 	
 	public ObjectBroker(Connection conn, boolean verbose){
@@ -45,6 +47,8 @@ public class ObjectBroker {
 		clients = new Clients(this.connection,verbose);
 		fileTransfers = new FileTransfers(this.connection,verbose);
 		agents = new Agents(this.connection,verbose);
+		links = new Links(this.connection,verbose);
+		executions = new Executions(this.connection,verbose);
 		//users = new Users(this.connection,verbose);
 	}
 	public void setConnection(Connection conn){
