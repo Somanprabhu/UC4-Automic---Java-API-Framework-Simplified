@@ -18,7 +18,7 @@ public class ConnectionManager {
 	
 	public Connection connectToClient(AECredentials credentials) throws IOException{
 		
-		System.out.println("Authenticating to Client "+credentials.getAEClientToConnect()+" with user "+credentials.getAEUserLogin());
+		//System.out.println("Authenticating to Client "+credentials.getAEClientToConnect()+" with user "+credentials.getAEUserLogin());
 		conn = Connection.open(credentials.getAEHostnameOrIp(), credentials.getAECPPort());
 		
 		CreateSession sess = conn.login(credentials.getAEClientToConnect(), credentials.getAEUserLogin(), 

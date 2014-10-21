@@ -232,7 +232,7 @@ public class Common extends ObjectTemplate{
 	}
 	// Open an Automic Object (of any kind)
 	public UC4Object openObject(String name, boolean readOnly) throws IOException {
-		Say(" ++ Opening object: "+name);
+		//Say(" ++ Opening object: "+name);
 		UC4ObjectName objName = null;
 		if (name.indexOf('/') != -1) objName = new UC4UserName(name);
 		else if (name.indexOf('-')  != -1) objName = new UC4HostName(name);
@@ -246,7 +246,7 @@ public class Common extends ObjectTemplate{
 			System.err.println(" -- "+open.getMessageBox().getText());
 			System.out.println(" %% Object: "+ name +" returned a message box: "+open.getMessageBox().getNumber());
 		}
-		Say(" ++ Object: "+name+" Successfully opened");
+		//Say(" ++ Object: "+name+" Successfully opened");
 		return open.getUC4Object();
 	}
 	
@@ -410,6 +410,27 @@ public class Common extends ObjectTemplate{
 			}
 		}
 		return JobList;
+	}
+	public ArrayList<FolderListItem> listAllObjects(String objectType) throws IOException{
+		return listAllObjectsWithNameFilter(objectType,".*");
+	}
+	
+	public ArrayList<FolderListItem> listAllObjectsWithNameFilter(String objectType, String filter) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		ArrayList<FolderListItem> ObjList = new ArrayList<FolderListItem>();
+		ArrayList<IFolder> allFolders = broker.folders.getAllFolders(true);
+		for(int i=0;i<allFolders.size();i++){
+			IFolder myFolder = allFolders.get(i);
+			FolderList itemList = broker.folders.getFolderContent(myFolder);
+			Iterator<FolderListItem> it = itemList.iterator();
+			while(it.hasNext()){
+				FolderListItem item = it.next(); 
+				if(item.getObjectType().equalsIgnoreCase(objectType) && item.getName().matches(filter)){
+					ObjList.add(item);
+				}
+			}
+		}
+		return ObjList;
 	}
 	public int getSearchCount(String namePattern) throws IOException {
 		SearchObject s = new SearchObject();		
