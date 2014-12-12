@@ -121,6 +121,9 @@ public class Common extends ObjectTemplate{
 			System.out.println(" -- "+exp.getMessageBox().getText());
 		}
 	}
+	public void  exportObject(FolderListItem item, String FilePathForExport) throws IOException{
+		exportObject(item.getName(), FilePathForExport);
+	}
 
 	public void  exportObjects(UC4ObjectName[] objectNames, String FilePathForExport) throws IOException{
 		File file = new File(FilePathForExport);
@@ -129,6 +132,20 @@ public class Common extends ObjectTemplate{
 		if (exp.getMessageBox() != null) {
 			System.out.println(" -- "+exp.getMessageBox().getText());
 		}
+	}
+	public void exportFolderContent(FolderList ItemList, String FilePathForExport)throws IOException{
+		ArrayList<UC4ObjectName> ObjList = new ArrayList<UC4ObjectName>();
+		Iterator<FolderListItem> it = ItemList.iterator();
+		while(it.hasNext()){
+			FolderListItem item = it.next();
+			ObjList.add(new UC4ObjectName(item.getName()));
+		}
+		UC4ObjectName[] ObjectNameList = new UC4ObjectName[ObjList.size()];
+		for(int i=0;i<ObjList.size();i++){
+			ObjectNameList[i] = ObjList.get(i);
+		}
+		exportObjects(ObjectNameList,FilePathForExport);
+		
 	}
 	
 	public List<SearchResultItem> searchObject(String ObjectName) throws IOException{

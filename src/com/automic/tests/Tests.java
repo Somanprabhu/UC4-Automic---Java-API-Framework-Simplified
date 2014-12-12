@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.xml.sax.SAXException;
+
 import com.automic.AECredentials;
 import com.automic.ConnectionManager;
+import com.automic.factories.FactoryBroker;
 import com.automic.objects.Jobs;
 import com.automic.objects.ObjectBroker;
 import com.uc4.api.FolderListItem;
@@ -31,88 +34,33 @@ public class Tests {
 	 * 
 	 * tests can be run here.
 	 * If you are adding methods to this framework, please test them here!
+	 * @throws SAXException 
 	 * 
 	 */
 	
-	public Tests(AECredentials myClient) throws IOException{
+	public Tests(AECredentials myClientSource,AECredentials myClientTarget) throws IOException, SAXException{
 
 		
 		
 		// 1- First, use the static connection object to initiate the connection (see ConnectionManager class for details)
 		
-		ConnectionManager mgr = new ConnectionManager();
-		Connection conn = mgr.connectToClient(myClient);
+		ConnectionManager mgrSource = new ConnectionManager();
+		Connection connSource = mgrSource.connectToClient(myClientSource);
+		
+		ConnectionManager mgrTarget = new ConnectionManager();
+		Connection connTarget = mgrTarget.connectToClient(myClientTarget);
 
 		// 2- initialize an Object broker object, it gives you access to all object methods
+		Connection[] collection = new Connection[2];
+		collection[0] = connSource;
+		collection[1] = connTarget;
 		
-		ObjectBroker broker = new ObjectBroker(conn,false);
-		IFolder myFolder = broker.folders.getFavoritesFolder();
-		FolderList list = broker.folders.getFolderContent(myFolder);
-		
-		for(FolderListItem item : list){
-			System.out.println("DEBUG: " + item.getName()+":"+item.getType());
-		}
-		
-		//broker.common.createObjectLink("RM.UX_APP.UX_APP.DEPLOYWARFILE", broker.folders.getFavoritesFolder());
-
-		//broker.users.moveUserToClient("BSP.LALA", "BSP", 330);
+		FactoryBroker FactBroker = new FactoryBroker(collection,false);
+		FactBroker.exportImportFactory.CopyFolderContentBetweenClients(connSource, "0001/1_WORKLOAD_AUTOMATION/SALES.REPORTING/WORKFLOWS", connTarget, "0330/1_WORKLOAD_AUTOMATION/SALES.REPORTING/WORKFLOWS");
 		
 		
-	//	ArrayList<IFolder> folders = broker.folders.getAllFolders(true);
-		//for(IFolder folder : folders){
-			
-		//	System.out.println(folder.getName()+":"+folder.getType());
-			
-		//}
-		
-		
-		//GetDatabaseInfo info = broker.automationEngine.getCentralDBInfo();
-		//String version = broker.automationEngine.returnServerVersion();
-		
-		// 3- use the Object Broker!
-		//IFolder myFolder = broker.folders.getFolderByName("BSP.WORKFLOWS");
-		//System.out.println(myFolder.getName());
-		
-		//broker.jobPlans.createSampleWorkPlan(myFolder);
-		
-		//UC4Object obj = broker.common.openObject("JOBS.WIN.BSP.DEMO.N1", true);
-		
-		//Job job = (Job) obj;
-
-	
-		//broker.common.getObjectVersions("JOBS.WIN.BSP.DEMO.N1");
-		
-		
-		//IFolder folder = broker.folders.getFolderByName("BSP.JOBS");
-		//broker.common.replaceObject("JOBS.WIN.BSP.DAY2.EX1.2", "JOBS.WIN.BSP.DAY2.EX1.1", folder);
-		//ArrayList<IFolder> mylist = broker.folders.getAllFolders(true);
-		
-		/*for(int i=0;i<mylist.size();i++){
-			System.out.println("+++ Content of: "+mylist.get(i).getName()+":"+mylist.get(i).fullPath());
-			FolderList itemlist = broker.folders.getFolderContent(mylist.get(i));
-			Iterator<FolderListItem> it = itemlist.iterator();
-			while(it.hasNext()){
-				FolderListItem item = it.next();
-				System.out.println("    --> "+item.getName());
-			}
-		}
-		*/
-		//utils.getServerVersion();
-		//utils.getActivityWindowContent();
-
-		//IFolder myFolder = broker.folders.getFolderByName("/BSP.OBJECTS/BSP.JOBS");
-
-		//String jobName = broker.jobs.createRandomJobInFolder(Template.JOBS_WIN,myFolder);
-		//UC4Object object = broker.common.openObject(jobName, true);
-		//broker.jobs.setJobPriority(object,34);
-		//broker.jobs.deleteJob(new UC4ObjectName(object.getName()));
-		
-		//ArrayList<UC4Object> myJobs = broker.common.getAllObjects(ObjectTypeEnum.JOBS);
-		//broker.jobPlans.getAllJobPlansWithFilter(".*");
-		//broker.automationEngine.getAgentList();
-		// 3 - Do not forget to close your connection when finished
-		conn.close();
-
+		connSource.close();
+		connTarget.close();
 	}
 	
 }
