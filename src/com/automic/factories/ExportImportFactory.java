@@ -12,6 +12,14 @@ import com.uc4.api.objects.IFolder;
 import com.uc4.communication.Connection;
 import com.uc4.communication.requests.FolderList;
 
+/**
+ * 
+ * @author bsp
+ * this class implements copy of objects operations between different clients
+ * Ex: Copy the content of a given folder from Client 1 to Client 130
+ *
+ */
+
 public class ExportImportFactory extends FactoryTemplate{
 	public ExportImportFactory(Connection[] conn, boolean verbose) {
 		super(conn, verbose);
@@ -21,6 +29,7 @@ public class ExportImportFactory extends FactoryTemplate{
 		return new ObjectBroker(conn,true);
 	}
 	
+	// The following method is very experimental and implements no control whatsoever.. use with caution.. or improve it!
 	public void CopyFolderContentBetweenClients(Connection ConnectionSource, String FolderFullPathSource, Connection ConnectionTarget, String FolderFullPathTarget) throws IOException, SAXException{
 		
 		ObjectBroker SourceBroker = getBrokerInstance(ConnectionSource);
