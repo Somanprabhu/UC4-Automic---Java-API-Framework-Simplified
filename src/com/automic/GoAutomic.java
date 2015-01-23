@@ -17,15 +17,15 @@ public class GoAutomic {
 			//String AEHostnameOrIP = "192.168.11.135";
 			String AEHostnameOrIP = "172.16.148.35";
 			int AECPPrimaryPort = 2217;
-			int AEClientNumber = 330; //5; // 330;
-			String AEUserLogin = "BSP"; //"ARA"; //"BSP";
+			int AEClientNumber = 340; //5; // 330;
+			String AEUserLogin = "JSM"; //"ARA"; //"BSP";
 			String AEUserDepartment = "AUTOMIC"; //"ARA"; //"AUTOMIC";
-			String AEUserPassword = "oneAutomation"; //"oneAutomation";
+			String AEUserPassword = "automic"; //"oneAutomation";
 			char AEMessageLanguage = 'E';
 			
 			AECredentials myClientTarget = new AECredentials(AEHostnameOrIP,AECPPrimaryPort,AEClientNumber,AEUserDepartment,AEUserLogin,AEUserPassword,AEMessageLanguage);
 			
-			AECredentials myClientSource = new AECredentials(AEHostnameOrIP,AECPPrimaryPort,1,AEUserDepartment,AEUserLogin,"automic",AEMessageLanguage);
+			AECredentials myClientSource = new AECredentials(AEHostnameOrIP,AECPPrimaryPort,330,AEUserDepartment,"BSP","oneAutomation",AEMessageLanguage);
 			
 			try {
 				Tests runTests = new Tests(myClientSource,myClientTarget);

@@ -56,7 +56,7 @@ public class Tests {
 		collection[1] = connTarget;
 		
 		FactoryBroker FactBroker = new FactoryBroker(collection,false);
-		FactBroker.exportImportFactory.CopyFolderContentBetweenClients(connSource, "0001/1_WORKLOAD_AUTOMATION/SALES.REPORTING/WORKFLOWS", connTarget, "0330/1_WORKLOAD_AUTOMATION/SALES.REPORTING/WORKFLOWS");
+		FactBroker.exportImportFactory.CopyFolderContentBetweenClients(connSource, "0330/1_WORKLOAD_AUTOMATION/SALES.REPORTING/WORKFLOWS", connTarget, "0340/1_WORKLOAD_AUTOMATION/SALES.REPORTING/WORKFLOWS");
 		
 		
 		connSource.close();
