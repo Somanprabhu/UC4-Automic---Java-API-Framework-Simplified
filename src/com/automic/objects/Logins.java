@@ -8,6 +8,7 @@ import com.automic.utils.ObjectTypeEnum;
 import com.uc4.api.objects.Login;
 import com.uc4.api.objects.LoginDefinition;
 import com.uc4.api.objects.UC4Object;
+import com.uc4.api.objects.UserGroup;
 import com.uc4.communication.Connection;
 
 public class Logins extends ObjectTemplate{
@@ -20,16 +21,22 @@ public class Logins extends ObjectTemplate{
 		return new ObjectBroker(this.connection,true);
 	}
 	
-	public void getLoginContent(String LoginName) throws IOException{
-		ObjectBroker broker = getBrokerInstance();
-		UC4Object logins = broker.common.openObject(LoginName, false);
-		Login myLogin = (Login) logins;
-		System.out.println("Content of Login: "+myLogin.getName());
-		Iterator<LoginDefinition> it = myLogin.iterator();
+	public void getLoginContent(Login login) throws IOException{
+		//System.out.println("Content of Login: "+myLogin.getName());
+		Iterator<LoginDefinition> it = login.iterator();
 		while(it.hasNext()){
 			LoginDefinition def = it.next();
-		System.out.println("Name: "+def.getHost()+" Type: "+def.getHostType()+" Login Info: "+def.getLoginInfo());
+			String host = def.getHost().toString();
+			if(host.equals("")){host="*";}
+			System.out.println("Host: ["+host+"] Type: ["+def.getHostType()+"] Login: ["+def.getLoginInfo()+"]");
 		}
+	}
+	
+	public Login getLoginFromName(String LoginName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		UC4Object obj = broker.common.openObject(LoginName, false);
+		Login login = (Login) obj;
+		return login;
 	}
 	
 	public ArrayList<UC4Object> getAllLogins() throws IOException{

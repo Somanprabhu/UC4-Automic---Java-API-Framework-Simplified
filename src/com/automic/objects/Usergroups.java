@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 import com.automic.utils.ObjectTypeEnum;
 import com.uc4.api.objects.UC4Object;
+import com.uc4.api.objects.User;
+import com.uc4.api.objects.UserGroup;
 import com.uc4.communication.Connection;
 
 public class Usergroups extends ObjectTemplate{
@@ -16,7 +18,12 @@ public class Usergroups extends ObjectTemplate{
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}
-	
+	public UserGroup getUsergroupFromName(String UsrgroupName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		UC4Object obj = broker.common.openObject(UsrgroupName, false);
+		UserGroup userg = (UserGroup) obj;
+		return userg;
+	}
 	public ArrayList<UC4Object> getAllUsergroups() throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		return broker.common.getAllObjects(ObjectTypeEnum.USRG);

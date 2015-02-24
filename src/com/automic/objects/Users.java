@@ -29,6 +29,13 @@ public class Users extends ObjectTemplate{
 		}
 		return req;
 	}
+	public User getUserFromName(String UserName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		UC4Object obj = broker.common.openObject(UserName, false);
+		User user = (User) obj;
+		return user;
+	}
+	
 	public void moveUserToClient(String UserName, String FolderName, int client) throws IOException{
 		int currentClient = Integer.parseInt(this.connection.getSessionInfo().getClient());
 		if(currentClient != 0){
