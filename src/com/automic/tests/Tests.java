@@ -32,15 +32,12 @@ public class Tests {
 
 	/**   
 	 * 
-	 * tests can be run here.
-	 * If you are adding methods to this framework, please test them here!
-	 * @throws SAXException 
+	 * DO NOT USE THIS
+	 * 
 	 * 
 	 */
 	
 	public Tests(AECredentials myClientSource,AECredentials myClientTarget) throws IOException, SAXException{
-
-		
 		
 		// 1- First, use the static connection object to initiate the connection (see ConnectionManager class for details)
 		
