@@ -1,7 +1,12 @@
 package com.automic.objects;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
 
 import com.automic.utils.ObjectTypeEnum;
 import com.uc4.api.Template;
@@ -32,6 +37,28 @@ public class Variables extends ObjectTemplate{
 		ObjectBroker broker = getBrokerInstance();
 		return broker.common.getAllObjectsWithNameFilter(ObjectTypeEnum.VARA,filter);
 	}
+	public Variable getVariableFromName(String VarName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		Variable Var = (Variable) broker.common.openObject(VarName, false);
+		return Var;
+	}
+	public void updateValueInVariable(Variable var, String key, String value, boolean keepABackup) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		if(keepABackup){
+			String timeStamp = new SimpleDateFormat("yyyyMMdd.HHmm").format(new Date());
+			var.add(timeStamp+"_"+key, var.get(key));
+		}
+		var.remove(key);
+		var.add(key,value);
+		broker.common.saveAndCloseObject(var);				
+	}
+	public void ShowVariableContent(Variable var){
+		Iterator<String> it = var.keyIterator();
+		while(it.hasNext()){
+			String key = it.next();
+			System.out.println(key+" : "+var.get(key));
+		}
+	}
 	public void createBackendVariable(String Name, IFolder folder, String HostAgent, String Login, String Result, 
 			ArrayList<BackendCommand> windowsCommands,  ArrayList<BackendCommand> unixCommands) throws IOException {
 		
@@ -60,8 +87,7 @@ public class Variables extends ObjectTemplate{
 
 		System.out.println(" ++ Backend Variable Created");
 		
-		broker.common.saveObject(vara);			
-		broker.common.closeObject(vara);		
+		broker.common.saveAndCloseObject(vara);				
 		
 	}
 	public void addWinCommandToBackendVariable(String Variablename, BackendCommand WinCmd) throws IOException{
@@ -69,15 +95,13 @@ public class Variables extends ObjectTemplate{
 		Variable vara = (Variable) broker.common.openObject(Variablename, true);
 		BackendVariable backend = vara.backend();	
 		backend.addWindowsCommand(WinCmd);
-		broker.common.saveObject(vara);			
-		broker.common.closeObject(vara);		
+		broker.common.saveAndCloseObject(vara);				
 	}
 	public void addUnixCommandToBackendVariable(String Variablename, BackendCommand WinCmd) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		Variable vara = (Variable) broker.common.openObject(Variablename, true);
 		BackendVariable backend = vara.backend();	
 		backend.addUnixCommand(WinCmd);
-		broker.common.saveObject(vara);			
-		broker.common.closeObject(vara);		
+		broker.common.saveAndCloseObject(vara);				
 	}
 }

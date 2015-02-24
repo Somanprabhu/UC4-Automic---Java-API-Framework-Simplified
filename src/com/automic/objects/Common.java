@@ -412,8 +412,9 @@ public class Common extends ObjectTemplate{
 	// match only jobs starting with "JOBS": "JOBS.*"
 	public ArrayList<UC4Object> getAllObjectsWithNameFilter(String objectType, String filter) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
-		ArrayList<UC4Object> JobList = new ArrayList<UC4Object>();
-		ArrayList<IFolder> allFolders = broker.folders.getAllFolders(true);
+		ArrayList<UC4Object> ObjList = new ArrayList<UC4Object>(); // Object Container
+		ArrayList<IFolder> allFolders = broker.folders.getAllFolders(false); // list of all folders
+	
 		for(int i=0;i<allFolders.size();i++){
 			IFolder myFolder = allFolders.get(i);
 			FolderList itemList = broker.folders.getFolderContent(myFolder);
@@ -422,11 +423,11 @@ public class Common extends ObjectTemplate{
 				FolderListItem item = it.next(); 
 				if(item.getObjectType().equalsIgnoreCase(objectType) && item.getName().matches(filter)){
 					UC4Object obj = broker.common.openObject(item.getName(), true);
-					JobList.add(obj);
+					ObjList.add(obj);
 				}
 			}
 		}
-		return JobList;
+		return ObjList;
 	}
 	public ArrayList<FolderListItem> listAllObjects(String objectType) throws IOException{
 		return listAllObjectsWithNameFilter(objectType,".*");
