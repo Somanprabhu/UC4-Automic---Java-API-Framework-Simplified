@@ -1,10 +1,15 @@
 package com.automic.objects;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.automic.utils.ReportTypeEnum;
 import com.uc4.api.UC4ObjectName;
 import com.uc4.communication.Connection;
+import com.uc4.communication.requests.AddComment;
+import com.uc4.communication.requests.GetComments;
+import com.uc4.communication.requests.GetComments.Comment;
 import com.uc4.communication.requests.LatestReport;
 import com.uc4.communication.requests.Report;
 import com.uc4.communication.requests.ReportTypeList;
@@ -79,5 +84,25 @@ public class Executions extends ObjectTemplate{
 			System.out.println(" -- "+req.getMessageBox().getText());
 		}
 		return req;
+	}
+	public void addCommentToRun(int RunID, String comment) throws IOException{
+		AddComment req = new AddComment(RunID, comment);
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText());
+		}
+	}
+	public ArrayList<Comment> getCommentsFromRun(int RunID) throws IOException{
+		GetComments req = new GetComments(RunID);
+		ArrayList<Comment> allComments = new ArrayList();
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText());
+		}
+		Iterator <Comment> it = req.iterator();
+		while(it.hasNext()){
+			allComments.add(it.next());
+		}
+		return allComments;
 	}
 }

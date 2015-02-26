@@ -27,6 +27,7 @@ public class ObjectBroker {
 	public Executions executions;
 	public Storages storages;
 	public Users users;
+	public TransportCases transports;
 	
 	public ObjectBroker(Connection conn, boolean verbose){
 		this.connection = conn;
@@ -52,6 +53,7 @@ public class ObjectBroker {
 		executions = new Executions(this.connection,verbose);
 		storages = new Storages(this.connection,verbose);
 		users = new Users(this.connection,verbose);
+		transports = new TransportCases(this.connection,verbose);
 	}
 	public void setConnection(Connection conn){
 		this.connection = conn;

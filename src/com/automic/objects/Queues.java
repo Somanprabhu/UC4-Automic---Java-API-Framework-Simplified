@@ -4,8 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.automic.utils.ObjectTypeEnum;
+import com.uc4.api.QueueStatus;
+import com.uc4.api.UC4ObjectName;
 import com.uc4.api.objects.UC4Object;
+import com.uc4.api.systemoverview.QueueListItem;
 import com.uc4.communication.Connection;
+import com.uc4.communication.requests.AddComment;
+import com.uc4.communication.requests.ModifyQueueStatus;
 
 public class Queues extends ObjectTemplate{
 
@@ -24,5 +29,21 @@ public class Queues extends ObjectTemplate{
 	public ArrayList<UC4Object> getAllQueuesWithFilter(String filter) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		return broker.common.getAllObjectsWithNameFilter(ObjectTypeEnum.QUEUE,filter);
+	}
+	public void stopQueue(String QueueName) throws IOException{
+		UC4ObjectName name = new UC4ObjectName(QueueName);
+		ModifyQueueStatus req = new ModifyQueueStatus(name, QueueStatus.RED);
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText());
+		}
+	}
+	public void startQueue(String QueueName) throws IOException{
+		UC4ObjectName name = new UC4ObjectName(QueueName);
+		ModifyQueueStatus req = new ModifyQueueStatus(name, QueueStatus.GREEN);
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText());
+		}
 	}
 }
