@@ -18,4 +18,5 @@ public class ObjectTypeEnum {
 	public static final String EVNT = "EVNT";
 	public static final String FOLD = "FOLD";
 	public static final String PRPT = "PRPT";
+	public static final String JSCH = "JSCH";
 }

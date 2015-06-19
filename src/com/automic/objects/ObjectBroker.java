@@ -28,6 +28,8 @@ public class ObjectBroker {
 	public Storages storages;
 	public Users users;
 	public TransportCases transports;
+	public Schedules schedules;
+	public Notifications notifications;
 	
 	public ObjectBroker(Connection conn, boolean verbose){
 		this.connection = conn;
@@ -54,6 +56,8 @@ public class ObjectBroker {
 		storages = new Storages(this.connection,verbose);
 		users = new Users(this.connection,verbose);
 		transports = new TransportCases(this.connection,verbose);
+		schedules = new Schedules(this.connection,verbose);
+		notifications = new Notifications(this.connection,verbose);
 	}
 	public void setConnection(Connection conn){
 		this.connection = conn;

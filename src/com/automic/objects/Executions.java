@@ -5,9 +5,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.automic.utils.ReportTypeEnum;
+import com.uc4.api.DateTime;
 import com.uc4.api.UC4ObjectName;
+import com.uc4.api.UC4TimezoneName;
+import com.uc4.api.objects.ExecuteRecurring;
 import com.uc4.communication.Connection;
 import com.uc4.communication.requests.AddComment;
+import com.uc4.communication.requests.ExecuteObject;
 import com.uc4.communication.requests.GetComments;
 import com.uc4.communication.requests.GetComments.Comment;
 import com.uc4.communication.requests.LatestReport;
@@ -23,7 +27,35 @@ public class Executions extends ObjectTemplate{
 		return new ObjectBroker(this.connection,true);
 	}
 	
-	public void executeObject(String ObjectName) throws IOException{getBrokerInstance().common.executeObject(ObjectName);}
+	public void executeObjectNow(String ObjectName) throws IOException{
+		
+		getBrokerInstance().common.executeObject(ObjectName);
+		
+	}
+	public void executeObjectOnce(String ObjectName) throws IOException{
+		
+		ExecuteObject obj = new ExecuteObject(new UC4ObjectName(ObjectName));
+		
+		DateTime startDate = DateTime.now().addDays(1);
+		DateTime logicalDate = DateTime.now().addDays(2);
+		
+		obj.executeOnce(startDate, logicalDate, new UC4TimezoneName("TZ.ANG"), false, null);
+
+		this.connection.sendRequestAndWait(obj);
+		int runID = obj.getRunID();
+	}
+	public void executeObjectRecurring(String ObjectName) throws IOException{
+		
+		ExecuteObject obj = new ExecuteObject(new UC4ObjectName(ObjectName));
+		
+		ExecuteRecurring rec = new ExecuteRecurring();
+		rec.setExecutionInterval(1);
+		obj.executeRecurring(rec);
+		//getBrokerInstance().common.saveAndCloseObject(obj);
+		this.connection.sendRequestAndWait(obj);
+		int runID = obj.getRunID();
+	}
+	
 	public void cancelObject(int ObjectRunId) throws IOException{getBrokerInstance().common.cancelObject(ObjectRunId);}
 	
 	public int getLatestRunId(String ObjectName) throws IOException{
