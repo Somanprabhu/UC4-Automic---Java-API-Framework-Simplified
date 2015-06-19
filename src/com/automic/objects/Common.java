@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.xml.sax.SAXException;
 
+import com.uc4.api.DateTime;
 import com.uc4.api.FolderListItem;
 import com.uc4.api.SearchResultItem;
 import com.uc4.api.TaskFilter;
@@ -17,6 +18,7 @@ import com.uc4.api.UC4ObjectName;
 import com.uc4.api.UC4TimezoneName;
 import com.uc4.api.UC4UserName;
 import com.uc4.api.VersionControlListItem;
+import com.uc4.api.objects.ExecuteRecurring;
 import com.uc4.api.objects.IFolder;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
@@ -296,9 +298,9 @@ public class Common extends ObjectTemplate{
 		}	
 	
 	// Execute an Automic Object (any object of the executable kind, JOBS, JOBP, EVENT, etc.)
-	public int executeObject(String name) throws IOException {
+	public int executeObjectNow(String name) throws IOException {
 
-		Say(" ++ Executing object: "+name);
+		Say(" ++ Executing object Now: "+name);
 
 		ExecuteObject execute = new ExecuteObject(new UC4ObjectName(name));
 		connection.sendRequestAndWait(execute);
@@ -312,6 +314,46 @@ public class Common extends ObjectTemplate{
 		return execute.getRunID();
 	}
 	
+	// Execute an Automic Object (any object of the executable kind, JOBS, JOBP, EVENT, etc.)
+	public int executeObjectOnce(String name) throws IOException {
+
+		Say(" ++ Executing object Once: "+name);
+
+		ExecuteObject execute = new ExecuteObject(new UC4ObjectName(name));
+		DateTime startDate = DateTime.now().addDays(1);
+		DateTime logicalDate = DateTime.now().addDays(2);
+		
+		execute.executeOnce(startDate, logicalDate, new UC4TimezoneName("TZ.ANG"), false, null);
+		connection.sendRequestAndWait(execute);
+
+		if (execute.getMessageBox() != null || execute.getRunID() == 0) {
+			if (execute.getMessageBox() != null) System.err.println(" -- "+execute.getMessageBox().getText());
+			System.out.println("-- Failed to execute object:"+name + ":" +execute.getMessageBox().getText());
+		}		
+		Say(" ++ Object: "+name+" Successfully executed with Run ID: "+execute.getRunID());
+
+		return execute.getRunID();
+	}
+	// Execute an Automic Object (any object of the executable kind, JOBS, JOBP, EVENT, etc.)
+	public int executeObjectRecurring(String name) throws IOException {
+
+		Say(" ++ Executing object Recurring: "+name);
+
+		ExecuteObject execute = new ExecuteObject(new UC4ObjectName(name));
+		ExecuteRecurring rec = new ExecuteRecurring();
+		rec.setExecutionInterval(1);
+		execute.executeRecurring(rec);
+		
+		connection.sendRequestAndWait(execute);
+
+		if (execute.getMessageBox() != null || execute.getRunID() == 0) {
+			if (execute.getMessageBox() != null) System.err.println(" -- "+execute.getMessageBox().getText());
+			System.out.println("-- Failed to execute object:"+name + ":" +execute.getMessageBox().getText());
+		}		
+		Say(" ++ Object: "+name+" Successfully executed with Run ID: "+execute.getRunID());
+
+		return execute.getRunID();
+	}
 	// Create an empty Automic Object (of any kind)
 	public void createObject(String name, Template template, IFolder fold) throws IOException {
 		Say(" ++ Creating object: "+name+" of Type: "+template.getType());
