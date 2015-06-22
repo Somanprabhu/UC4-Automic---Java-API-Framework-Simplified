@@ -38,6 +38,10 @@ public class Agents extends ObjectTemplate{
 		}
 	}
 	
+	public boolean isAgentActive(AgentListItem agent) throws IOException {
+		return agent.isActive();
+	}
+	
 	public ArrayList<AgentListItem> getAgentList() throws IOException {
 		return getAgentListWithNameAndTypeFilter(".*",".*");
 	}

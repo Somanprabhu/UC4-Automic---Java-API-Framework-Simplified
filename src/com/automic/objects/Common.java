@@ -315,15 +315,15 @@ public class Common extends ObjectTemplate{
 	}
 	
 	// Execute an Automic Object (any object of the executable kind, JOBS, JOBP, EVENT, etc.)
-	public int executeObjectOnce(String name) throws IOException {
+	public int executeObjectOnce(String name, String timezone, DateTime startDate, DateTime logicalDate) throws IOException {
 
 		Say(" ++ Executing object Once: "+name);
 
 		ExecuteObject execute = new ExecuteObject(new UC4ObjectName(name));
-		DateTime startDate = DateTime.now().addDays(1);
-		DateTime logicalDate = DateTime.now().addDays(2);
-		
-		execute.executeOnce(startDate, logicalDate, new UC4TimezoneName("TZ.ANG"), false, null);
+		//DateTime startDate = DateTime.now().addDays(1);
+		//DateTime logicalDate = DateTime.now().addDays(2);
+		execute.executeOnce(startDate, logicalDate, new UC4TimezoneName(timezone), false, null);
+		//execute.executeOnce(startDate, logicalDate, new UC4TimezoneName("TZ.ANG"), false, null);
 		connection.sendRequestAndWait(execute);
 
 		if (execute.getMessageBox() != null || execute.getRunID() == 0) {
@@ -335,14 +335,15 @@ public class Common extends ObjectTemplate{
 		return execute.getRunID();
 	}
 	// Execute an Automic Object (any object of the executable kind, JOBS, JOBP, EVENT, etc.)
-	public int executeObjectRecurring(String name) throws IOException {
+	public int executeObjectRecurring(String name, ExecuteRecurring recurringPattern) throws IOException {
 
 		Say(" ++ Executing object Recurring: "+name);
 
 		ExecuteObject execute = new ExecuteObject(new UC4ObjectName(name));
-		ExecuteRecurring rec = new ExecuteRecurring();
-		rec.setExecutionInterval(1);
-		execute.executeRecurring(rec);
+		//ExecuteRecurring rec = new ExecuteRecurring();
+		//rec.setExecutionInterval(1);
+		
+		execute.executeRecurring(recurringPattern);
 		
 		connection.sendRequestAndWait(execute);
 

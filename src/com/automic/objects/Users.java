@@ -36,6 +36,7 @@ public class Users extends ObjectTemplate{
 		return user;
 	}
 	
+	
 	public void moveUserToClient(String UserName, String FolderName, int client) throws IOException{
 		int currentClient = Integer.parseInt(this.connection.getSessionInfo().getClient());
 		if(currentClient != 0){
