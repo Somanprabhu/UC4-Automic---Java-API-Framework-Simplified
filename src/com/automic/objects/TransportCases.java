@@ -3,10 +3,8 @@ package com.automic.objects;
 import java.io.IOException;
 
 import com.uc4.api.objects.IFolder;
-import com.uc4.api.objects.Job;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
-import com.uc4.communication.requests.AddComment;
 import com.uc4.communication.requests.ClearTransportCase;
 import com.uc4.communication.requests.TransportObject;
 

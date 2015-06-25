@@ -3,8 +3,10 @@ package com.automic.objects;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.uc4.api.Template;
 import com.uc4.api.UC4HostName;
-import com.uc4.api.objects.Job;
+import com.uc4.api.objects.AgentAssignment;
+import com.uc4.api.objects.IFolder;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.api.systemoverview.AgentListItem;
 import com.uc4.communication.Connection;
@@ -38,6 +40,20 @@ public class Agents extends ObjectTemplate{
 		if (req.getMessageBox() != null) {
 			System.out.println(req.getMessageBox());
 		}
+	}
+	public void createAgentClientAssignment(String AgentClientAssignmentName, IFolder FolderLocation) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		broker.common.createObject(AgentClientAssignmentName, Template.HSTA, FolderLocation);
+	//	AgentAssignment myAss = getAgentAssignmentFromObject(broker.common.openObject(AgentClientAssignmentName, false));
+	//	AgentAssignmentFilter filterWin = new AgentAssignmentFilter();
+		
+	//	myAss.
+		
+	}
+	public AgentAssignment getAgentAssignmentFromObject(UC4Object object){return (AgentAssignment) object;}
+	
+	public void createOpenAgentClientAssignment(String AgentClientAssignmentName, IFolder FolderLocation){
+		
 	}
 	
 	public boolean isAgentActive(AgentListItem agent) throws IOException {

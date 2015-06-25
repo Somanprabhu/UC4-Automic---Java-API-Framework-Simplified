@@ -1,12 +1,9 @@
 package com.automic.objects;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
-import com.uc4.api.systemoverview.AgentListItem;
 import com.uc4.api.systemoverview.ServerListItem;
 import com.uc4.communication.Connection;
-import com.uc4.communication.requests.AgentList;
 import com.uc4.communication.requests.GetDatabaseInfo;
 import com.uc4.communication.requests.ResumeClient;
 import com.uc4.communication.requests.ServerList;
@@ -18,6 +15,7 @@ public class AutomationEngine extends ObjectTemplate{
 	public AutomationEngine(Connection conn, boolean verbose) {
 		super(conn, verbose);
 	}
+	@SuppressWarnings("unused")
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}

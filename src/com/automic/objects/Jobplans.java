@@ -13,6 +13,8 @@ import com.uc4.api.objects.JobPlan;
 import com.uc4.api.objects.JobPlanTask;
 import com.uc4.api.objects.TaskState;
 import com.uc4.api.objects.UC4Object;
+import com.uc4.api.objects.WorkflowIF;
+import com.uc4.api.objects.WorkflowLoop;
 import com.uc4.communication.Connection;
 import com.uc4.communication.requests.AddJobPlanTask;
 
@@ -63,6 +65,19 @@ private ObjectBroker broker;
 		}
 		return allJobs;
 	}
+	
+	public void createEmpltyWorkPlan(String WorkplanName, IFolder folder) throws IOException{
+		broker.common.createObject(WorkplanName, Template.JOBP, folder);
+	}
+	public void createEmpltyIFWorkPlan(String WorkplanName, IFolder folder) throws IOException{
+		broker.common.createObject(WorkplanName, Template.JOBP_IF, folder);
+	}
+	public void createEmpltyFOREACHWorkPlan(String WorkplanName, IFolder folder) throws IOException{
+		broker.common.createObject(WorkplanName, Template.JOBP_FOREACH, folder);
+	}
+	public WorkflowIF getIFWorkflowFromObject(UC4Object object){return (WorkflowIF) object;}
+	public WorkflowLoop getFOREACHWorkflowFromObject(UC4Object object){return (WorkflowLoop) object;}
+	public JobPlan getWorkflowFromObject(UC4Object object){return (JobPlan) object;}
 	
 	// The following method is provided as an example
 	public void createSampleWorkPlan(IFolder folder) throws IOException{

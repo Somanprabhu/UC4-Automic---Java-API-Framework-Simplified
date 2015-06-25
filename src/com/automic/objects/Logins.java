@@ -5,11 +5,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.automic.utils.ObjectTypeEnum;
-import com.uc4.api.objects.Job;
 import com.uc4.api.objects.Login;
 import com.uc4.api.objects.LoginDefinition;
 import com.uc4.api.objects.UC4Object;
-import com.uc4.api.objects.UserGroup;
 import com.uc4.communication.Connection;
 
 public class Logins extends ObjectTemplate{

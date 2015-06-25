@@ -1,32 +1,12 @@
 package com.automic.tests;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.xml.sax.SAXException;
 
 import com.automic.AECredentials;
 import com.automic.ConnectionManager;
 import com.automic.factories.FactoryBroker;
-import com.automic.objects.Jobs;
-import com.automic.objects.ObjectBroker;
-import com.uc4.api.FolderListItem;
-import com.uc4.api.SearchResultItem;
-import com.uc4.api.Template;
-import com.uc4.api.VersionControlListItem;
-import com.uc4.api.objects.DocuContainer;
-import com.uc4.api.objects.IFolder;
-import com.uc4.api.objects.Job;
-import com.uc4.api.objects.Login;
-import com.uc4.api.objects.LoginDefinition;
-import com.uc4.api.objects.UC4Object;
-import com.uc4.api.systemoverview.ServerListItem;
 import com.uc4.communication.Connection;
-import com.uc4.communication.requests.FolderList;
-import com.uc4.communication.requests.ServerList;
-import com.uc4.communication.requests.VersionControlList;
 
 public class Tests {
 

@@ -14,6 +14,7 @@ public class ActivityWindow extends ObjectTemplate{
 	public ActivityWindow(Connection conn, boolean verbose) {
 		super(conn, verbose);
 	}
+	@SuppressWarnings("unused")
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}

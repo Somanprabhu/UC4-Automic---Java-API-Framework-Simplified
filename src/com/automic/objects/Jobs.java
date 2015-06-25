@@ -9,8 +9,6 @@ import com.automic.utils.ObjectTypeEnum;
 import com.uc4.api.Template;
 import com.uc4.api.UC4HostName;
 import com.uc4.api.UC4ObjectName;
-import com.uc4.api.objects.ExecuteRecurring;
-import com.uc4.api.objects.FileTransfer;
 import com.uc4.api.objects.IFolder;
 import com.uc4.api.objects.Job;
 import com.uc4.api.objects.UC4Object;

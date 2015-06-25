@@ -30,6 +30,16 @@ public class ObjectBroker {
 	public TransportCases transports;
 	public Schedules schedules;
 	public Notifications notifications;
+	public Events events;
+	public Connections connections;
+	public Timezones timezones;
+	public Syncs syncs;
+	public Documentations documentations;
+	public OutputFilters outputFilters;
+	public Jobgroups jobgroups;
+	public Includes includes;
+	public Dashboards dashboards;
+	public SAPQueueManager sapqueuemanager;
 	
 	public ObjectBroker(Connection conn, boolean verbose){
 		this.connection = conn;
@@ -58,6 +68,16 @@ public class ObjectBroker {
 		transports = new TransportCases(this.connection,verbose);
 		schedules = new Schedules(this.connection,verbose);
 		notifications = new Notifications(this.connection,verbose);
+		events = new Events(this.connection,verbose);
+		connections = new Connections(this.connection,verbose);
+		timezones = new Timezones(this.connection,verbose);
+		syncs = new Syncs(this.connection,verbose);
+		documentations = new Documentations(this.connection,verbose);
+		outputFilters = new OutputFilters(this.connection,verbose);
+		jobgroups = new Jobgroups(this.connection,verbose);
+		includes = new Includes(this.connection,verbose);
+		dashboards = new Dashboards(this.connection,verbose);
+		sapqueuemanager = new SAPQueueManager(this.connection,verbose);
 	}
 	public void setConnection(Connection conn){
 		this.connection = conn;

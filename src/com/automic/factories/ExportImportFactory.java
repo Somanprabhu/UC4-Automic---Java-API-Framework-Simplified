@@ -6,7 +6,6 @@ import java.util.Iterator;
 import org.xml.sax.SAXException;
 
 import com.automic.objects.ObjectBroker;
-import com.automic.objects.ObjectTemplate;
 import com.uc4.api.FolderListItem;
 import com.uc4.api.objects.IFolder;
 import com.uc4.communication.Connection;

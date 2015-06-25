@@ -3,13 +3,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.xml.sax.SAXException;
-
-import com.automic.factories.FactoryBroker;
 import com.automic.objects.ObjectBroker;
-import com.automic.tests.Tests;
 import com.uc4.api.objects.UC4Object;
-import com.uc4.api.objects.Variable;
 import com.uc4.communication.Connection;
 
 

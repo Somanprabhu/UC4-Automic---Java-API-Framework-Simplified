@@ -1,10 +1,8 @@
 package com.automic.objects;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -15,7 +13,6 @@ import com.uc4.api.UC4ObjectName;
 import com.uc4.api.objects.BackendCommand;
 import com.uc4.api.objects.BackendVariable;
 import com.uc4.api.objects.IFolder;
-import com.uc4.api.objects.Job;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.api.objects.Variable;
 import com.uc4.communication.Connection;
@@ -23,13 +20,47 @@ import com.uc4.communication.Connection;
 public class Variables extends ObjectTemplate{
 
 	public Variables(Connection conn, boolean verbose) {
-		super(conn, verbose);
-		
+		super(conn, verbose);	
 	}
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}
+	
 	public Variable getJobFromObject(UC4Object object){return (Variable) object;}
+	
+	public void createStaticVariable(String VariableName, IFolder FolderLocation) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		broker.common.createObject(VariableName, Template.VARA, FolderLocation);
+	}
+	public void createBackendVariable(String VariableName, IFolder FolderLocation) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		broker.common.createObject(VariableName, Template.VARA_BACKEND, FolderLocation);
+	}
+	public void createFilelistVariable(String VariableName, IFolder FolderLocation) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		broker.common.createObject(VariableName, Template.VARA_FILELIST, FolderLocation);
+	}
+	public void createMultiVariable(String VariableName, IFolder FolderLocation) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		broker.common.createObject(VariableName, Template.VARA_MULTI, FolderLocation);
+	}
+	public void createSecSQLVariable(String VariableName, IFolder FolderLocation) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		broker.common.createObject(VariableName, Template.VARA_SEC_SQL, FolderLocation);
+	}
+	public void createSecSQLIVariable(String VariableName, IFolder FolderLocation) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		broker.common.createObject(VariableName, Template.VARA_SEC_SQLI, FolderLocation);
+	}
+	public void createSQLVariable(String VariableName, IFolder FolderLocation) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		broker.common.createObject(VariableName, Template.VARA_SQL, FolderLocation);
+	}
+	public void createSQLIVariable(String VariableName, IFolder FolderLocation) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		broker.common.createObject(VariableName, Template.VARA_SQLI, FolderLocation);
+	}
+
 	public ArrayList<UC4Object> getAllVariables() throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		return broker.common.getAllObjects(ObjectTypeEnum.VARA);

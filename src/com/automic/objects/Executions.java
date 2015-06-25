@@ -5,15 +5,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.automic.utils.ReportTypeEnum;
-import com.uc4.api.DateTime;
 import com.uc4.api.UC4ObjectName;
-import com.uc4.api.UC4TimezoneName;
-import com.uc4.api.objects.ExecuteRecurring;
-import com.uc4.api.objects.Job;
-import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
 import com.uc4.communication.requests.AddComment;
-import com.uc4.communication.requests.ExecuteObject;
 import com.uc4.communication.requests.GetComments;
 import com.uc4.communication.requests.GetComments.Comment;
 import com.uc4.communication.requests.LatestReport;
@@ -99,7 +93,7 @@ public class Executions extends ObjectTemplate{
 	}
 	public ArrayList<Comment> getCommentsFromRun(int RunID) throws IOException{
 		GetComments req = new GetComments(RunID);
-		ArrayList<Comment> allComments = new ArrayList();
+		ArrayList<Comment> allComments = new ArrayList<Comment>();
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
 			System.out.println(" -- "+req.getMessageBox().getText());

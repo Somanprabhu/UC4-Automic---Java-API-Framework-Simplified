@@ -6,12 +6,9 @@ import java.util.ArrayList;
 import com.automic.utils.ObjectTypeEnum;
 import com.uc4.api.QueueStatus;
 import com.uc4.api.UC4ObjectName;
-import com.uc4.api.objects.Job;
 import com.uc4.api.objects.Queue;
 import com.uc4.api.objects.UC4Object;
-import com.uc4.api.systemoverview.QueueListItem;
 import com.uc4.communication.Connection;
-import com.uc4.communication.requests.AddComment;
 import com.uc4.communication.requests.ModifyQueueStatus;
 
 public class Queues extends ObjectTemplate{

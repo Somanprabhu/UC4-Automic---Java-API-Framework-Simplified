@@ -6,7 +6,6 @@ import java.util.Iterator;
 
 import com.automic.utils.ObjectTypeEnum;
 import com.uc4.api.Time;
-import com.uc4.api.objects.Job;
 import com.uc4.api.objects.Schedule;
 import com.uc4.api.objects.ScheduleTask;
 import com.uc4.api.objects.UC4Object;

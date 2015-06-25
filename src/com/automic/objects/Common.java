@@ -34,7 +34,6 @@ import com.uc4.communication.requests.ExportObject;
 import com.uc4.communication.requests.FolderList;
 import com.uc4.communication.requests.GetReplaceList;
 import com.uc4.communication.requests.ImportObject;
-import com.uc4.communication.requests.LinkTo;
 import com.uc4.communication.requests.MoveObject;
 import com.uc4.communication.requests.OpenObject;
 import com.uc4.communication.requests.RenameObject;

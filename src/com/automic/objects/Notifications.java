@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.automic.utils.ObjectTypeEnum;
-import com.uc4.api.objects.Job;
 import com.uc4.api.objects.Notification;
-import com.uc4.api.objects.Schedule;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
 

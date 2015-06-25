@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 public class SupportedAEVersions {
 
-	public static ArrayList<String> SupportedVersions = new ArrayList(Arrays.asList(
+	public static ArrayList<String> SupportedVersions = new ArrayList<String>(Arrays.asList(
 			"10.0","11.0","11.1"
 			));
 	

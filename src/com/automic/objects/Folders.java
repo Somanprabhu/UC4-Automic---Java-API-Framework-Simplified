@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.uc4.api.objects.IFolder;
-import com.uc4.api.objects.Job;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
 import com.uc4.communication.requests.DeleteObject;
@@ -17,6 +16,7 @@ public class Folders extends ObjectTemplate{
 	public Folders(Connection conn, boolean verbose) {
 		super(conn, verbose);
 	}
+	@SuppressWarnings("unused")
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}
