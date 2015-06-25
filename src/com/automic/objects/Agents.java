@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.uc4.api.UC4HostName;
+import com.uc4.api.objects.Job;
+import com.uc4.api.objects.UC4Object;
 import com.uc4.api.systemoverview.AgentListItem;
 import com.uc4.communication.Connection;
 import com.uc4.communication.requests.AgentList;
@@ -19,7 +21,7 @@ public class Agents extends ObjectTemplate{
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}
-	
+
 	public void startAgent(String AgentName) throws IOException{
 		UC4HostName agent = new UC4HostName(AgentName);
 		StartHost req = new StartHost(agent);

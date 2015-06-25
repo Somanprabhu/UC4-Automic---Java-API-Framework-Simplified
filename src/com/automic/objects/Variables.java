@@ -15,6 +15,7 @@ import com.uc4.api.UC4ObjectName;
 import com.uc4.api.objects.BackendCommand;
 import com.uc4.api.objects.BackendVariable;
 import com.uc4.api.objects.IFolder;
+import com.uc4.api.objects.Job;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.api.objects.Variable;
 import com.uc4.communication.Connection;
@@ -28,7 +29,7 @@ public class Variables extends ObjectTemplate{
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}
-	
+	public Variable getJobFromObject(UC4Object object){return (Variable) object;}
 	public ArrayList<UC4Object> getAllVariables() throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		return broker.common.getAllObjects(ObjectTypeEnum.VARA);

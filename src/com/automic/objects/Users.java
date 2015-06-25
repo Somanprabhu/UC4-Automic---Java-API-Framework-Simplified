@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import com.automic.utils.ObjectTypeEnum;
 import com.uc4.api.UC4UserName;
 import com.uc4.api.objects.IFolder;
+import com.uc4.api.objects.Job;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.api.objects.User;
 import com.uc4.communication.Connection;
@@ -21,6 +22,7 @@ public class Users extends ObjectTemplate{
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}
+	public User getUserFromObject(UC4Object object){return (User) object;}
 	public UserList getUserList() throws IOException{
 		UserList req = new UserList();
 		connection.sendRequestAndWait(req);

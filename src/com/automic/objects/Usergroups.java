@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.automic.utils.ObjectTypeEnum;
+import com.uc4.api.objects.Job;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.api.objects.User;
 import com.uc4.api.objects.UserGroup;
@@ -18,6 +19,7 @@ public class Usergroups extends ObjectTemplate{
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}
+	public UserGroup getUserGroupFromObject(UC4Object object){return (UserGroup) object;}
 	public UserGroup getUsergroupFromName(String UsrgroupName) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		UC4Object obj = broker.common.openObject(UsrgroupName, false);

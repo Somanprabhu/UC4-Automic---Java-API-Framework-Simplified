@@ -27,7 +27,7 @@ private ObjectBroker broker;
 		return new ObjectBroker(this.connection,true);
 	}
 	
-	
+	public JobPlan getJobPlanFromObject(UC4Object object){return (JobPlan) object;}
 	public void setPriority(UC4Object object, int priority) throws IOException{
 		JobPlan jobp = (JobPlan) object;
 		jobp.attributes().setPriority(priority);

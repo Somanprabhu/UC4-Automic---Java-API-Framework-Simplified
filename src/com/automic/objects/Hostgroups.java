@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.automic.utils.ObjectTypeEnum;
+import com.uc4.api.objects.HostGroup;
+import com.uc4.api.objects.Job;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
 
@@ -16,7 +18,7 @@ public class Hostgroups extends ObjectTemplate{
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}
-	
+	public HostGroup getHostgroupFromObject(UC4Object object){return (HostGroup) object;}
 	public ArrayList<UC4Object> getAllHostgroups() throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		return broker.common.getAllObjects(ObjectTypeEnum.HOSTG);

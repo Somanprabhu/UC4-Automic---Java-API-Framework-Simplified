@@ -21,7 +21,7 @@ public class Schedules extends ObjectTemplate{
 	private ObjectBroker getBrokerInstance() {
 		return new ObjectBroker(this.connection, true);
 	}
-	
+	public Schedule getScheduleFromObject(UC4Object object){return (Schedule) object;}
 	public void setTaskTime(ScheduleTask task, int Hours, int Minutes, int Seconds){
 		short hours = (short)Hours;
 		short minutes = (short)Minutes;

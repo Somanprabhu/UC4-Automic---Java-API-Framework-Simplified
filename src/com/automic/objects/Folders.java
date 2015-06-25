@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.uc4.api.objects.IFolder;
+import com.uc4.api.objects.Job;
+import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
 import com.uc4.communication.requests.DeleteObject;
 import com.uc4.communication.requests.FolderList;
@@ -18,7 +20,7 @@ public class Folders extends ObjectTemplate{
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}
-	
+	public IFolder getFolderFromObject(UC4Object object){return (IFolder) object;}
 	public IFolder getRootFolder() throws IOException{
 		FolderTree tree = new FolderTree();
 		this.connection.sendRequestAndWait(tree);

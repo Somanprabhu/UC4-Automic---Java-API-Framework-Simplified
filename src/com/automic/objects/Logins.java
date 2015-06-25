@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.automic.utils.ObjectTypeEnum;
+import com.uc4.api.objects.Job;
 import com.uc4.api.objects.Login;
 import com.uc4.api.objects.LoginDefinition;
 import com.uc4.api.objects.UC4Object;
@@ -20,7 +21,7 @@ public class Logins extends ObjectTemplate{
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}
-	
+	public Login getLoginFromObject(UC4Object object){return (Login) object;}
 	public void getLoginContent(Login login) throws IOException{
 		//System.out.println("Content of Login: "+myLogin.getName());
 		Iterator<LoginDefinition> it = login.iterator();

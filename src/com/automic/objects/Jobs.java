@@ -10,6 +10,7 @@ import com.uc4.api.Template;
 import com.uc4.api.UC4HostName;
 import com.uc4.api.UC4ObjectName;
 import com.uc4.api.objects.ExecuteRecurring;
+import com.uc4.api.objects.FileTransfer;
 import com.uc4.api.objects.IFolder;
 import com.uc4.api.objects.Job;
 import com.uc4.api.objects.UC4Object;
@@ -26,6 +27,7 @@ public class Jobs extends ObjectTemplate {
 		return new ObjectBroker(this.connection, true);
 	}
 
+	public Job getJobFromObject(UC4Object object){return (Job) object;}
 	// Modify a property of a Job object
 	public void setJobPriority(UC4Object object, int priority)
 			throws IOException {

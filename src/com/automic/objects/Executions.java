@@ -9,6 +9,8 @@ import com.uc4.api.DateTime;
 import com.uc4.api.UC4ObjectName;
 import com.uc4.api.UC4TimezoneName;
 import com.uc4.api.objects.ExecuteRecurring;
+import com.uc4.api.objects.Job;
+import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
 import com.uc4.communication.requests.AddComment;
 import com.uc4.communication.requests.ExecuteObject;
@@ -26,7 +28,6 @@ public class Executions extends ObjectTemplate{
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}
-	
 	
 	public void cancelObject(int ObjectRunId) throws IOException{getBrokerInstance().common.cancelObject(ObjectRunId);}
 	

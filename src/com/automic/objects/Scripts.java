@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.automic.utils.ObjectTypeEnum;
+import com.uc4.api.objects.Job;
+import com.uc4.api.objects.Script;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
 
@@ -16,6 +18,7 @@ public class Scripts extends ObjectTemplate{
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}
+	public Script getScriptFromObject(UC4Object object){return (Script) object;}
 	public ArrayList<UC4Object> getAllScripts() throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		return broker.common.getAllObjects(ObjectTypeEnum.SCRI);

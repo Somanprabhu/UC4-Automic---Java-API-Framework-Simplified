@@ -7,6 +7,7 @@ import com.automic.utils.ObjectTypeEnum;
 import com.uc4.api.DateTime;
 import com.uc4.api.UC4ObjectName;
 import com.uc4.api.objects.Calendar;
+import com.uc4.api.objects.Job;
 import com.uc4.api.objects.StaticCalendarKeyword;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
@@ -20,7 +21,7 @@ public class Calendars extends ObjectTemplate{
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}
-	
+	public Calendar getCalendarFromObject(UC4Object object){return (Calendar) object;}
 	public ArrayList<UC4Object> getAllCalendars() throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		return broker.common.getAllObjects(ObjectTypeEnum.CALE);

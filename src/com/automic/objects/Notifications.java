@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.automic.utils.ObjectTypeEnum;
+import com.uc4.api.objects.Job;
 import com.uc4.api.objects.Notification;
 import com.uc4.api.objects.Schedule;
 import com.uc4.api.objects.UC4Object;
@@ -18,7 +19,6 @@ public class Notifications  extends ObjectTemplate{
 	private ObjectBroker getBrokerInstance() {
 		return new ObjectBroker(this.connection, true);
 	}
-	
 	public ArrayList<UC4Object> getAllSchedules() throws IOException {
 		ObjectBroker broker = getBrokerInstance();
 		return broker.common.getAllObjects(ObjectTypeEnum.CALL);

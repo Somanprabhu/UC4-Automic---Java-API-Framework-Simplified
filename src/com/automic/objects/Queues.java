@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import com.automic.utils.ObjectTypeEnum;
 import com.uc4.api.QueueStatus;
 import com.uc4.api.UC4ObjectName;
+import com.uc4.api.objects.Job;
+import com.uc4.api.objects.Queue;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.api.systemoverview.QueueListItem;
 import com.uc4.communication.Connection;
@@ -21,7 +23,7 @@ public class Queues extends ObjectTemplate{
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}
-	
+	public Queue getQueueFromObject(UC4Object object){return (Queue) object;}
 	public ArrayList<UC4Object> getAllQueues() throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		return broker.common.getAllObjects(ObjectTypeEnum.QUEUE);
