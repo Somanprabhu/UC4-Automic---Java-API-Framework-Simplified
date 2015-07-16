@@ -44,7 +44,6 @@ public class GoAutomic {
 				//System.out.println(it.next().getName());
 		//	}
 			
-			System.out.println("Debug:"+connSource.getSessionInfo().getClient());
 			Objbroker.clients.displayClientList();;
 		
 			ArrayList<AgentListItem> agents = Objbroker.agents.getAgentList();
