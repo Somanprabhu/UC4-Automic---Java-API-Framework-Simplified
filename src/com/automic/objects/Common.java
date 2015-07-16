@@ -22,6 +22,7 @@ import com.uc4.api.objects.ExecuteRecurring;
 import com.uc4.api.objects.IFolder;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
+import com.uc4.communication.TimeoutException;
 import com.uc4.communication.requests.ActivityList;
 import com.uc4.communication.requests.CancelTask;
 import com.uc4.communication.requests.CloseObject;
@@ -41,6 +42,7 @@ import com.uc4.communication.requests.ReplaceObject;
 import com.uc4.communication.requests.RestoreObjectVersion;
 import com.uc4.communication.requests.SaveObject;
 import com.uc4.communication.requests.SearchObject;
+import com.uc4.communication.requests.TemplateList;
 import com.uc4.communication.requests.VersionControlList;
 
 
@@ -59,6 +61,7 @@ public class Common extends ObjectTemplate{
 	*
 	** The Methods below are generic.
  * @return 
+ * @throws TimeoutException 
  * @throws SAXException 
  * @throws IOException 
 	** 
@@ -66,6 +69,15 @@ public class Common extends ObjectTemplate{
 	
 	**/
 
+	public TemplateList getTemplateList() throws TimeoutException, IOException{
+		TemplateList req = new TemplateList();
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText());
+		}
+		return req;
+	}
+	
 	public void restoreObjectVersions(VersionControlListItem VersionControlObject) throws IOException{
 		RestoreObjectVersion req = new RestoreObjectVersion(VersionControlObject);
 		connection.sendRequestAndWait(req);

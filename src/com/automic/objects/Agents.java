@@ -2,15 +2,22 @@ package com.automic.objects;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.uc4.api.Template;
 import com.uc4.api.UC4HostName;
 import com.uc4.api.objects.AgentAssignment;
+import com.uc4.api.objects.Authorizations;
+import com.uc4.api.objects.Host;
 import com.uc4.api.objects.IFolder;
 import com.uc4.api.objects.UC4Object;
+import com.uc4.api.systemoverview.AgentGroupListItem;
 import com.uc4.api.systemoverview.AgentListItem;
 import com.uc4.communication.Connection;
+import com.uc4.communication.TimeoutException;
+import com.uc4.communication.requests.AgentGroupList;
 import com.uc4.communication.requests.AgentList;
+import com.uc4.communication.requests.SetHostAuthorizations;
 import com.uc4.communication.requests.StartHost;
 import com.uc4.communication.requests.TerminateHost;
 
@@ -41,19 +48,16 @@ public class Agents extends ObjectTemplate{
 			System.out.println(req.getMessageBox());
 		}
 	}
+	
 	public void createAgentClientAssignment(String AgentClientAssignmentName, IFolder FolderLocation) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		broker.common.createObject(AgentClientAssignmentName, Template.HSTA, FolderLocation);
-	//	AgentAssignment myAss = getAgentAssignmentFromObject(broker.common.openObject(AgentClientAssignmentName, false));
-	//	AgentAssignmentFilter filterWin = new AgentAssignmentFilter();
-		
-	//	myAss.
-		
 	}
+	
 	public AgentAssignment getAgentAssignmentFromObject(UC4Object object){return (AgentAssignment) object;}
 	
 	public void createOpenAgentClientAssignment(String AgentClientAssignmentName, IFolder FolderLocation){
-		
+		// Stub method. Needs to be created!!
 	}
 	
 	public boolean isAgentActive(AgentListItem agent) throws IOException {
@@ -82,4 +86,54 @@ public class Agents extends ObjectTemplate{
 		}
 		return objList;
 	}
+	
+	public ArrayList<AgentGroupListItem> getAgentGroupList() throws TimeoutException, IOException{
+		ArrayList<AgentGroupListItem> objList = new ArrayList<AgentGroupListItem>();
+		AgentGroupList list = new AgentGroupList();
+		connection.sendRequestAndWait(list);
+		if (list.getMessageBox() != null) {
+		}
+		for (AgentGroupListItem item : list) {
+			//if(item.getName().toString().matches(NameFilter) && item.getJclVariant().matches(TypeFilter)){
+			objList.add(item);	
+			//}
+		}
+		return objList;
+	}
+	
+	public Authorizations getPermissionsForAgent(String AgentName) throws IOException{
+		UC4Object obj = getBrokerInstance().common.openObject(AgentName, false);
+		Host host = (Host) obj; 
+		return host.authorizations();
+	}
+	
+	public void displayPermissionsForAgent(String AgentName) throws IOException{
+		UC4Object obj = getBrokerInstance().common.openObject(AgentName, false);
+		Host host = (Host) obj;
+		System.out.println("\n[Agent name]:[Client]:[Client Read permission]:[Client Write Permission]:[Client Execute Permission]");
+		for (Iterator<Authorizations.Entry> it = host.authorizations().iterator(); it.hasNext();) {
+			Authorizations.Entry entry = it.next();
+			System.out.println(AgentName+":"+entry.getClient()+":"+entry.isRead()+":"+entry.isWrite()+":"+entry.isExecute());
+		}
+	}
+	
+	public void setAgentAuthorizationsForAllAgents(int Client, boolean Read, boolean Write, boolean Execute) throws TimeoutException, IOException{
+		setAgentAuthorizations("*",Client,Read,Write,Execute);
+	}
+	
+	// the following method actually takes a filter as an AgentName (if needed..). '*' and '?' are accepted!
+	public void setAgentAuthorizations(String AgentName, int Client, boolean Read, boolean Write, boolean Execute) throws TimeoutException, IOException{
+		String CurrentSessionClient = connection.getSessionInfo().getClient();
+		if(CurrentSessionClient == "0000"){
+		SetHostAuthorizations req = new SetHostAuthorizations(AgentName, Client, Read, Write, Execute);
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText());
+		}
+		}else{
+			System.out.println("-- Error! Current Client is: " + CurrentSessionClient+", You Need to be connected with Client 0000 for this operation.");
+		}
+	}
+		
+
 }
