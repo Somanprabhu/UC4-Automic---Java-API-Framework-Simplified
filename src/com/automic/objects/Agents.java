@@ -87,6 +87,19 @@ public class Agents extends ObjectTemplate{
 		return objList;
 	}
 	
+	public AgentListItem getAgentListItemByName(String AgentName) throws IOException {
+		AgentList list = new AgentList();
+		connection.sendRequestAndWait(list);
+		if (list.getMessageBox() != null) {
+		}
+		for (AgentListItem item : list) {
+			if(item.getName().toString().equals(AgentName)){
+			return item;
+			}
+		}
+		return null;
+	}
+	
 	public ArrayList<AgentGroupListItem> getAgentGroupList() throws TimeoutException, IOException{
 		ArrayList<AgentGroupListItem> objList = new ArrayList<AgentGroupListItem>();
 		AgentGroupList list = new AgentGroupList();
@@ -110,11 +123,43 @@ public class Agents extends ObjectTemplate{
 	public void displayPermissionsForAgent(String AgentName) throws IOException{
 		UC4Object obj = getBrokerInstance().common.openObject(AgentName, false);
 		Host host = (Host) obj;
-		System.out.println("\n[Agent name]:[Client]:[Client Read permission]:[Client Write Permission]:[Client Execute Permission]");
+		System.out.format("\n%-40s, %-8s, %-17s, %-17s, %-12s, %-15s, %-24s, %-9s, %-7s, %-8s, %-10s, %-19s, %-16s, %-19s, %-18s\n",
+				"[Agent]","[Type]","[Agent Version]","[IP Adress]","[Hardware]","[Software]","[Software Version]",
+				"[Client]",
+				"[Read]","[Write]","[Execute]",
+				"[License Category]","[License Class]","[Max Job Resource]","[Max FT Resource]");
 		for (Iterator<Authorizations.Entry> it = host.authorizations().iterator(); it.hasNext();) {
 			Authorizations.Entry entry = it.next();
-			System.out.println(AgentName+":"+entry.getClient()+":"+entry.isRead()+":"+entry.isWrite()+":"+entry.isExecute());
+			AgentListItem item = getAgentListItemByName(AgentName);
+			System.out.format("%-40s, %-8s, %-17s, %-17s, %-12s, %-15s, %-24s, %-9s, %-7s, %-8s, %-10s, %-19s, %-16s, %-19s, %-18s\n",
+					AgentName,item.getJclVariant(),item.getVersion(),item.getIpAddress(),item.getHardware(),
+					item.getSoftware(), item.getSoftwareVersion(),entry.getClient(),entry.isRead(),entry.isWrite(),entry.isExecute(),
+					item.getLicenseCategory(),item.getLicenseClass(),item.getMaxJobResources(),item.getMaxFileTransferResources());
 		}
+	}
+	
+	public void displayPermissionsForAllAgents(ArrayList<AgentListItem> list) throws IOException{
+		System.out.println("\nTotal Number Of Agents: "+list.size());
+		System.out.format("\n%-40s, %-8s, %-17s, %-17s, %-12s, %-15s, %-24s, %-9s, %-7s, %-8s, %-10s, %-19s, %-16s, %-19s, %-18s\n",
+				"[Agent]","[Type]","[Agent Version]","[IP Adress]","[Hardware]","[Software]","[Software Version]",
+				"[Client]",
+				"[Read]","[Write]","[Execute]",
+				"[License Category]","[License Class]","[Max Job Resource]","[Max FT Resource]");
+		for(int i=0;i<list.size();i++){
+			UC4Object obj = getBrokerInstance().common.openObject(list.get(i).getName().toString(), false);
+			Host host = (Host) obj;
+			
+			for (Iterator<Authorizations.Entry> it = host.authorizations().iterator(); it.hasNext();) {
+				Authorizations.Entry entry = it.next();
+				AgentListItem item = getAgentListItemByName(list.get(i).getName().toString());
+				System.out.format("%-40s, %-8s, %-17s, %-17s, %-12s, %-15s, %-24s, %-9s, %-7s, %-8s, %-10s, %-19s, %-16s, %-19s, %-18s\n",
+						list.get(i).getName().toString(),item.getJclVariant(),item.getVersion(),item.getIpAddress(),item.getHardware(),
+						item.getSoftware(), item.getSoftwareVersion(),entry.getClient(),entry.isRead(),entry.isWrite(),entry.isExecute(),
+						item.getLicenseCategory(),item.getLicenseClass(),item.getMaxJobResources(),item.getMaxFileTransferResources());
+			}
+			
+		}
+		
 	}
 	
 	public void setAgentAuthorizationsForAllAgents(int Client, boolean Read, boolean Write, boolean Execute) throws TimeoutException, IOException{

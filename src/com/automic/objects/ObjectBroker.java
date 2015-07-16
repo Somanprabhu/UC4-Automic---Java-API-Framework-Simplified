@@ -40,6 +40,7 @@ public class ObjectBroker {
 	public Includes includes;
 	public Dashboards dashboards;
 	public SAPQueueManager sapqueuemanager;
+	public Statistics statistics;
 	
 	public ObjectBroker(Connection conn, boolean verbose){
 		this.connection = conn;
@@ -78,6 +79,7 @@ public class ObjectBroker {
 		includes = new Includes(this.connection,verbose);
 		dashboards = new Dashboards(this.connection,verbose);
 		sapqueuemanager = new SAPQueueManager(this.connection,verbose);
+		statistics = new Statistics(this.connection,verbose);
 	}
 	public void setConnection(Connection conn){
 		this.connection = conn;

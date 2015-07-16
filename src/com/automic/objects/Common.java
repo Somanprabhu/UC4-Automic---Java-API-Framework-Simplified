@@ -180,6 +180,24 @@ public class Common extends ObjectTemplate{
 	return results;
 	}
 	
+	public List<SearchResultItem> searchObjectForUsage(String ObjectName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		SearchObject ser = new SearchObject();
+		ser.selectAllObjectTypes();
+		ser.setSearchUseOfObjects(true);
+		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
+		ser.setName(ObjectName);
+		ser.setIncludeUseInScripts(false);
+		connection.sendRequestAndWait(ser);
+		Iterator<SearchResultItem> it =  ser.resultIterator();
+		List<SearchResultItem> results = new ArrayList<SearchResultItem>();
+		while(it.hasNext()){
+			SearchResultItem item = it.next();
+			results.add(item);
+		}
+		return results;
+	}
+	
 	private List<SearchResultItem> searchObjectForReplace(String ObjectName) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		SearchObject ser = new SearchObject();

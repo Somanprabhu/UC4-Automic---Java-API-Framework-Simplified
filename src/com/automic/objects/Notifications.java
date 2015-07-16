@@ -2,11 +2,15 @@ package com.automic.objects;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.automic.utils.ObjectTypeEnum;
 import com.uc4.api.objects.Notification;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
+import com.uc4.communication.TimeoutException;
+import com.uc4.communication.requests.ActiveNotifications;
+import com.uc4.communication.requests.ActiveNotifications.Entry;
 
 public class Notifications  extends ObjectTemplate{
 
@@ -37,4 +41,14 @@ public class Notifications  extends ObjectTemplate{
 		broker.common.saveObject(notification);
 	}
 	
+	public ArrayList<Entry> getActiveNotifications() throws TimeoutException, IOException{
+		ActiveNotifications active = new ActiveNotifications();
+		connection.sendRequestAndWait(active);
+		ArrayList<ActiveNotifications.Entry> AllActiveNotifications = new ArrayList<ActiveNotifications.Entry>();
+		Iterator<ActiveNotifications.Entry> it = active.iterator();
+		while(it.hasNext()){
+			AllActiveNotifications.add(it.next());
+		}
+		return AllActiveNotifications;
+	}
 }

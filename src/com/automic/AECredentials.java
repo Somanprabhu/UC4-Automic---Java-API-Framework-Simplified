@@ -14,7 +14,7 @@ public class AECredentials {
 	private String AEUserPassword; 	// AE User Password
 	private char AEMessageLanguage; // Language: 'E' or 'D', or 'F'
 	
-	public AECredentials(String AEHostnameOrIp,int AECPPort,int AEClientToConnect, String AEDepartment,String AEUserLogin,String AEUserPassword,char AEMessageLanguage ){
+	public AECredentials(String AEHostnameOrIp,int AECPPort,int AEClientToConnect,String AEUserLogin, String AEDepartment,String AEUserPassword,char AEMessageLanguage ){
 		
 		this.AEHostnameOrIp = AEHostnameOrIp;
 		this.AECPPort = AECPPort;
