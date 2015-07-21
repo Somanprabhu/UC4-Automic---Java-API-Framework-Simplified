@@ -486,8 +486,9 @@ public class Common extends ObjectTemplate{
 				return;
 			}
 			System.out.println((delete.getMessageBox().getText()));
-		}		
+		}else{		
 		Say(" ++ Object: "+name+" Successfully deleted ");
+		}
 	}
 	// Delete an Automic Object (of any kind)
 	public void deleteObject(String name, IFolder fold, boolean ignoreError) throws IOException {
