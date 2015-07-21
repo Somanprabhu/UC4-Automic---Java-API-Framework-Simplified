@@ -180,6 +180,61 @@ public class Common extends ObjectTemplate{
 	return results;
 	}
 	
+	public List<SearchResultItem> searchObjectWithFilter(String ObjectName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		SearchObject ser = new SearchObject();
+		// BUG: All filters unselected?!
+		ser.selectAllObjectTypes();
+		//ser.unselectAllObjectTypes();
+		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
+		ser.setName(ObjectName);
+		
+		ser.setTypeCALE(true);
+		ser.setTypeCALL(true);
+		ser.setTypeCITC(true);
+		ser.setTypeCLNT(true);
+		ser.setTypeCODE(true);
+		ser.setTypeCONN(true);
+		ser.setTypeCPIT(true);
+		ser.setTypeDASH(true);
+		ser.setTypeDOCU(true);
+		ser.setTypeEVNT(true);
+		ser.setTypeExecuteable();
+		ser.setTypeFILTER(true);
+		ser.setTypeFOLD(true);
+		ser.setTypeHOST(true);
+		ser.setTypeHOSTG(true);
+		ser.setTypeHSTA(true);
+		ser.setTypeJOBF(true);
+		ser.setTypeJOBF(true);
+		ser.setTypeJOBG(true);
+		ser.setTypeJOBP(true);
+		ser.setTypeJOBQ(true);
+		ser.setTypeJOBS(true);
+		ser.setTypeJSCH(true);
+		ser.setTypeLOGIN(true);
+		ser.setTypePRPT(true);
+		ser.setTypeQUEUE(true);
+		ser.setTypeSCRI(true);
+		ser.setTypeSERV(true);
+		ser.setTypeSTORE(true);
+		ser.setTypeSYNC(true);
+		ser.setTypeTZ(true);
+		ser.setTypeUSER(true);
+		ser.setTypeUSRG(true);
+		ser.setTypeVARA(true);
+		ser.setTypeXSL(true);
+		
+		connection.sendRequestAndWait(ser);
+		Iterator<SearchResultItem> it =  ser.resultIterator();
+		List<SearchResultItem> results = new ArrayList<SearchResultItem>();
+		while(it.hasNext()){
+			SearchResultItem item = it.next();
+			results.add(item);
+		}
+	return results;
+	}
+	
 	public List<SearchResultItem> searchObjectForUsage(String ObjectName) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		SearchObject ser = new SearchObject();

@@ -108,6 +108,12 @@ public class Jobs extends ObjectTemplate {
 		ObjectBroker broker = getBrokerInstance();
 		broker.common.createObject(JobName, template, folder);
 	}
+	
+	public void createJob(String JobName, String TemplateName, IFolder folder)
+			throws IOException {
+		ObjectBroker broker = getBrokerInstance();
+		broker.common.createObject(JobName, com.automic.utils.Utils.convertStringToTemplate(TemplateName), folder);
+	}
 
 	// Save an Job
 	public void saveJob(UC4Object Job) throws IOException {
