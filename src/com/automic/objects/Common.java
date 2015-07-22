@@ -73,7 +73,7 @@ public class Common extends ObjectTemplate{
 		TemplateList req = new TemplateList();
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 		}
 		return req;
 	}
@@ -82,7 +82,9 @@ public class Common extends ObjectTemplate{
 		RestoreObjectVersion req = new RestoreObjectVersion(VersionControlObject);
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Object: "+VersionControlObject.getSavedName()+" Successfully restored in version: "+VersionControlObject.getVersionNumber());
 		}
 	}	
 	public UC4Object openVersionControlObject(VersionControlListItem VersionControlObject) throws IOException{
@@ -94,7 +96,7 @@ public class Common extends ObjectTemplate{
 		VersionControlList req = new VersionControlList(objName);
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 		}
 		return req;
 	}
@@ -111,7 +113,9 @@ public class Common extends ObjectTemplate{
 				MoveObject mov = new MoveObject(item,FolderSource,FolderTarget);
 				connection.sendRequestAndWait(mov);
 				if (mov.getMessageBox() != null) {
-					System.out.println(" -- "+mov.getMessageBox().getText());
+					System.out.println(" -- "+mov.getMessageBox().getText().toString().replace("\n", ""));
+				}else{
+					Say(" ++ Object: "+item.getName()+" From: "+FolderSource.fullPath()+" Successfully moved to Folder: "+FolderTarget.fullPath());
 				}
 			}
 		}
@@ -121,7 +125,9 @@ public class Common extends ObjectTemplate{
 		ImportObject imp = new ImportObject(file, folder, overwriteObject, overwriteFolderLinks);
 		connection.sendRequestAndWait(imp);
 		if (imp.getMessageBox() != null) {
-			System.out.println(" -- "+imp.getMessageBox().getText());
+			System.out.println(" -- "+imp.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Object(s) Successfully Imported.");
 		}
 	}
 
@@ -131,7 +137,9 @@ public class Common extends ObjectTemplate{
 		ExportObject exp = new ExportObject(objName,file);
 		connection.sendRequestAndWait(exp);
 		if (exp.getMessageBox() != null) {
-			System.out.println(" -- "+exp.getMessageBox().getText());
+			System.out.println(" -- "+exp.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Object(s) Successfully Exported.");
 		}
 	}
 	public void  exportObject(FolderListItem item, String FilePathForExport) throws IOException{
@@ -143,7 +151,9 @@ public class Common extends ObjectTemplate{
 		ExportObject exp = new ExportObject(objectNames,file);
 		connection.sendRequestAndWait(exp);
 		if (exp.getMessageBox() != null) {
-			System.out.println(" -- "+exp.getMessageBox().getText());
+			System.out.println(" -- "+exp.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Objects "+" Successfully Exported to File: "+FilePathForExport.toString());
 		}
 	}
 	public void exportFolderContent(FolderList ItemList, String FilePathForExport)throws IOException{
@@ -157,8 +167,7 @@ public class Common extends ObjectTemplate{
 		for(int i=0;i<ObjList.size();i++){
 			ObjectNameList[i] = ObjList.get(i);
 		}
-		exportObjects(ObjectNameList,FilePathForExport);
-		
+		exportObjects(ObjectNameList,FilePathForExport);	
 	}
 	
 	public List<SearchResultItem> searchObject(String ObjectName) throws IOException{
@@ -269,7 +278,7 @@ public class Common extends ObjectTemplate{
 		return results;
 	}
 	
-	public void replaceObject(String SourceObjectName, String TargetObjectName, IFolder folder) throws IOException{
+	public void replaceObject(String SourceObjectName, String TargetObjectName) throws IOException{
 		
 		UC4ObjectName sourceName = new UC4ObjectName(SourceObjectName);
 		UC4ObjectName targetName = new UC4ObjectName(TargetObjectName);
@@ -282,7 +291,9 @@ public class Common extends ObjectTemplate{
 		ReplaceObject rep = new ReplaceObject(repList,targetName,1);
 		connection.sendRequestAndWait(rep);
 		if (rep.getMessageBox() != null) {
-			System.out.println(" -- "+rep.getMessageBox().getText());
+			System.out.println(" -- "+rep.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Object "+ SourceObjectName +" Successfully Replaced by: "+TargetObjectName);
 		}
 
 	}
@@ -292,7 +303,9 @@ public class Common extends ObjectTemplate{
 		RenameObject ren = new RenameObject(sourceName,targetName,folder, ""); // empty String is the Object Title
 		connection.sendRequestAndWait(ren);
 		if (ren.getMessageBox() != null) {
-			System.out.println(" -- "+ren.getMessageBox().getText());
+			System.out.println(" -- "+ren.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Object "+ SourceObjectName +" Successfully Renamed to: "+TargetObjectName);
 		}
 
 	}
@@ -318,21 +331,26 @@ public class Common extends ObjectTemplate{
 			DeepRename deepRename = new DeepRename();
 			deepRename.setNamePattern(NewPatternName);
 			deepRename.setCleanPattern(ExistingPatternName);		
-
 			connection.sendRequestAndWait(deepRename);
-		
+			if (deepRename.getMessageBox() != null) {
+				System.out.println(" -- "+deepRename.getMessageBox().toString().replace("\n", ""));
+			}else{
+				Say(" ++ Object(s) with Pattern: "+ExistingPatternName+" Successfully renamed to Pattern: "+NewPatternName);
+			}
 	}
+	
 	public void duplicateObject(String SourceObjectName, String TargetObjectName, IFolder folder) throws IOException{
 		UC4Object obj = openObject(SourceObjectName, true);
 		UC4ObjectName dupName = new UC4ObjectName(TargetObjectName);
 		DuplicateObject dup = new DuplicateObject(obj,dupName,folder);
 		connection.sendRequestAndWait(dup);
 		if (dup.getMessageBox() != null) {
-			System.out.println(" -- "+dup.getMessageBox().getText());
+			System.out.println(" -- "+dup.getMessageBox().toString().replace("\n", ""));
 		}else{
 			Say(" ++ Object: "+obj.getName()+" Successfully saved in folder "+folder);
 		}
 	}
+	
 	// Open an Automic Object (of any kind)
 	public UC4Object openObject(String name, boolean readOnly) throws IOException {
 		//Say(" ++ Opening object: "+name);
@@ -346,39 +364,50 @@ public class Common extends ObjectTemplate{
 		connection.sendRequestAndWait(open);
 
 		if (open.getMessageBox() != null) {
-			System.err.println(" -- "+open.getMessageBox().getText());
-			System.out.println(" %% Object: "+ name +" returned a message box: "+open.getMessageBox().getNumber());
+			System.err.println(" -- "+open.getMessageBox().toString().replace("\n", ""));
+			return null;
 		}
-		//Say(" ++ Object: "+name+" Successfully opened");
 		return open.getUC4Object();
 	}
 	
 	// Save an Automic Object (of any kind)
 	public void saveObject(UC4Object obj) throws IOException {
-		Say(" ++ Saving object: "+obj.getName()+"(Type: "+obj.getType()+")");
+		//Say(" ++ Saving object: "+obj.getName()+"(Type: "+obj.getType()+")");
 		SaveObject save = new SaveObject(obj);
 		connection.sendRequestAndWait(save);
 		if (save.getMessageBox() != null) {
-			System.out.println(" -- "+save.getMessageBox().getText());
+			System.out.println(" -- "+save.getMessageBox().getText().toString().replace("\n", ""));
 		}
 		Say(" ++ Object: "+obj.getName()+" Successfully saved");
 	}
 
 	// close an Automic Object (of any kind)
 	public void closeObject(UC4Object obj) throws IOException {
-		Say(" ++ Closing object: "+obj.getName()+"(Type: "+obj.getType()+")");
+		//Say(" ++ Closing object: "+obj.getName()+"(Type: "+obj.getType()+")");
 		CloseObject close = new CloseObject(obj);
 		connection.sendRequestAndWait(close);	
 		if (close.getMessageBox() != null) {
-			System.err.println(" -- "+close.getMessageBox().getText());
-			System.out.println(" -- Close failed");
+			System.err.println(" -- "+close.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Object: "+obj.getName()+" Successfully closed");
 		}
-		Say(" ++ Object: "+obj.getName()+" Successfully closed");
 	}	
+	
 	// close an Automic Object (of any kind)
 		public void saveAndCloseObject(UC4Object obj) throws IOException {
-			saveObject(obj);
-			closeObject(obj);
+			SaveObject save = new SaveObject(obj);
+			connection.sendRequestAndWait(save);
+			if (save.getMessageBox() != null) {
+				System.out.println(" -- "+save.getMessageBox().getText().toString().replace("\n", ""));
+			}else{
+				CloseObject close = new CloseObject(obj);
+				connection.sendRequestAndWait(close);	
+				if (close.getMessageBox() != null) {
+					System.err.println(" -- "+close.getMessageBox().getText().toString().replace("\n", ""));
+				}else{
+					Say(" ++ Object: "+obj.getName()+" Successfully saved & closed");
+				}
+			}
 		}	
 	
 	// Execute an Automic Object (any object of the executable kind, JOBS, JOBP, EVENT, etc.)
@@ -390,11 +419,11 @@ public class Common extends ObjectTemplate{
 		connection.sendRequestAndWait(execute);
 
 		if (execute.getMessageBox() != null || execute.getRunID() == 0) {
-			if (execute.getMessageBox() != null) System.err.println(" -- "+execute.getMessageBox().getText());
-			System.out.println("-- Failed to execute object:"+name + ":" +execute.getMessageBox().getText());
-		}		
-		Say(" ++ Object: "+name+" Successfully executed with Run ID: "+execute.getRunID());
-
+			if (execute.getMessageBox() != null) System.err.println(" -- "+execute.getMessageBox().getText().toString().replace("\n", ""));
+			//System.out.println("-- Failed to execute object:"+name + ":" +execute.getMessageBox().getText());
+		}else{	
+			Say(" ++ Object: "+name+"++ Successfully executed with Run ID: "+execute.getRunID());
+		}
 		return execute.getRunID();
 	}
 	
@@ -411,11 +440,11 @@ public class Common extends ObjectTemplate{
 		connection.sendRequestAndWait(execute);
 
 		if (execute.getMessageBox() != null || execute.getRunID() == 0) {
-			if (execute.getMessageBox() != null) System.err.println(" -- "+execute.getMessageBox().getText());
-			System.out.println("-- Failed to execute object:"+name + ":" +execute.getMessageBox().getText());
-		}		
-		Say(" ++ Object: "+name+" Successfully executed with Run ID: "+execute.getRunID());
-
+			if (execute.getMessageBox() != null) System.err.println(" -- "+execute.getMessageBox().getText().toString().replace("\n", ""));
+			//System.out.println("-- Failed to execute object:"+name + ":" +execute.getMessageBox().getText());
+		}else{		
+			Say(" ++ Object: "+name+"++ Successfully executed with Run ID: "+execute.getRunID());
+		}
 		return execute.getRunID();
 	}
 	// Execute an Automic Object (any object of the executable kind, JOBS, JOBP, EVENT, etc.)
@@ -432,11 +461,11 @@ public class Common extends ObjectTemplate{
 		connection.sendRequestAndWait(execute);
 
 		if (execute.getMessageBox() != null || execute.getRunID() == 0) {
-			if (execute.getMessageBox() != null) System.err.println(" -- "+execute.getMessageBox().getText());
-			System.out.println("-- Failed to execute object:"+name + ":" +execute.getMessageBox().getText());
-		}		
-		Say(" ++ Object: "+name+" Successfully executed with Run ID: "+execute.getRunID());
-
+			if (execute.getMessageBox() != null) System.err.println(" -- "+execute.getMessageBox().getText().toString().replace("\n", ""));
+			//System.out.println("-- Failed to execute object:"+name + ":" +execute.getMessageBox().getText());
+		}else{		
+			Say(" ++ Object: "+name+" Successfully executed with Run ID: "+execute.getRunID());
+		}
 		return execute.getRunID();
 	}
 	// Create an empty Automic Object (of any kind)
@@ -451,14 +480,15 @@ public class Common extends ObjectTemplate{
 		CreateObject create = new CreateObject(objName,template,fold);
 		connection.sendRequestAndWait(create);
 		if (create.getMessageBox() != null) {
-			System.out.println(create.getMessageBox().getText());
+			System.out.println(create.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Object: "+name+" Successfully created (Type: "+template.getType()+")");
 		}
-		Say(" ++ Object: "+name+" Successfully created (Type: "+template.getType()+")");
 	}
 
 	// Delete an Automic Object (of any kind)
 	public void deleteObject(String name, boolean ignoreError) throws IOException {
-		Say(" ++ Deleting object: "+name);
+		//Say(" ++ Deleting object: "+name);
 
 		UC4ObjectName objName = null;
 		if (name.indexOf('/') != -1) objName = new UC4UserName(name);
@@ -475,24 +505,24 @@ public class Common extends ObjectTemplate{
 				connection.sendRequestAndWait(list);
 				//for (Task t : list) removeTask(t);
 				//connection.sendRequestAndWait(delete);
-				if ( delete.getMessageBox() == null )
-				{	Say(" ++ Object: "+name+" Successfully deleted ");
+				if ( delete.getMessageBox() == null)
+				{	Say(" ++ Object: "+name+" Successfully deleted. ");
 					return;
 				}
 			}
 			
 			if (ignoreError) {
-				System.out.println(delete.getMessageBox().getText());
+				System.out.println(delete.getMessageBox().getText().toString().replace("\n", ""));
 				return;
 			}
-			System.out.println((delete.getMessageBox().getText()));
+			System.out.println((delete.getMessageBox().getText().toString().replace("\n", "")));
 		}else{		
-		Say(" ++ Object: "+name+" Successfully deleted ");
+			Say(" ++ Object: "+name+" Successfully deleted. ");
 		}
 	}
 	// Delete an Automic Object (of any kind)
 	public void deleteObject(String name, IFolder fold, boolean ignoreError) throws IOException {
-		Say(" ++ Deleting object: "+name);
+		//Say(" ++ Deleting object: "+name);
 
 		UC4ObjectName objName = null;
 		if (name.indexOf('/') != -1) objName = new UC4UserName(name);
@@ -510,18 +540,19 @@ public class Common extends ObjectTemplate{
 				//for (Task t : list) removeTask(t);
 				//connection.sendRequestAndWait(delete);
 				if ( delete.getMessageBox() == null )
-				{	Say(" ++ Object: "+name+" Successfully deleted ");
+				{	Say(" ++ Object: "+name+" Successfully deleted. ");
 					return;
 				}
 			}
 			
 			if (ignoreError) {
-				System.out.println(delete.getMessageBox().getText());
+				System.out.println(delete.getMessageBox().getText().toString().replace("\n", ""));
 				return;
 			}
-			System.out.println((delete.getMessageBox().getText()));
-		}		
-		Say(" ++ Object: "+name+" Successfully deleted ");
+			System.out.println((delete.getMessageBox().getText().toString().replace("\n", "")));
+		}else{		
+			Say(" ++ Object: "+name+" Successfully deleted. ");
+		}
 	}
 	
 	// Cancel an Automic Object (any object of the executable kind, JOBS, JOBP, EVENT, etc.)
@@ -529,7 +560,11 @@ public class Common extends ObjectTemplate{
 		System.out.print("Cancel RundId("+ rundId +") ... ");
 		CancelTask cancel = new CancelTask(rundId, false);
 		connection.sendRequestAndWait(cancel);
-		Say(" ++ Object: "+rundId+" Successfully cancelled ");
+		if (cancel.getMessageBox() != null) {
+			System.out.println(cancel.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Object with RUNID: "+rundId+" Successfully Cancelled.");
+		}
 	}
 	
 	public ArrayList<UC4Object> getAllObjects(String objectType) throws IOException{
