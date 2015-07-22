@@ -21,6 +21,7 @@ public class Folders extends ObjectTemplate{
 		return new ObjectBroker(this.connection,true);
 	}
 	public IFolder getFolderFromObject(UC4Object object){return (IFolder) object;}
+	
 	public IFolder getRootFolder() throws IOException{
 		FolderTree tree = new FolderTree();
 		this.connection.sendRequestAndWait(tree);
@@ -115,9 +116,26 @@ public class Folders extends ObjectTemplate{
 	// Remark below is obsolete now. Mechanism improved
 	// WATCH OUT, full path must be specified: ex: /BSP.OBJECTS/BSP.JOBS
 	public IFolder getFolderByName(String FolderName) throws IOException{
+		 if(FolderName.contains("-") || FolderName.contains("/")){
+			 return getFolderByFullPathName(FolderName);
+		 }
+		
+		ArrayList<IFolder> foundFolders = new ArrayList<IFolder>();
 		 ArrayList<IFolder> allFolders = getAllFolders(true);
 		 for(IFolder folder : allFolders){
-			 if(folder.getName().equalsIgnoreCase(FolderName)){return folder;}
+			 if(folder.getName().equalsIgnoreCase(FolderName)){
+				 foundFolders.add(folder);
+				 //return folder;
+				 }
+		 }
+		 if(foundFolders.size() == 1){return foundFolders.get(0);}
+		 else{
+			 System.out.println(" -- Error: "+foundFolders.size()+" Found corresponding to name:" + FolderName);
+			 for(int i=0;i<foundFolders.size();i++){
+				 System.out.println("  ----> "+foundFolders.get(i).fullPath());
+			 }
+			 System.out.println("  => Please select only one folder. HINT: Try passing the full path name. Ex: \"0002/CUSTOM.DEMOS/ARCHIVE/ABC/JOBS\" or \"SWINVM1 - 0002/CUSTOM.DEMOS/ARCHIVE/ABC/JOBS\"");
+			 System.exit(1);
 		 }
 		 return null;
 	}

@@ -329,9 +329,9 @@ public class Common extends ObjectTemplate{
 		connection.sendRequestAndWait(dup);
 		if (dup.getMessageBox() != null) {
 			System.out.println(" -- "+dup.getMessageBox().getText());
+		}else{
+			Say(" ++ Object: "+obj.getName()+" Successfully saved in folder "+folder);
 		}
-		Say(" ++ Object: "+obj.getName()+" Successfully saved");
-
 	}
 	// Open an Automic Object (of any kind)
 	public UC4Object openObject(String name, boolean readOnly) throws IOException {
