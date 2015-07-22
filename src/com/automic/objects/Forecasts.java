@@ -14,11 +14,12 @@ public class Forecasts extends ObjectTemplate{
 		return new ObjectBroker(this.connection,true);
 	}
 	
-	public void getClientForecast() throws IOException{
+	public ForecastList getClientForecast() throws IOException{
 		ForecastList req = new ForecastList();
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 		}
+		return req;
 	}
 }

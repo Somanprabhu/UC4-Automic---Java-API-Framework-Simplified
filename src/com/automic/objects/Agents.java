@@ -36,7 +36,9 @@ public class Agents extends ObjectTemplate{
 		StartHost req = new StartHost(agent);
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(req.getMessageBox());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Agent: "+AgentName+" Successfully Started.");
 		}
 	}
 	
@@ -45,7 +47,9 @@ public class Agents extends ObjectTemplate{
 		TerminateHost req = new TerminateHost(agent);
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(req.getMessageBox());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Agent: "+AgentName+" Successfully Shutdown.");
 		}
 	}
 	
@@ -56,9 +60,9 @@ public class Agents extends ObjectTemplate{
 	
 	public AgentAssignment getAgentAssignmentFromObject(UC4Object object){return (AgentAssignment) object;}
 	
-	public void createOpenAgentClientAssignment(String AgentClientAssignmentName, IFolder FolderLocation){
+	//public void createOpenAgentClientAssignment(String AgentClientAssignmentName, IFolder FolderLocation){
 		// Stub method. Needs to be created!!
-	}
+	//}
 	
 	public boolean isAgentActive(AgentListItem agent) throws IOException {
 		return agent.isActive();
@@ -78,6 +82,7 @@ public class Agents extends ObjectTemplate{
 		AgentList list = new AgentList();
 		connection.sendRequestAndWait(list);
 		if (list.getMessageBox() != null) {
+			System.out.println(" -- "+list.getMessageBox().getText().toString().replace("\n", ""));
 		}
 		for (AgentListItem item : list) {
 			if(item.getName().toString().matches(NameFilter) && item.getJclVariant().matches(TypeFilter)){
@@ -91,6 +96,7 @@ public class Agents extends ObjectTemplate{
 		AgentList list = new AgentList();
 		connection.sendRequestAndWait(list);
 		if (list.getMessageBox() != null) {
+			System.out.println(" -- "+list.getMessageBox().getText().toString().replace("\n", ""));
 		}
 		for (AgentListItem item : list) {
 			if(item.getName().toString().equals(AgentName)){
@@ -105,6 +111,7 @@ public class Agents extends ObjectTemplate{
 		AgentGroupList list = new AgentGroupList();
 		connection.sendRequestAndWait(list);
 		if (list.getMessageBox() != null) {
+			System.out.println(" -- "+list.getMessageBox().getText().toString().replace("\n", ""));
 		}
 		for (AgentGroupListItem item : list) {
 			//if(item.getName().toString().matches(NameFilter) && item.getJclVariant().matches(TypeFilter)){
@@ -173,7 +180,7 @@ public class Agents extends ObjectTemplate{
 		SetHostAuthorizations req = new SetHostAuthorizations(AgentName, Client, Read, Write, Execute);
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 		}
 		}else{
 			System.out.println("-- Error! Current Client is: " + CurrentSessionClient+", You Need to be connected with Client 0000 for this operation.");

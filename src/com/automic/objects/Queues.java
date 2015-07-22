@@ -34,7 +34,9 @@ public class Queues extends ObjectTemplate{
 		ModifyQueueStatus req = new ModifyQueueStatus(name, QueueStatus.RED);
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Queue: "+QueueName+" Successfully Stopped.");
 		}
 	}
 	public void startQueue(String QueueName) throws IOException{
@@ -42,7 +44,9 @@ public class Queues extends ObjectTemplate{
 		ModifyQueueStatus req = new ModifyQueueStatus(name, QueueStatus.GREEN);
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Queue: "+QueueName+" Successfully Started.");
 		}
 	}
 }

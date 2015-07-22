@@ -30,7 +30,7 @@ public class Users extends ObjectTemplate{
 		UserList req = new UserList();
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 		}
 		return req;
 	}
@@ -132,7 +132,9 @@ public class Users extends ObjectTemplate{
 		MoveUserToClient req = new MoveUserToClient(user,folder,client);
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ User: "+UserName+" successfully moved to Client: "+client);
 		}
 	}
 

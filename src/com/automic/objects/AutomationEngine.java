@@ -24,7 +24,7 @@ public class AutomationEngine extends ObjectTemplate{
 		ServerList req = new ServerList();
 		connection.sendRequestAndWait(req);
 		if(req.getMessageBox()!=null){
-			System.out.println(req.getMessageBox());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 		}
 		return req;
 		
@@ -34,7 +34,9 @@ public class AutomationEngine extends ObjectTemplate{
 		StartServer req = new StartServer(ProcessName);
 		connection.sendRequestAndWait(req);
 		if(req.getMessageBox()!=null){
-			System.out.println(req.getMessageBox());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Process: "+ProcessName+" Successfully Started.");
 		}
 	}
 	
@@ -42,7 +44,9 @@ public class AutomationEngine extends ObjectTemplate{
 		ResumeClient req = new ResumeClient();
 		connection.sendRequestAndWait(req);
 		if(req.getMessageBox()!=null){
-			System.out.println(req.getMessageBox());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Client: "+connection.getSessionInfo().getClient()+" Successfully Resumed.");
 		}
 	}
 	
@@ -50,7 +54,9 @@ public class AutomationEngine extends ObjectTemplate{
 		SuspendClient req = new SuspendClient();
 		connection.sendRequestAndWait(req);
 		if(req.getMessageBox()!=null){
-			System.out.println(req.getMessageBox());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Client: "+connection.getSessionInfo().getClient()+" Successfully Stopped.");
 		}
 	}
 	
@@ -76,7 +82,7 @@ public class AutomationEngine extends ObjectTemplate{
 		GetDatabaseInfo info = new GetDatabaseInfo();
 		connection.sendRequestAndWait(info);
 		if (info.getMessageBox() != null) {
-			System.err.println(info.getMessageBox().getText());
+			System.out.println(" -- "+info.getMessageBox().getText().toString().replace("\n", ""));
 		}
 		return info;
 	}

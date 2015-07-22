@@ -21,14 +21,19 @@ public class TransportCases extends ObjectTemplate {
 		ClearTransportCase req = new ClearTransportCase();
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say("++ Transport Case Cleared Successfully.");
 		}
+		
 	}
 	public void addObjectToTransportCase(UC4Object obj) throws IOException{
 		TransportObject req = new TransportObject(obj);
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say("++ Object: "+obj.getName()+" was successfully added to Transport Case.");
 		}
 	}
 	public void addObjectsToTransportCase(UC4Object[] objects) throws IOException{

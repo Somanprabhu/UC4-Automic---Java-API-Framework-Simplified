@@ -86,9 +86,10 @@ public class Variables extends ObjectTemplate{
 	}
 	public void ShowVariableContent(Variable var){
 		Iterator<String> it = var.keyIterator();
+		System.out.println(" ++ Content for Variable: "+var.getName());
 		while(it.hasNext()){
 			String key = it.next();
-			System.out.println(key+" : "+var.get(key));
+			System.out.println("  => " +key+" : "+var.get(key));
 		}
 	}
 	public void createBackendVariable(String Name, IFolder folder, String HostAgent, String Login, String Result, 

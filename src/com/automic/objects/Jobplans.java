@@ -25,6 +25,7 @@ private ObjectBroker broker;
 	public Jobplans(Connection conn, boolean verbose) {
 		super(conn, verbose);
 	}
+	
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}
@@ -40,16 +41,18 @@ private ObjectBroker broker;
 		ObjectBroker broker = getBrokerInstance();
 		return broker.common.getAllObjects(ObjectTypeEnum.JOBP);
 	}
+	
 	public ArrayList<UC4Object> getAllJobPlansWithFilter(String filter) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		return broker.common.getAllObjectsWithNameFilter(ObjectTypeEnum.JOBP,filter);
 	}
+	
 	private JobPlanTask getTask(String name) throws IOException {
-		System.out.print("Add JobPlan task "+name+" ... "); 
+		//System.out.print("Add JobPlan task "+name+" ... "); 
 		AddJobPlanTask add = new AddJobPlanTask(new UC4ObjectName(name));
 		connection.sendRequestAndWait(add);
 		if (add.getMessageBox() != null) {
-			System.err.println(add.getMessageBox().getText());
+			System.out.println(" -- "+add.getMessageBox().getText().toString().replace("\n", ""));
 		}
 		return add.getJobPlanTask();
 	}

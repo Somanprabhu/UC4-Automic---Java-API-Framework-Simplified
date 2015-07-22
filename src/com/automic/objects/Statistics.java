@@ -27,7 +27,7 @@ public class Statistics  extends ObjectTemplate{
 		req.setSourceHost(Agentname);
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 		}
 		return req;
 		

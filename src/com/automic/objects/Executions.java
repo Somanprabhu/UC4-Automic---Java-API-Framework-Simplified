@@ -30,7 +30,7 @@ public class Executions extends ObjectTemplate{
 		LatestReport req = new LatestReport(objName);
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 		}
 		return req.latestRunID();
 	}
@@ -39,7 +39,7 @@ public class Executions extends ObjectTemplate{
 		ReportTypeList req = new ReportTypeList(RunID);
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 		}
 		return req;
 	}
@@ -48,7 +48,7 @@ public class Executions extends ObjectTemplate{
 		Report req = new Report(RunID, ReportType);
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 		}
 		return req;
 	}
@@ -56,7 +56,7 @@ public class Executions extends ObjectTemplate{
 		Report req = new Report(RunID, ReportTypeEnum.ACTIVATION);
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 		}
 		return req;
 	}
@@ -64,7 +64,7 @@ public class Executions extends ObjectTemplate{
 		Report req = new Report(RunID, ReportTypeEnum.RUNTIME_REPORT);
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 		}
 		return req;
 	}
@@ -72,7 +72,7 @@ public class Executions extends ObjectTemplate{
 		Report req = new Report(RunID, ReportTypeEnum.JOB_REPORT);
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 		}
 		return req;
 	}
@@ -80,7 +80,7 @@ public class Executions extends ObjectTemplate{
 		Report req = new Report(RunID, ReportTypeEnum.POST_REPORT);
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 		}
 		return req;
 	}
@@ -88,7 +88,7 @@ public class Executions extends ObjectTemplate{
 		AddComment req = new AddComment(RunID, comment);
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 		}
 	}
 	public ArrayList<Comment> getCommentsFromRun(int RunID) throws IOException{
@@ -96,7 +96,7 @@ public class Executions extends ObjectTemplate{
 		ArrayList<Comment> allComments = new ArrayList<Comment>();
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 		}
 		Iterator <Comment> it = req.iterator();
 		while(it.hasNext()){

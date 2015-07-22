@@ -43,18 +43,25 @@ public class Links extends ObjectTemplate{
 		}
 		createObjectLink(LocatedItem, TargetFolder);
 	}
+	
 	public void createObjectLink(FolderListItem item, IFolder TargetFolder) throws IOException{
 		LinkTo req = new LinkTo(item,TargetFolder);
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Link to Object: "+item.getName()+" Successfully Created in Folder: "+TargetFolder.fullPath());
 		}
 	}
+	
 	public void deleteObjectLink(FolderListItem item) throws IOException{
 		DeleteLink req = new DeleteLink(item);
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText());
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say("++ Link to: "+item.getName()+" Successfully Deleted");
 		}
+		
 	}
 }

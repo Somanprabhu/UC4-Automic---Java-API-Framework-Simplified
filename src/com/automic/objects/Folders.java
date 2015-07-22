@@ -31,23 +31,11 @@ public class Folders extends ObjectTemplate{
 	// Returns a list of ALL Folders (including folders in folders, folders in folders in folders etc.)
 	public ArrayList<IFolder> getAllFolders(boolean OnlyExtractFolderObjects) throws IOException{
 		return getFoldersRecursively(getRootFolder(), OnlyExtractFolderObjects);
-		//ArrayList<IFolder> FolderList = new ArrayList<IFolder>();
-		//if(!OnlyExtractFolderObjects){FolderList.add(getRootFolder());}
-		//IFolder rootFolder = getRootFolder();
-		//Iterator<IFolder> it = rootFolder.subfolder();
-		//while (it.hasNext()){
-		//	IFolder myFolder = it.next();
-		//	if(! myFolder.getName().equals("<No Folder>")){
-		//	addFoldersToList(FolderList,myFolder,OnlyExtractFolderObjects);
-		//	}
-		//}
-		//return FolderList; 
 	}
+	
 	// Internal Method
 	private void addFoldersToList(ArrayList<IFolder> folderList,
 			IFolder myFolder, boolean onlyExtractFolderObjects) {
-		//System.out.println("DEBUG2:"+myFolder.getName());
-		//if(!onlyExtractFolderObjects){folderList.add(myFolder);}
 		if(onlyExtractFolderObjects){
 			if( myFolder.getType().equals("FOLD")){folderList.add(myFolder);}
 			if( myFolder.getType().equals("FOLD") && myFolder.subfolder() != null){
@@ -68,6 +56,7 @@ public class Folders extends ObjectTemplate{
 		}
 
 	}
+	
 	public IFolder getVersionControlFolder() throws IOException{
 		 ArrayList<IFolder> allFolders = getAllFolders(false);
 		 for(IFolder folder : allFolders){
@@ -75,6 +64,7 @@ public class Folders extends ObjectTemplate{
 		 }
 		 return null;
 	}
+	
 	public IFolder getVersionNoFolderFolder() throws IOException{
 		 ArrayList<IFolder> allFolders = getAllFolders(false);
 		 for(IFolder folder : allFolders){
@@ -82,22 +72,23 @@ public class Folders extends ObjectTemplate{
 		 }
 		 return null;
 	}
+	
 	public IFolder getFavoritesFolder() throws IOException{
 		 ArrayList<IFolder> allFolders = getAllFolders(false);
 		 for(IFolder folder : allFolders){
-			
 			 if(folder.getType().equalsIgnoreCase("FAV")){return folder;}
 		 }
 		 return null;
 	}
+	
 	public IFolder getRecentFolder() throws IOException{
 		 ArrayList<IFolder> allFolders = getAllFolders(false);
 		 for(IFolder folder : allFolders){
-			
 			 if(folder.getType().equalsIgnoreCase("RCNT")){return folder;}
 		 }
 		 return null;
 	}
+	
 	public IFolder getRecycleBinFolder() throws IOException{
 		 ArrayList<IFolder> allFolders = getAllFolders(false);
 		 for(IFolder folder : allFolders){
@@ -105,6 +96,7 @@ public class Folders extends ObjectTemplate{
 		 }
 		 return null;
 	}
+	
 	public IFolder getTransportCaseFolder() throws IOException{
 		 ArrayList<IFolder> allFolders = getAllFolders(false);
 		 for(IFolder folder : allFolders){
@@ -112,9 +104,8 @@ public class Folders extends ObjectTemplate{
 		 }
 		 return null;
 	}
-	// Returns a folder by name
-	// Remark below is obsolete now. Mechanism improved
-	// WATCH OUT, full path must be specified: ex: /BSP.OBJECTS/BSP.JOBS
+	
+	// Returns a folder by name, can be passed a Full path or just a folder name
 	public IFolder getFolderByName(String FolderName) throws IOException{
 		 if(FolderName.contains("-") || FolderName.contains("/")){
 			 return getFolderByFullPathName(FolderName);
@@ -125,7 +116,6 @@ public class Folders extends ObjectTemplate{
 		 for(IFolder folder : allFolders){
 			 if(folder.getName().equalsIgnoreCase(FolderName)){
 				 foundFolders.add(folder);
-				 //return folder;
 				 }
 		 }
 		 if(foundFolders.size() == 1){return foundFolders.get(0);}
@@ -153,7 +143,6 @@ public class Folders extends ObjectTemplate{
 			 }else{
 				 FullPath = folder.fullPath();
 			 }
-			 
 			 if(FullPath.equalsIgnoreCase(FolderName)){return folder;}
 		 }
 		 return null;
@@ -170,19 +159,20 @@ public class Folders extends ObjectTemplate{
 	public FolderList getFolderContentByName(String FolderName) throws IOException{	
 		return this.getFolderContent(this.getFolderByName(FolderName));
 	}
+	
 	// Delete a Folder
 	public void deleteFolder(IFolder fold) throws IOException {
-		System.out.print("Delete  folder "+ fold.getName() + " ... ");
-
+		//System.out.print("Deleting folder "+ fold.getName() + " ... ");
 		DeleteObject delete = new DeleteObject(fold);
 		connection.sendRequestAndWait(delete);	
 		if (delete.getMessageBox() != null) {
 			System.err.println(delete.getMessageBox().getText());
-			System.out.println("Failed to delete object:"+fold.fullPath());
-		}		
-
-		System.out.println("OK");
+			//System.out.println("Failed to delete object:"+fold.fullPath());
+		}else{
+			Say(" ++ Folder: "+fold.fullPath()+" Successfully Deleted.");
+		}
 	}
+	
 	// Returns a list of ALL Folders (including folders in folders, folders in folders in folders etc.)
 	public ArrayList<IFolder> getFoldersRecursively(IFolder rootFolder, boolean OnlyExtractFolderObjects ) throws IOException{
 		ArrayList<IFolder> FolderList = new ArrayList<IFolder>();
@@ -191,7 +181,7 @@ public class Folders extends ObjectTemplate{
 		while (it.hasNext()){
 			IFolder myFolder = it.next();
 			if(! myFolder.getName().equals("<No Folder>")){
-			addFoldersToList(FolderList,myFolder,OnlyExtractFolderObjects);
+				addFoldersToList(FolderList,myFolder,OnlyExtractFolderObjects);
 			}
 		}
 		return FolderList; 

@@ -57,7 +57,9 @@ public class Clients extends ObjectTemplate{
 			SuspendClient req = new SuspendClient();
 			connection.sendRequestAndWait(req);
 			if (req.getMessageBox() != null) {
-				System.out.println(" -- "+req.getMessageBox().getText());
+				System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+			}else{
+				Say(" ++ Client: "+connection.getSessionInfo().getClient()+" Successfully Stopped.");
 			}
 		}
 		
@@ -65,7 +67,9 @@ public class Clients extends ObjectTemplate{
 			ResumeClient req = new ResumeClient();
 			connection.sendRequestAndWait(req);
 			if (req.getMessageBox() != null) {
-				System.out.println(" -- "+req.getMessageBox().getText());
+				System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+			}else{
+				Say(" ++ Client: "+connection.getSessionInfo().getClient()+" Successfully Started.");
 			}
 		}
 		
@@ -73,7 +77,9 @@ public class Clients extends ObjectTemplate{
 			SuspendClient req = new SuspendClient(Client);
 			connection.sendRequestAndWait(req);
 			if (req.getMessageBox() != null) {
-				System.out.println(" -- "+req.getMessageBox().getText());
+				System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+			}else{
+				Say(" ++ Client: "+Client.getClient()+" Successfully Stopped.");
 			}
 		}
 		
@@ -81,7 +87,9 @@ public class Clients extends ObjectTemplate{
 			ResumeClient req = new ResumeClient(Client);
 			connection.sendRequestAndWait(req);
 			if (req.getMessageBox() != null) {
-				System.out.println(" -- "+req.getMessageBox().getText());
+				System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+			}else{
+				Say(" ++ Client: "+Client.getClient()+" Successfully Started.");
 			}
 		}
 		

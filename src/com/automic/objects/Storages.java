@@ -26,11 +26,13 @@ public class Storages extends ObjectTemplate{
 		UC4Object obj = getBrokerInstance().common.openObject(StorageName, true);
 		Storage store = getStorageFromObject(obj);
 		Iterator<ResourceItem> it = store.resourceItems().resourceItemsIterator();
+		System.out.println(" ++ Storage Content for object: "+StorageName);
 		while(it.hasNext()){
 			ResourceItem item = it.next();
-			System.out.println(item.toString());
+			System.out.println("  => "+item.toString());
 		}
 	}
+	
 	public ArrayList<ResourceItem> getStorageContent(String StorageName) throws IOException{
 		UC4Object obj = getBrokerInstance().common.openObject(StorageName, true);
 		Storage store = getStorageFromObject(obj);
@@ -42,8 +44,10 @@ public class Storages extends ObjectTemplate{
 		}
 		return resCollection;
 	}
+	
 	public void createStorage(String JGroupName, IFolder FolderLocation) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		broker.common.createObject(JGroupName, Template.STORE, FolderLocation);
 	}
+	
 }
