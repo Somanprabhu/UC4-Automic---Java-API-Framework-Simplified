@@ -104,6 +104,24 @@ public class Clients extends ObjectTemplate{
 			}
 			return clients;
 		}
+		public void displayClientList(ArrayList<ClientListItem> clients) throws TimeoutException, IOException{
+			System.out.println("\nNumber Of Clients Defined: "+clients.size());
+			//System.out.println("Client:[Client Name]:[Client Title]:[Client Active]:[# Of Objects In Client]:[# of Users In Client]");
+			System.out.format("\n%-8s, %-30s, %-9s, %-18s, %-16s, %-14s, %-10s\n","[Client]","[Client Title]","[Active]","[Objects Defined]","[Users Defined]","[Activities]","[Timezone]");
+			for(int i =0;i< clients.size();i++){
+				ClientListItem client = clients.get(i);
+				String ClientName = String.valueOf(client.getClient());
+				String isClientActive = String.valueOf(client.isClientActive());
+				String NumberOfObjects = String.valueOf(client.getNumberOfObjects());
+				String NumberOfUsers = String.valueOf(client.getNumberOfUsers());
+				String ClientTitle = client.getTitle();
+				String ClientTZ = client.getTimezone().getName();
+				String NumberOfActivities = String.valueOf(client.getNumberOfActivities());
+				
+				//System.out.println("Client:"+ClientName+":"+ClientTitle+":"+isClientActive+":"+NumberOfObjects+":"+NumberOfUsers);
+				System.out.format("%-8s, %-30s, %-9s, %-18s, %-16s, %-14s, %-10s\n",ClientName,ClientTitle,isClientActive,NumberOfObjects,NumberOfUsers,NumberOfActivities,ClientTZ);
+			}
+		}
 		
 		public void displayClientList() throws TimeoutException, IOException{
 			ArrayList<ClientListItem> clients = getClientList();
