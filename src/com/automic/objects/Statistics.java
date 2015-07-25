@@ -52,7 +52,9 @@ public class Statistics  extends ObjectTemplate{
 				//System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 				// -- Your selection results in too many statistics (count '44347').
 				 String toProc = req.getMessageBox().getText().toString();
-				String processed = toProc.split("count ")[1].replace("'", "").replace(")","").replace(".","");
+				 // Extracting the count returned
+				 String processed = toProc.replace("5000", "").replaceAll("[^0-9]","");
+				
 				return Integer.parseInt(processed);
 				
 			}
