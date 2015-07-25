@@ -156,17 +156,27 @@ public class Agents extends ObjectTemplate{
 				"[Read]","[Write]","[Execute]",
 				"[License Category]","[License Class]","[Max Job Resource]","[Max FT Resource]");
 		for(int i=0;i<list.size();i++){
-			UC4Object obj = getBrokerInstance().common.openObject(list.get(i).getName().toString(), false);
-			Host host = (Host) obj;
-			AgentListItem item = getAgentListItemByName(list.get(i).getName().toString());
-			Iterator<Authorizations.Entry> it = host.authorizations().iterator();
-			while( it.hasNext()) {
-				Authorizations.Entry entry = it.next();
+			AgentListItem item = list.get(i);
+			if(item.isAuthenticated()){
+				UC4Object obj = getBrokerInstance().common.openObject(list.get(i).getName().toString(), false);
+				Host host = (Host) obj;
+		 //.getName().toString());
+				
+				Iterator<Authorizations.Entry> it = host.authorizations().iterator();
+				while( it.hasNext()) {
+					Authorizations.Entry entry = it.next();
+					System.out.format("%-40s, %-8s, %-17s, %-17s, %-12s, %-15s, %-24s, %-9s, %-7s, %-8s, %-10s, %-19s, %-16s, %-19s, %-18s\n",
+							list.get(i).getName().toString(),item.getJclVariant(),item.getVersion(),item.getIpAddress(),item.getHardware(),
+							item.getSoftware(), item.getSoftwareVersion(),entry.getClient(),entry.isRead(),entry.isWrite(),entry.isExecute(),
+							item.getLicenseCategory(),item.getLicenseClass(),item.getMaxJobResources(),item.getMaxFileTransferResources());
+				}
+			}else{
 				System.out.format("%-40s, %-8s, %-17s, %-17s, %-12s, %-15s, %-24s, %-9s, %-7s, %-8s, %-10s, %-19s, %-16s, %-19s, %-18s\n",
-						list.get(i).getName().toString(),item.getJclVariant(),item.getVersion(),item.getIpAddress(),item.getHardware(),
-						item.getSoftware(), item.getSoftwareVersion(),entry.getClient(),entry.isRead(),entry.isWrite(),entry.isExecute(),
+						item.getName().toString(),item.getJclVariant(),item.getVersion(),item.getIpAddress(),item.getHardware(),
+						item.getSoftware(), item.getSoftwareVersion(),"Not Auth","NA","NA","NA",
 						item.getLicenseCategory(),item.getLicenseClass(),item.getMaxJobResources(),item.getMaxFileTransferResources());
 			}
+
 		}
 	}
 	

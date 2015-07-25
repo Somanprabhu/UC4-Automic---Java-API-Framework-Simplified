@@ -1,7 +1,10 @@
 package com.automic.objects;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
+import com.uc4.api.DateTime;
+import com.uc4.api.StatisticSearchItem;
 import com.uc4.api.objects.Login;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
@@ -20,17 +23,44 @@ public class Statistics  extends ObjectTemplate{
 	}
 	
 	public GenericStatistics getGenericStatistics(int Client, String Agentname) throws TimeoutException, IOException{
+
 		GenericStatistics req = new GenericStatistics();
 		req.selectAllPlatforms();
 		req.selectAllTypes();
 		req.setClient(Client);
 		req.setSourceHost(Agentname);
+		
 		connection.sendRequestAndWait(req);
+		
 		if (req.getMessageBox() != null) {
 			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 		}
 		return req;
 		
 	}
+		public int getGenericStatisticsCount(int Client, String Agentname) throws TimeoutException, IOException{
+
+			GenericStatistics req = new GenericStatistics();
+			req.selectAllPlatforms();
+			req.selectAllTypes();
+			req.setClient(Client);
+			req.setSourceHost(Agentname);
+
+			connection.sendRequestAndWait(req);
+			
+			if (req.getMessageBox() != null && req.getMessageBox().getText().toString().contains("too many statistics")) {
+				//System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+				// -- Your selection results in too many statistics (count '44347').
+				 String toProc = req.getMessageBox().getText().toString();
+				String processed = toProc.split("count ")[1].replace("'", "").replace(")","").replace(".","");
+				return Integer.parseInt(processed);
+				
+			}
+			
+			if (req.getMessageBox() != null) {
+				System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+			}
+			return req.size();
+		}
 	
 }
