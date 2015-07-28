@@ -460,7 +460,7 @@ public class Common extends ObjectTemplate{
 			if (execute.getMessageBox() != null) System.err.println(" -- "+execute.getMessageBox().getText().toString().replace("\n", ""));
 			//System.out.println("-- Failed to execute object:"+name + ":" +execute.getMessageBox().getText());
 		}else{		
-			Say(" ++ Object: "+name+"++ Successfully executed with Run ID: "+execute.getRunID());
+			Say(" ++ Object: "+name+" Successfully executed with Run ID: "+execute.getRunID());
 		}
 		return execute.getRunID();
 	}
