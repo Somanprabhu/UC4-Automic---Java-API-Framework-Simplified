@@ -262,6 +262,23 @@ public class Common extends ObjectTemplate{
 		return results;
 	}
 	
+	public int searchObjectForUsageCount(String ObjectName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		SearchObject ser = new SearchObject();
+		ser.selectAllObjectTypes();
+		ser.setSearchUseOfObjects(true);
+		//ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
+		ser.setName(ObjectName);
+		ser.setIncludeUseInScripts(false);
+		connection.sendRequestAndWait(ser);
+		Iterator<SearchResultItem> it =  ser.resultIterator();
+		int count = 0;
+		while(it.hasNext()){
+			count++;
+			it.next();
+		}
+		return count;
+	}
 	private List<SearchResultItem> searchObjectForReplace(String ObjectName) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		SearchObject ser = new SearchObject();

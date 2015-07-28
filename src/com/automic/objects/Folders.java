@@ -166,7 +166,7 @@ public class Folders extends ObjectTemplate{
 		DeleteObject delete = new DeleteObject(fold);
 		connection.sendRequestAndWait(delete);	
 		if (delete.getMessageBox() != null) {
-			System.err.println(delete.getMessageBox().getText());
+			System.out.println(" -- "+delete.getMessageBox().getText().toString().replace("\n", ""));
 			//System.out.println("Failed to delete object:"+fold.fullPath());
 		}else{
 			Say(" ++ Folder: "+fold.fullPath()+" Successfully Deleted.");
