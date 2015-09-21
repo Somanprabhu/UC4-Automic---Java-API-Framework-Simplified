@@ -197,6 +197,17 @@ public class Agents extends ObjectTemplate{
 			System.out.println("-- Error! Current Client is: " + CurrentSessionClient+", You Need to be connected with Client 0000 for this operation.");
 		}
 	}
+	
+	public void removeAgentFromClient0(int Client, String AgentName ) throws IOException{
+		String CurrentSessionClient = connection.getSessionInfo().getClient();
+		if(CurrentSessionClient == "0000"){
+		ObjectBroker broker = getBrokerInstance();
+		UC4Object obj = broker.common.openObject(AgentName, false);
+		broker.common.deleteObject(obj.getName(), false);
+		}else{
+			System.out.println("-- Error! Current Client is: " + CurrentSessionClient+", You Need to be connected with Client 0000 for this operation.");
+		}
+	}
 		
 
 }
