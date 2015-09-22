@@ -518,6 +518,14 @@ public class Common extends ObjectTemplate{
 		}
 		return execute.getRunID();
 	}
+	public void createObject(String name, String templateName, IFolder fold) throws IOException{
+		Template template = com.automic.utils.Utils.convertStringToTemplate(templateName);
+		if ( template == null){
+			System.out.println(" -- Error! Template Name " + templateName +" Does Not Seem To Match Any Existing Template..");
+		}else{
+		createObject(name, template, fold);
+		}
+	}
 	// Create an empty Automic Object (of any kind)
 	public void createObject(String name, Template template, IFolder fold) throws IOException {
 		Say(" ++ Creating object: "+name+" of Type: "+template.getType());
