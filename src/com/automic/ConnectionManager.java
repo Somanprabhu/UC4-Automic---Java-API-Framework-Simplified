@@ -1,6 +1,8 @@
 package com.automic;
 
 import java.io.IOException;
+import java.net.ConnectException;
+import java.nio.channels.UnresolvedAddressException;
 import java.util.ArrayList;
 
 import com.uc4.communication.Connection;
@@ -19,13 +21,24 @@ public class ConnectionManager {
 	public Connection connectToClient(AECredentials credentials) throws IOException{
 		
 		//System.out.println("Authenticating to Client "+credentials.getAEClientToConnect()+" with user "+credentials.getAEUserLogin());
-		conn = Connection.open(credentials.getAEHostnameOrIp(), credentials.getAECPPort());
+		try{
+			conn = Connection.open(credentials.getAEHostnameOrIp(), credentials.getAECPPort());
+		}catch (UnresolvedAddressException e){
+			System.out.println(" -- ERROR: Could Not Resolve Host or IP: "+credentials.getAEHostnameOrIp());
+			System.exit(999);
+		}catch (ConnectException c){
+			System.out.println(" -- ERROR: Could Not Connect to Host: " + credentials.getAEHostnameOrIp());
+			System.out.println(" --     Hint: is the host or IP reachable?");
+			System.exit(998);
+			
+		}
 		
 		CreateSession sess = conn.login(credentials.getAEClientToConnect(), credentials.getAEUserLogin(), 
 				credentials.getAEDepartment(), credentials.getAEUserPassword(), credentials.getAEMessageLanguage());
 		
 		if(sess.getMessageBox()!=null){
 			System.out.println("-- Error: " + sess.getMessageBox()); 
+			System.exit(990);
 			return null;
 		}
 		// Check Server Version:
