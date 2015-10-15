@@ -7,6 +7,7 @@ import java.util.Iterator;
 import com.uc4.api.objects.IFolder;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
+import com.uc4.communication.requests.CreateObject;
 import com.uc4.communication.requests.DeleteObject;
 import com.uc4.communication.requests.FolderList;
 import com.uc4.communication.requests.FolderTree;
@@ -171,6 +172,12 @@ public class Folders extends ObjectTemplate{
 		}else{
 			Say(" ++ Folder: "+fold.fullPath()+" Successfully Deleted.");
 		}
+	}
+	// Create a Folder
+	public void createFolder(String FolderName, IFolder fold) throws IOException {
+		
+		getBrokerInstance().common.createObject(FolderName, "FOLD", fold);
+
 	}
 	
 	// Returns a list of ALL Folders (including folders in folders, folders in folders in folders etc.)

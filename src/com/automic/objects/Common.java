@@ -130,7 +130,29 @@ public class Common extends ObjectTemplate{
 			Say(" ++ Object(s) Successfully Imported.");
 		}
 	}
-
+	// only works in v11+
+	public void  exportFolder(IFolder folder, String FilePathForExport) throws IOException{
+		File file = new File(FilePathForExport);
+		ExportObject exp = new ExportObject(folder,file,true);
+		connection.sendRequestAndWait(exp);
+		if (exp.getMessageBox() != null) {
+			System.out.println(" -- "+exp.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Folder Successfully Exported.");
+		}
+	}
+	// only works in v11+
+	public void  exportFolders(IFolder[] folder, String FilePathForExport) throws IOException{
+		File file = new File(FilePathForExport);
+		ExportObject exp = new ExportObject(folder,file,true);
+		connection.sendRequestAndWait(exp);
+		if (exp.getMessageBox() != null) {
+			System.out.println(" -- "+exp.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Folders Successfully Exported.");
+		}
+	}
+	
 	public void  exportObject(String ObjectName, String FilePathForExport) throws IOException{
 		UC4ObjectName objName = new UC4ObjectName(ObjectName);
 		File file = new File(FilePathForExport);
@@ -279,11 +301,14 @@ public class Common extends ObjectTemplate{
 	public List<SearchResultItem> searchJOBSOrJOBPWithFilter(String ObjectName) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		SearchObject ser = new SearchObject();
-		// BUG: All filters unselected?!
-		//ser.selectAllObjectTypes();
 		ser.unselectAllObjectTypes();
 		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
-		ser.setName(ObjectName);
+		
+		if(ObjectName.equals("*")){
+			//ser.setName("");
+		}else{
+			ser.setName(ObjectName);
+		}
 		
 		ser.setTypeJOBS(true);
 		ser.setTypeJSCH(true);

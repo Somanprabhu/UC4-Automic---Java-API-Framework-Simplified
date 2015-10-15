@@ -25,6 +25,27 @@ public class AECredentials {
 		this.AEMessageLanguage = AEMessageLanguage;
 		
 	}
+	public void setAEHostnameOrIp(String aEHostnameOrIp) {
+		AEHostnameOrIp = aEHostnameOrIp;
+	}
+	public void setAECPPort(int aECPPort) {
+		AECPPort = aECPPort;
+	}
+	public void setAEClientToConnect(int aEClientToConnect) {
+		AEClientToConnect = aEClientToConnect;
+	}
+	public void setAEDepartment(String aEDepartment) {
+		AEDepartment = aEDepartment;
+	}
+	public void setAEUserLogin(String aEUserLogin) {
+		AEUserLogin = aEUserLogin;
+	}
+	public void setAEUserPassword(String aEUserPassword) {
+		AEUserPassword = aEUserPassword;
+	}
+	public void setAEMessageLanguage(char aEMessageLanguage) {
+		AEMessageLanguage = aEMessageLanguage;
+	}
 	public String getAEHostnameOrIp() {
 		return AEHostnameOrIp;
 	}
