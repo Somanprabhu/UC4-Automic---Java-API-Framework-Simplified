@@ -121,11 +121,15 @@ public class Folders extends ObjectTemplate{
 		 }
 		 if(foundFolders.size() == 1){return foundFolders.get(0);}
 		 else{
-			 System.out.println(" -- Error: "+foundFolders.size()+" Found corresponding to name:" + FolderName);
-			 for(int i=0;i<foundFolders.size();i++){
-				 System.out.println("  ----> "+foundFolders.get(i).fullPath());
+			 System.out.println(" -- Error: "+foundFolders.size()+" Folder(s) Found corresponding to name: " + FolderName);
+			 if(foundFolders.size() == 0){
+				 System.out.println("  => Are you sure the Folder specified exists in the Target Client?");
+			 }else{
+				 for(int i=0;i<foundFolders.size();i++){
+					 System.out.println("  ----> "+foundFolders.get(i).fullPath());
+				 }
+				 System.out.println("  => Please select only one folder. HINT: Try passing the full path name. Ex: \"0002/CUSTOM.DEMOS/ARCHIVE/ABC/JOBS\" or \"SWINVM1 - 0002/CUSTOM.DEMOS/ARCHIVE/ABC/JOBS\"");
 			 }
-			 System.out.println("  => Please select only one folder. HINT: Try passing the full path name. Ex: \"0002/CUSTOM.DEMOS/ARCHIVE/ABC/JOBS\" or \"SWINVM1 - 0002/CUSTOM.DEMOS/ARCHIVE/ABC/JOBS\"");
 			 System.exit(1);
 		 }
 		 return null;
