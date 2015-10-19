@@ -421,6 +421,31 @@ public class Common extends ObjectTemplate{
 
 	}
 	
+	public void renameFolder(String SourceFolderName, String TargetFolderName) throws IOException{
+		IFolder sourceFolder = getBrokerInstance().folders.getFolderByName(SourceFolderName);
+		UC4ObjectName targetName = new UC4ObjectName(TargetFolderName);
+		RenameObject ren = new RenameObject(sourceFolder,targetName); // empty String is the Object Title
+		connection.sendRequestAndWait(ren);
+		if (ren.getMessageBox() != null) {
+			System.out.println(" -- "+ren.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Object "+ sourceFolder.fullPath() +" Successfully Renamed to: "+targetName);
+		}
+
+	}
+	
+	public void renameFolder(IFolder SourceFolder, String TargetFolderName) throws IOException{
+		UC4ObjectName targetName = new UC4ObjectName(TargetFolderName);
+		RenameObject ren = new RenameObject(SourceFolder,targetName); // empty String is the Object Title
+		connection.sendRequestAndWait(ren);
+		if (ren.getMessageBox() != null) {
+			System.out.println(" -- "+ren.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Object "+ SourceFolder.fullPath() +" Successfully Renamed to: "+targetName);
+		}
+
+	}
+	
 	// the method below can potentially do a lot of harm - use with caution!
 	// example: 
 	
