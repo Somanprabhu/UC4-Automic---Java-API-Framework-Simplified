@@ -47,7 +47,7 @@ private ObjectBroker broker;
 		return broker.common.getAllObjectsWithNameFilter(ObjectTypeEnum.JOBP,filter);
 	}
 	
-	private JobPlanTask getTask(String name) throws IOException {
+	public JobPlanTask getTaskFromName(String name) throws IOException {
 		//System.out.print("Add JobPlan task "+name+" ... "); 
 		AddJobPlanTask add = new AddJobPlanTask(new UC4ObjectName(name));
 		connection.sendRequestAndWait(add);
@@ -103,12 +103,12 @@ private ObjectBroker broker;
 		// Declaring all created jobs as JobPlanTasks (including START and END points)
 		JobPlanTask taskStart = jobPlan.getStartTask();
 		JobPlanTask taskEnd = jobPlan.getEndTask();
-		JobPlanTask task1 = getTask("TEST.SAMPLE.JOB1");
-		JobPlanTask task2 = getTask("TEST.SAMPLE.JOB2");
-		JobPlanTask task3 = getTask("TEST.SAMPLE.JOB3");
-		JobPlanTask task4 = getTask("TEST.SAMPLE.JOB4");
-		JobPlanTask task5 = getTask("TEST.SAMPLE.JOB5");
-		JobPlanTask task6 = getTask("TEST.SAMPLE.JOB6");
+		JobPlanTask task1 = getTaskFromName("TEST.SAMPLE.JOB1");
+		JobPlanTask task2 = getTaskFromName("TEST.SAMPLE.JOB2");
+		JobPlanTask task3 = getTaskFromName("TEST.SAMPLE.JOB3");
+		JobPlanTask task4 = getTaskFromName("TEST.SAMPLE.JOB4");
+		JobPlanTask task5 = getTaskFromName("TEST.SAMPLE.JOB5");
+		JobPlanTask task6 = getTaskFromName("TEST.SAMPLE.JOB6");
 		
 		// Adding all JobPlanTasks to the actual Job Plan
 		jobPlan.addTask(task1);
@@ -170,7 +170,7 @@ private ObjectBroker broker;
 		JobPlanTask taskEnd = jobPlan.getEndTask();
 		ArrayList<JobPlanTask> JobPlans = new ArrayList<JobPlanTask>();
 		for(int i=0;i<JobNames.size();i++){
-			JobPlanTask task = getTask(JobNames.get(i));
+			JobPlanTask task = getTaskFromName(JobNames.get(i));
 			// Adding all JobPlanTasks to the actual Job Plan
 			jobPlan.addTask(task);
 			JobPlans.add(task);
@@ -208,8 +208,8 @@ private ObjectBroker broker;
 		ObjectBroker broker = getBrokerInstance();
 		JobPlan jobPlan = (JobPlan) broker.common.openObject(name, false);
 		
-		JobPlanTask job1 = getTask(Job1Name);
-		JobPlanTask job2 = getTask(Job2name);
+		JobPlanTask job1 = getTaskFromName(Job1Name);
+		JobPlanTask job2 = getTaskFromName(Job2name);
 
 		System.out.print("Add tasks to JobPlan ... ");
 		jobPlan.addTask(job1);
