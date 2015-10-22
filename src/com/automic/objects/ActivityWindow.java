@@ -24,6 +24,9 @@ public class ActivityWindow extends ObjectTemplate{
 			ActivityList list = new ActivityList(taskFilter);
 			connection.sendRequestAndWait(list);		
 			List<Task> tasks = new ArrayList<Task>();
+			for (Task t : list) {
+				tasks.add(t);
+			}
 			return tasks;
 		}
 		
