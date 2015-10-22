@@ -24,10 +24,6 @@ public class ActivityWindow extends ObjectTemplate{
 			ActivityList list = new ActivityList(taskFilter);
 			connection.sendRequestAndWait(list);		
 			List<Task> tasks = new ArrayList<Task>();
-			for (Task t : list) {
-				System.out.println("INFO:"+t.getName()+":"+t.getStatus()+":"+t.getStartTime()+":"+t.getEndTime());
-				tasks.add(t);
-			}
 			return tasks;
 		}
 		
