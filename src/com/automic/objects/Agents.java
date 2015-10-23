@@ -17,6 +17,7 @@ import com.uc4.communication.Connection;
 import com.uc4.communication.TimeoutException;
 import com.uc4.communication.requests.AgentGroupList;
 import com.uc4.communication.requests.AgentList;
+import com.uc4.communication.requests.DisconnectHost;
 import com.uc4.communication.requests.SetHostAuthorizations;
 import com.uc4.communication.requests.StartHost;
 import com.uc4.communication.requests.TerminateHost;
@@ -42,7 +43,27 @@ public class Agents extends ObjectTemplate{
 		}
 	}
 	
-	public void shutdownAgent(String AgentName) throws IOException{
+	public void disconnectAgent(AgentListItem item) throws IOException{
+		DisconnectHost req = new DisconnectHost(item);
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Agent: "+item.getName()+" Successfully Shutdown.");
+		}
+	}
+	
+	public void disconnectAgent(String AgentName) throws IOException{
+		DisconnectHost req = new DisconnectHost(getAgentListItemByName(AgentName));
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Agent: "+AgentName+" Successfully Shutdown.");
+		}
+	}
+	
+	public void TerminateAgent(String AgentName) throws IOException{
 		UC4HostName agent = new UC4HostName(AgentName);
 		TerminateHost req = new TerminateHost(agent);
 		connection.sendRequestAndWait(req);
@@ -187,7 +208,7 @@ public class Agents extends ObjectTemplate{
 	// the following method actually takes a filter as an AgentName (if needed..). '*' and '?' are accepted!
 	public void setAgentAuthorizations(String AgentName, int Client, boolean Read, boolean Write, boolean Execute) throws TimeoutException, IOException{
 		String CurrentSessionClient = connection.getSessionInfo().getClient();
-		if(CurrentSessionClient == "0000"){
+		if(CurrentSessionClient.equals("0000")){
 		SetHostAuthorizations req = new SetHostAuthorizations(AgentName, Client, Read, Write, Execute);
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
@@ -200,7 +221,7 @@ public class Agents extends ObjectTemplate{
 	
 	public void removeAgentFromClient0(int Client, String AgentName ) throws IOException{
 		String CurrentSessionClient = connection.getSessionInfo().getClient();
-		if(CurrentSessionClient == "0000"){
+		if(CurrentSessionClient.equals("0000")){
 		ObjectBroker broker = getBrokerInstance();
 		UC4Object obj = broker.common.openObject(AgentName, false);
 		broker.common.deleteObject(obj.getName(), false);
