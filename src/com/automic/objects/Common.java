@@ -82,7 +82,7 @@ public class Common extends ObjectTemplate{
 		RestoreObjectVersion req = new RestoreObjectVersion(VersionControlObject);
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+			System.out.println(" \t %% "+req.getMessageBox().getText().toString().replace("\n", "").replace("restored.","restored in version "+VersionControlObject.getVersionNumber()));
 		}else{
 			Say(" ++ Object: "+VersionControlObject.getSavedName()+" Successfully restored in version: "+VersionControlObject.getVersionNumber());
 		}
