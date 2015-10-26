@@ -86,11 +86,34 @@ public class Common extends ObjectTemplate{
 		}else{
 			Say(" ++ Object: "+VersionControlObject.getSavedName()+" Successfully restored in version: "+VersionControlObject.getVersionNumber());
 		}
-	}	
+	}
+	
 	public UC4Object openVersionControlObject(VersionControlListItem VersionControlObject) throws IOException{
 		UC4Object obj = openObject(VersionControlObject.getSavedName().toString(), true);
 		return obj;
 	}
+	
+	public boolean restoreSpecificVersion(String ObjectName, int VersionNumber) throws IOException{
+		VersionControlList vcl = getObjectVersions(ObjectName);
+		Iterator<VersionControlListItem> lastVersions = vcl.iterator();
+		boolean Restored = false;
+		while(lastVersions.hasNext()){
+			VersionControlListItem item = lastVersions.next();
+			if(item.getVersionNumber() == VersionNumber){
+				restoreObjectVersions(item);
+				Restored = true;
+				return true;
+			}
+		}
+		return Restored;
+	}
+	
+	public void restorePreviousVersion(String ObjectName) throws IOException{
+		VersionControlList vcl = getObjectVersions(ObjectName);
+		VersionControlListItem lastVersion = vcl.iterator().next();
+		restoreObjectVersions(lastVersion);
+	}
+	
 	public VersionControlList getObjectVersions(String ObjectName) throws IOException{
 		UC4ObjectName objName = new UC4ObjectName(ObjectName);
 		VersionControlList req = new VersionControlList(objName);
