@@ -61,14 +61,14 @@ public class AutomationEngine extends ObjectTemplate{
 	}
 	
 	// Get the version of CPs, WPs etc.
-	public void getServerVersion() throws IOException {
+	public void displayServerVersion() throws IOException {
 		ServerList list = new ServerList();
 		connection.sendRequestAndWait(list);
 		for (ServerListItem item : list) {
 			System.out.println("INFO:"+item.getName()+":"+item.getType()+":"+item.getVersion());	
 		}
 	}
-	public String returnServerVersion() throws IOException{
+	public String getServerVersion() throws IOException{
 		ServerList list = new ServerList();
 		connection.sendRequestAndWait(list);
 		for (ServerListItem item : list) {
