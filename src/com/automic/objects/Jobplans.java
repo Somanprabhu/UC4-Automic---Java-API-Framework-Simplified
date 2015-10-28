@@ -57,6 +57,17 @@ private ObjectBroker broker;
 		return add.getJobPlanTask();
 	}
 	
+	public JobPlanTask getTaskFromNameAndJobPlan(JobPlan jobPlan, String TaskName) throws IOException{
+		Iterator<JobPlanTask> it = jobPlan.taskIterator();
+		while(it.hasNext()){
+			JobPlanTask jpt = it.next();
+			if(jpt.getTaskName().equals(TaskName)){
+				return jpt;
+			}
+		}
+		return null;
+	}
+	
 	public ArrayList<Job> getAllJobsFromJobPlan(JobPlan jobPlan) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		ArrayList<Job> allJobs = new ArrayList<Job>();
@@ -69,13 +80,13 @@ private ObjectBroker broker;
 		return allJobs;
 	}
 	
-	public void createEmpltyWorkPlan(String WorkplanName, IFolder folder) throws IOException{
+	public void createEmptyWorkPlan(String WorkplanName, IFolder folder) throws IOException{
 		broker.common.createObject(WorkplanName, Template.JOBP, folder);
 	}
-	public void createEmpltyIFWorkPlan(String WorkplanName, IFolder folder) throws IOException{
+	public void createEmptyIFWorkPlan(String WorkplanName, IFolder folder) throws IOException{
 		broker.common.createObject(WorkplanName, Template.JOBP_IF, folder);
 	}
-	public void createEmpltyFOREACHWorkPlan(String WorkplanName, IFolder folder) throws IOException{
+	public void createEmptyFOREACHWorkPlan(String WorkplanName, IFolder folder) throws IOException{
 		broker.common.createObject(WorkplanName, Template.JOBP_FOREACH, folder);
 	}
 	public WorkflowIF getIFWorkflowFromObject(UC4Object object){return (WorkflowIF) object;}
