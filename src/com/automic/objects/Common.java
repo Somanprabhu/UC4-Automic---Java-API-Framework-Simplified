@@ -567,6 +567,7 @@ public class Common extends ObjectTemplate{
 			Say(" ++ Object: "+objName+" Successfully reclaimed");
 		}
 	}
+	
 	// close an Automic Object (of any kind)
 	public void closeObject(UC4Object obj) throws IOException {
 		//Say(" ++ Closing object: "+obj.getName()+"(Type: "+obj.getType()+")");
