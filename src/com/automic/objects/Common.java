@@ -39,6 +39,7 @@ import com.uc4.communication.requests.MoveObject;
 import com.uc4.communication.requests.OpenObject;
 import com.uc4.communication.requests.RenameObject;
 import com.uc4.communication.requests.ReplaceObject;
+import com.uc4.communication.requests.ResetOpenFlag;
 import com.uc4.communication.requests.RestoreObjectVersion;
 import com.uc4.communication.requests.SaveObject;
 import com.uc4.communication.requests.SearchObject;
@@ -556,6 +557,16 @@ public class Common extends ObjectTemplate{
 		Say(" ++ Object: "+obj.getName()+" Successfully saved");
 	}
 
+	public void reclaimObject(String ObjectName) throws TimeoutException, IOException{
+		UC4ObjectName objName = new UC4ObjectName(ObjectName);
+		ResetOpenFlag req = new ResetOpenFlag(objName);
+		connection.sendRequestAndWait(req);	
+		if (req.getMessageBox() != null) {
+			System.err.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			Say(" ++ Object: "+objName+" Successfully reclaimed");
+		}
+	}
 	// close an Automic Object (of any kind)
 	public void closeObject(UC4Object obj) throws IOException {
 		//Say(" ++ Closing object: "+obj.getName()+"(Type: "+obj.getType()+")");
