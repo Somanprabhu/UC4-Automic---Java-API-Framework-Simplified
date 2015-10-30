@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.uc4.api.Template;
+import com.uc4.api.UC4ObjectName;
+import com.uc4.api.UC4TimezoneName;
+import com.uc4.api.UC4UserName;
 import com.uc4.api.objects.IFolder;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
@@ -144,12 +148,15 @@ public class Folders extends ObjectTemplate{
 			 // the IFolder.fullpath() method ALWAYS returns the system name before the path (ex: "AEV10 - 0005/UC4.APPLICATIONS/JFORUM_BREN")
 			 // therefore it is necessary to modify it for comparison.. if the FolderName passed does not also contain the system name..
 			 if(!FolderName.contains(" - ")){
-				 FullPath = folder.fullPath().split(" - ")[1];
+				 FullPath = folder.fullPath().split(" - ")[1].trim();
 			 }else{
-				 FullPath = folder.fullPath();
+				 FullPath = folder.fullPath().trim();
 			 }
-			 if(FullPath.equalsIgnoreCase(FolderName)){return folder;}
+			 if(FullPath.equalsIgnoreCase(FolderName.trim())){
+				 return folder;
+			}
 		 }
+
 		 return null;
 	}
 	
@@ -174,7 +181,7 @@ public class Folders extends ObjectTemplate{
 			System.out.println(" -- "+delete.getMessageBox().getText().toString().replace("\n", ""));
 			//System.out.println("Failed to delete object:"+fold.fullPath());
 		}else{
-			Say(" ++ Folder: "+fold.fullPath()+" Successfully Deleted.");
+			Say("\t ++ Folder: "+fold.fullPath()+" Successfully Deleted.");
 		}
 	}
 	// Create a Folder
@@ -184,13 +191,35 @@ public class Folders extends ObjectTemplate{
 
 	}
 	
+	// Create an empty Automic Object (of any kind)
+	public boolean createFolderSilently(String name, IFolder fold) throws IOException {
+		UC4ObjectName objName = null;
+		if (name.indexOf('/') != -1) objName = new UC4UserName(name);
+		else objName = new UC4ObjectName(name);		
+
+		CreateObject create = new CreateObject(objName,Template.FOLD,fold);
+		connection.sendRequestAndWait(create);
+		if (create.getMessageBox() != null) {
+			if(!create.getMessageBox().getText().contains("already")){
+				System.out.println(create.getMessageBox().getText().toString().replace("\n", ""));
+				return false;
+			}
+		}else{
+			//Say("\t ++ Folder: "+name+" Successfully created.");
+			return true;
+		}
+		return false;
+	}
+	
 	// Returns a list of ALL Folders (including folders in folders, folders in folders in folders etc.)
 	public ArrayList<IFolder> getFoldersRecursively(IFolder rootFolder, boolean OnlyExtractFolderObjects ) throws IOException{
 		ArrayList<IFolder> FolderList = new ArrayList<IFolder>();
 		if(!OnlyExtractFolderObjects){FolderList.add(getRootFolder());}
+		
 		Iterator<IFolder> it = rootFolder.subfolder();
 		while (it.hasNext()){
 			IFolder myFolder = it.next();
+			System.out.println("DEBUG:"+myFolder.fullPath());
 			if(! myFolder.getName().equals("<No Folder>")){
 				addFoldersToList(FolderList,myFolder,OnlyExtractFolderObjects);
 			}
