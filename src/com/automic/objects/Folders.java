@@ -219,7 +219,6 @@ public class Folders extends ObjectTemplate{
 		Iterator<IFolder> it = rootFolder.subfolder();
 		while (it.hasNext()){
 			IFolder myFolder = it.next();
-			System.out.println("DEBUG:"+myFolder.fullPath());
 			if(! myFolder.getName().equals("<No Folder>")){
 				addFoldersToList(FolderList,myFolder,OnlyExtractFolderObjects);
 			}

@@ -100,23 +100,40 @@ public class Common extends ObjectTemplate{
 	
 	public boolean restoreSpecificVersion(String ObjectName, int VersionNumber) throws IOException{
 		VersionControlList vcl = getObjectVersions(ObjectName);
-		Iterator<VersionControlListItem> lastVersions = vcl.iterator();
-		boolean Restored = false;
-		while(lastVersions.hasNext()){
-			VersionControlListItem item = lastVersions.next();
-			if(item.getVersionNumber() == VersionNumber){
-				restoreObjectVersions(item);
-				Restored = true;
-				return true;
+		if(vcl.size() != 0){
+			Iterator<VersionControlListItem> lastVersions = vcl.iterator();
+			boolean Restored = false;
+			while(lastVersions.hasNext()){
+				VersionControlListItem item = lastVersions.next();
+				if(item.getVersionNumber() == VersionNumber){
+					restoreObjectVersions(item);
+					Restored = true;
+					return true;
+				}
 			}
+			return Restored;
+		}else{
+			System.out.println("\t -- Error: No Version Found. Is Versioning Activated?");
+			return false;
 		}
-		return Restored;
+		
 	}
 	
 	public void restorePreviousVersion(String ObjectName) throws IOException{
 		VersionControlList vcl = getObjectVersions(ObjectName);
+		if(vcl.size() != 0){
+			VersionControlListItem lastVersion = vcl.iterator().next();
+			restoreObjectVersions(lastVersion);
+		}else{
+			System.out.println(" \t -- Error: No Previous Version Found. Is Versioning Activated?");
+		}
+		
+	}
+	public int getLastVersionNumber(String ObjectName) throws IOException{
+		VersionControlList vcl = getObjectVersions(ObjectName);
+		if(vcl.size() == 0){return 0;}
 		VersionControlListItem lastVersion = vcl.iterator().next();
-		restoreObjectVersions(lastVersion);
+		return lastVersion.getVersionNumber();
 	}
 	
 	public VersionControlList getObjectVersions(String ObjectName) throws IOException{
@@ -503,7 +520,14 @@ public class Common extends ObjectTemplate{
 	public void renameObject(String SourceObjectName, String TargetObjectName, IFolder folder) throws IOException{
 		UC4ObjectName sourceName = new UC4ObjectName(SourceObjectName);
 		UC4ObjectName targetName = new UC4ObjectName(TargetObjectName);
-		RenameObject ren = new RenameObject(sourceName,targetName,folder, ""); // empty String is the Object Title
+		String SourceObjectTitle = "";
+		List<SearchResultItem> items = searchObject(SourceObjectName);
+		// this method should always only be used on exact objects and not on * or ? expressions.. the items List should always yield exactly one element
+		if(items.size()==1){
+			SourceObjectTitle = items.get(0).getTitle();
+		}
+		RenameObject ren = new RenameObject(sourceName,targetName,folder,SourceObjectTitle); // empty String is the Object Title
+		
 		connection.sendRequestAndWait(ren);
 		if (ren.getMessageBox() != null) {
 			System.out.println(" -- "+ren.getMessageBox().getText().toString().replace("\n", ""));
