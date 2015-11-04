@@ -319,6 +319,22 @@ public class Common extends ObjectTemplate{
 		}
 	return results;
 	}
+	public List<SearchResultItem> searchConnections(String ObjectName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		SearchObject ser = new SearchObject();
+		ser.unselectAllObjectTypes();
+		ser.setTypeCONN(true);
+		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
+		ser.setName(ObjectName);
+		connection.sendRequestAndWait(ser);
+		Iterator<SearchResultItem> it =  ser.resultIterator();
+		List<SearchResultItem> results = new ArrayList<SearchResultItem>();
+		while(it.hasNext()){
+			SearchResultItem item = it.next();
+			results.add(item);
+		}
+	return results;
+	}
 	public List<SearchResultItem> searchJobs(String ObjectName) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		SearchObject ser = new SearchObject();
