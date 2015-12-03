@@ -339,7 +339,6 @@ public class Common extends ObjectTemplate{
 		ObjectBroker broker = getBrokerInstance();
 		SearchObject ser = new SearchObject();
 		ser.unselectAllObjectTypes();
-		ser.setTypeJOBS(true);
 		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
 		ser.setName(ObjectName);
 		ser.setTypeJOBS(true);
