@@ -137,4 +137,32 @@ public class Variables extends ObjectTemplate{
 		backend.addUnixCommand(WinCmd);
 		broker.common.saveAndCloseObject(vara);				
 	}
+	
+	public String getVariableType(Variable obj){
+		// THIS is the only way to check the type of Variable.. (v11.2 and before) 
+		// it is very ugly but it works :)
+		if(obj.backend()!=null){return "BACKEND";}
+		if(obj.composite()!=null){return "MULTI";}
+		if(obj.dynamicExecVariable()!=null){return "EXEC";}
+		if(obj.fileList()!=null){return "FILELIST";}
+		if(obj.sql()!=null){return "SQL";}
+		if(obj.sqlIntern()!=null){return "SQLI";}
+		if(obj.sqlInternSecure()!=null){return "SEC_SQLI";}
+		if(obj.sqlSecure()!=null){return "SEC_SQL";}
+		//if(obj.!=null){return "";}// XML?
+		
+		return "STATIC";
+	//	boolean IsBackend = (obj.backend()!=null);
+	//	boolean IsComposite = (obj.composite()!=null);
+	//	boolean IsDynamicExec = (obj.dynamicExecVariable()!=null);
+	//	boolean IsFList = (obj.fileList()!=null);
+	//	boolean IsSQL = (obj.sql()!=null);
+	//	boolean IsSQLI = (obj.sqlIntern()!=null);
+	//	boolean IsSECSQLI = (obj.sqlInternSecure()!=null);
+	//	boolean IsSECSQL = (obj.sqlSecure()!=null);
+	//	boolean IsStatic = (IsBackend == false && IsComposite == false && IsDynamicExec == false
+	//			&& IsFList == false && IsSQL == false && IsSQLI == false && IsSECSQLI == false
+	//			&& IsSECSQL == false);
+	}
+	
 }

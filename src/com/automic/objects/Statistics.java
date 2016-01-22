@@ -5,11 +5,14 @@ import java.util.ArrayList;
 
 import com.uc4.api.DateTime;
 import com.uc4.api.StatisticSearchItem;
+import com.uc4.api.UC4ObjectName;
 import com.uc4.api.objects.Login;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
 import com.uc4.communication.TimeoutException;
 import com.uc4.communication.requests.GenericStatistics;
+import com.uc4.communication.requests.GetLastRuntimes;
+import com.uc4.communication.requests.ObjectStatistics;
 import com.uc4.communication.requests.TemplateList;
 
 public class Statistics  extends ObjectTemplate{
@@ -22,6 +25,23 @@ public class Statistics  extends ObjectTemplate{
 		return new ObjectBroker(this.connection,true);
 	}
 	
+	public GetLastRuntimes getLastRuntimes(String ObjName) throws TimeoutException, IOException{
+		GetLastRuntimes req = new GetLastRuntimes(new UC4ObjectName(ObjName));
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}
+		return req;
+	}
+	
+	public ObjectStatistics getObjectStatistics(String ObjName) throws TimeoutException, IOException{
+		ObjectStatistics req = new ObjectStatistics(new UC4ObjectName(ObjName));
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}
+		return req;
+	}
 	public GenericStatistics getGenericStatistics(int Client, String Agentname) throws TimeoutException, IOException{
 
 		GenericStatistics req = new GenericStatistics();
