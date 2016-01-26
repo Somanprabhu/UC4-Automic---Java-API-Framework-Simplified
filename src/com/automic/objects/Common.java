@@ -423,7 +423,7 @@ public class Common extends ObjectTemplate{
 		//ser.unselectAllObjectTypes();
 		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
 		ser.setName(ObjectName);
-		
+	/*	
 		ser.setTypeCALE(true);
 		ser.setTypeCALL(true);
 		ser.setTypeCITC(true);
@@ -459,7 +459,7 @@ public class Common extends ObjectTemplate{
 		ser.setTypeUSRG(true);
 		ser.setTypeVARA(true);
 		ser.setTypeXSL(true);
-		
+		*/
 		connection.sendRequestAndWait(ser);
 		Iterator<SearchResultItem> it =  ser.resultIterator();
 		List<SearchResultItem> results = new ArrayList<SearchResultItem>();
