@@ -284,7 +284,24 @@ public class Common extends ObjectTemplate{
 		}
 		exportObjects(ObjectNameList,FilePathForExport);	
 	}
-	
+	public List<SearchResultItem> searchUsersAndGroups(String ObjectName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		SearchObject ser = new SearchObject();
+		// BUG: All filters unselected?!
+		ser.setTypeUSER(true);
+		ser.setTypeUSRG(true);
+		//ser.unselectAllObjectTypes();
+		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
+		ser.setName(ObjectName);
+		connection.sendRequestAndWait(ser);
+		Iterator<SearchResultItem> it =  ser.resultIterator();
+		List<SearchResultItem> results = new ArrayList<SearchResultItem>();
+		while(it.hasNext()){
+			SearchResultItem item = it.next();
+			results.add(item);
+		}
+	return results;
+	}
 	public List<SearchResultItem> searchObject(String ObjectName) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		SearchObject ser = new SearchObject();
@@ -303,6 +320,7 @@ public class Common extends ObjectTemplate{
 		}
 	return results;
 	}
+	
 	public List<SearchResultItem> searchJobflows(String ObjectName) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		SearchObject ser = new SearchObject();
@@ -681,14 +699,26 @@ public class Common extends ObjectTemplate{
 	}
 
 	public void reclaimObject(String ObjectName) throws TimeoutException, IOException{
-		UC4ObjectName objName = new UC4ObjectName(ObjectName);
-		ResetOpenFlag req = new ResetOpenFlag(objName);
-		connection.sendRequestAndWait(req);	
-		if (req.getMessageBox() != null) {
-			System.err.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		if(ObjectName.contains("/")){
+			UC4UserName objName = new UC4UserName(ObjectName);
+			ResetOpenFlag req = new ResetOpenFlag(objName);
+			connection.sendRequestAndWait(req);	
+			if (req.getMessageBox() != null) {
+				System.err.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+			}else{
+				Say(" \t ++ Object: "+objName+" Successfully reclaimed");
+			}
 		}else{
-			Say(" \t ++ Object: "+objName+" Successfully reclaimed");
+			UC4ObjectName objName = new UC4ObjectName(ObjectName);
+			ResetOpenFlag req = new ResetOpenFlag(objName);
+			connection.sendRequestAndWait(req);	
+			if (req.getMessageBox() != null) {
+				System.err.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+			}else{
+				Say(" \t ++ Object: "+objName+" Successfully reclaimed");
+			}
 		}
+		
 	}
 	
 	// close an Automic Object (of any kind)
