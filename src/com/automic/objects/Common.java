@@ -36,6 +36,7 @@ import com.uc4.communication.requests.ExportObject;
 import com.uc4.communication.requests.ExportWithReferences;
 import com.uc4.communication.requests.FindReferencedObjects;
 import com.uc4.communication.requests.FolderList;
+import com.uc4.communication.requests.GetChangeLog;
 import com.uc4.communication.requests.GetReplaceList;
 import com.uc4.communication.requests.ImportObject;
 import com.uc4.communication.requests.MoveObject;
@@ -66,6 +67,7 @@ public class Common extends ObjectTemplate{
 	*
 	** The Methods below are generic.
  * @return 
+ * @return 
  * @throws TimeoutException 
  * @throws SAXException 
  * @throws IOException 
@@ -74,6 +76,18 @@ public class Common extends ObjectTemplate{
 	
 	**/
 
+	public GetChangeLog getChanges() throws TimeoutException, IOException{
+		GetChangeLog req = new GetChangeLog();
+		req.selectAllChangeTypes();
+		req.selectAllObjects();
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}
+		
+		return req;
+	}
+	
 	public TemplateList getTemplateList() throws TimeoutException, IOException{
 		TemplateList req = new TemplateList();
 		connection.sendRequestAndWait(req);
@@ -502,6 +516,29 @@ public class Common extends ObjectTemplate{
 		ser.setTypeJOBS(true);
 		ser.setTypeJSCH(true);
 		ser.setTypeJOBP(true);		
+		connection.sendRequestAndWait(ser);
+		Iterator<SearchResultItem> it =  ser.resultIterator();
+		List<SearchResultItem> results = new ArrayList<SearchResultItem>();
+		while(it.hasNext()){
+			SearchResultItem item = it.next();
+			results.add(item);
+		}
+	return results;
+	}
+	
+	public List<SearchResultItem> searchCalendars(String ObjectName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		SearchObject ser = new SearchObject();
+		ser.unselectAllObjectTypes();
+		ser.setTypeCALE(true);
+		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
+		
+		if(ObjectName.equals("*")){
+			//ser.setName("");
+		}else{
+			ser.setName(ObjectName);
+		}
+		
 		connection.sendRequestAndWait(ser);
 		Iterator<SearchResultItem> it =  ser.resultIterator();
 		List<SearchResultItem> results = new ArrayList<SearchResultItem>();
