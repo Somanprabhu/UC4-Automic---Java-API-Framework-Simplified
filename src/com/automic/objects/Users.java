@@ -158,8 +158,9 @@ public class Users extends ObjectTemplate{
 			return false;
 		}
 		SearchResultItem item = foundUsers.get(0);
-		IFolder UserFolder = broker.folders.getFolderByName(item.getFolder());
 		
+		IFolder UserFolder = broker.folders.getFolderByName(item.getFolder());
+
 		MoveUserToClient req = new MoveUserToClient(user,UserFolder,client);
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {

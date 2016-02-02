@@ -70,10 +70,12 @@ public class Folders extends ObjectTemplate{
 		 return null;
 	}
 	
-	public IFolder getVersionNoFolderFolder() throws IOException{
+	public IFolder getNoFolderFolder() throws IOException{
 		 ArrayList<IFolder> allFolders = getAllFolders(false);
 		 for(IFolder folder : allFolders){
 			 if(folder.getType().equalsIgnoreCase("NFOLD")){return folder;}
+			 // for CLient 0, NOFOLD is actually CLNT.. ?!
+			 if(folder.getType().equalsIgnoreCase("CLNT")){return folder;}
 		 }
 		 return null;
 	}
@@ -112,8 +114,12 @@ public class Folders extends ObjectTemplate{
 	
 	// Returns a folder by name, can be passed a Full path or just a folder name
 	public IFolder getFolderByName(String FolderName) throws IOException{
-		 if(FolderName.contains("-") || FolderName.contains("/")){
+		// Bug Fix: '/' isnt enough to establish that a full path is passed..
+		 if(FolderName.contains("-") || (FolderName.contains("/")&& !FolderName.contains("No Folder"))){
 			 return getFolderByFullPathName(FolderName);
+		 }
+		 if(FolderName.contains("No Folder")){
+			 return getNoFolderFolder();
 		 }
 		
 		ArrayList<IFolder> foundFolders = new ArrayList<IFolder>();
