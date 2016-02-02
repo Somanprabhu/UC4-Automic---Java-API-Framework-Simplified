@@ -1,7 +1,10 @@
 package com.automic.objects;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.uc4.api.SearchResultItem;
 import com.uc4.api.Template;
 import com.uc4.api.UC4UserName;
 import com.uc4.api.objects.IFolder;
@@ -137,5 +140,34 @@ public class Users extends ObjectTemplate{
 			Say(" ++ User: "+UserName+" successfully moved to Client: "+client);
 		}
 	}
-
+	public boolean moveUserToClient(String UserName, int client) throws IOException{
+		int currentClient = Integer.parseInt(this.connection.getSessionInfo().getClient());
+		if(currentClient != 0){
+			System.out.println(" -- Error: You can only move a client when connected to Client 0. Current Client is: "+currentClient);
+			System.exit(1);
+		}
+		UC4UserName user = new UC4UserName(UserName);
+		ObjectBroker broker = getBrokerInstance();
+		List<SearchResultItem> foundUsers = broker.common.searchUsersAndGroups(user.getName());
+		if(foundUsers.isEmpty()){
+			System.out.println(" \t -- Error, Could Not Find User: " + user.getName());
+			return false;
+		}
+		if(foundUsers.size()>1){
+			System.out.println(" \t -- Error, Found Multiple Users Matching: " + user.getName());
+			return false;
+		}
+		SearchResultItem item = foundUsers.get(0);
+		IFolder UserFolder = broker.folders.getFolderByName(item.getFolder());
+		
+		MoveUserToClient req = new MoveUserToClient(user,UserFolder,client);
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+			return false;
+		}else{
+			Say(" ++ User: "+UserName+" successfully moved to Client: "+client);
+			return true;
+		}
+	}
 }
