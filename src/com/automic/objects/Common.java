@@ -432,6 +432,22 @@ public class Common extends ObjectTemplate{
 		}
 	return results;
 	}
+	public List<SearchResultItem> searchSched(String ObjectName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		SearchObject ser = new SearchObject();
+		ser.unselectAllObjectTypes();
+		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
+		ser.setName(ObjectName);
+		ser.setTypeJSCH(true);
+		connection.sendRequestAndWait(ser);
+		Iterator<SearchResultItem> it =  ser.resultIterator();
+		List<SearchResultItem> results = new ArrayList<SearchResultItem>();
+		while(it.hasNext()){
+			SearchResultItem item = it.next();
+			results.add(item);
+		}
+	return results;
+	}
 	public List<SearchResultItem> searchExecutableObjects(String ObjectName) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		SearchObject ser = new SearchObject();
@@ -747,7 +763,7 @@ public class Common extends ObjectTemplate{
 		SaveObject save = new SaveObject(obj);
 		connection.sendRequestAndWait(save);
 		if (save.getMessageBox() != null) {
-			System.out.println(" -- "+save.getMessageBox().getText().toString().replace("\n", ""));
+			System.out.println("\t -- "+save.getMessageBox().getText().toString().replace("\n", ""));
 		}
 		Say(" \t ++ Object: "+obj.getName()+" Successfully saved");
 	}
@@ -797,7 +813,7 @@ public class Common extends ObjectTemplate{
 				CloseObject close = new CloseObject(obj);
 				connection.sendRequestAndWait(close);	
 				if (close.getMessageBox() != null) {
-					System.err.println(" -- "+close.getMessageBox().getText().toString().replace("\n", ""));
+					System.err.println("\t -- "+close.getMessageBox().getText().toString().replace("\n", ""));
 				}else{
 					Say(" \t ++ Object: "+obj.getName()+" Successfully saved & closed");
 				}

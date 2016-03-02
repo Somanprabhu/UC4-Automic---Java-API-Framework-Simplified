@@ -12,6 +12,7 @@ import com.uc4.communication.requests.AddComment;
 import com.uc4.communication.requests.CancelTask;
 import com.uc4.communication.requests.DeactivateTask;
 import com.uc4.communication.requests.ModifyTaskState;
+import com.uc4.communication.requests.QuitTask;
 import com.uc4.communication.requests.RestartTask;
 import com.uc4.communication.requests.SuspendTask;
 
@@ -39,6 +40,10 @@ public class ActivityWindow extends ObjectTemplate{
 	// return the content of the activity window
 	public List<Task> getActivityWindowContent() throws IOException {		
 		TaskFilter taskFilter = new TaskFilter();
+		taskFilter.selectAllObjects();
+		taskFilter.selectAllPlatforms();
+		taskFilter.setTypeJSCH(true);
+		taskFilter.setTypeAPI(true);
 		return getActivityWindowContent(taskFilter);
 	}
 		
@@ -51,6 +56,16 @@ public class ActivityWindow extends ObjectTemplate{
 		}
 		return true;
 	}
+	public boolean quitTask(int RunID) throws IOException {		
+		QuitTask req = new QuitTask(RunID); // force
+		connection.sendRequestAndWait(req);		
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+			return false;
+		}
+		return true;
+	}
+	
 	
 	public boolean restartTask(int RunID) throws IOException {		
 		RestartTask req = new RestartTask(RunID); // force

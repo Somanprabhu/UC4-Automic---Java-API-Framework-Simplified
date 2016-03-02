@@ -5,11 +5,22 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.automic.utils.ObjectTypeEnum;
+import com.uc4.api.DateTime;
 import com.uc4.api.Time;
+import com.uc4.api.UC4ObjectName;
+import com.uc4.api.UC4TimezoneName;
 import com.uc4.api.objects.Schedule;
 import com.uc4.api.objects.ScheduleTask;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
+import com.uc4.communication.TimeoutException;
+import com.uc4.communication.requests.AddScheduleTask;
+import com.uc4.communication.requests.ModifyStartTime;
+import com.uc4.communication.requests.OpenProcessFlowModification;
+import com.uc4.communication.requests.ReloadNextTurnaround;
+import com.uc4.communication.requests.ResetScheduleTask;
+import com.uc4.communication.requests.RunScheduledTask;
+import com.uc4.communication.requests.ScheduleMonitor;
 
 public class Schedules extends ObjectTemplate{
 
@@ -36,6 +47,61 @@ public class Schedules extends ObjectTemplate{
 		Schedule schedule = (Schedule) object;
 		schedule.attributes().setPriority(priority);
 		broker.common.saveObject(schedule);
+	}
+	public ScheduleMonitor getScheduleMonitorFromActiveSchedule(int runID) throws TimeoutException, IOException{
+		ScheduleMonitor req = new ScheduleMonitor(runID, true);
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}
+		
+		return req;
+	}
+	public ReloadNextTurnaround reloadAtNextTurnaround(Schedule sched) throws TimeoutException, IOException{
+		ReloadNextTurnaround req = new ReloadNextTurnaround(sched);
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}
+		
+		return req;
+	}
+
+	public AddScheduleTask addSchedTask(String ObjectName) throws TimeoutException, IOException{
+		AddScheduleTask req = new AddScheduleTask(new UC4ObjectName(ObjectName));
+		//req.getScheduleTask().s
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}
+		return req;
+	}
+	
+	public RunScheduledTask runScheduledTask(ScheduleMonitor.Task task) throws TimeoutException, IOException{
+		RunScheduledTask req = new RunScheduledTask(task);
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}
+		return req;
+	}
+	
+	public ResetScheduleTask resetScheduledTask(ScheduleMonitor.Task task) throws TimeoutException, IOException{
+		ResetScheduleTask req = new ResetScheduleTask(task);
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}
+		return req;
+	}
+	
+	public ModifyStartTime setNewStartTimeForTask(int runID, DateTime start, UC4TimezoneName tz) throws TimeoutException, IOException{
+		ModifyStartTime req = new ModifyStartTime(runID, start,tz);
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}
+		return req;
 	}
 	
 	// Modify a property of a Schedule object
