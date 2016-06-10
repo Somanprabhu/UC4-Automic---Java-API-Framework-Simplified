@@ -8,17 +8,17 @@ import java.util.ArrayList;
 import com.uc4.communication.Connection;
 import com.uc4.communication.requests.CreateSession;
 
-public class ConnectionManager {
+public final class ConnectionManager {
 
-	private Connection conn = null;
+	private static Connection conn = null;
 	
-	public ArrayList<Connection> ConnectionList = new ArrayList<Connection>();
+	public static ArrayList<Connection> ConnectionList = new ArrayList<Connection>();
 	
 	public ConnectionManager(){
 		
 	}
 	
-	public Connection connectToClient(AECredentials credentials) throws IOException{
+	public static Connection connectToClient(AECredentials credentials) throws IOException{
 		
 		//System.out.println("Authenticating to Client "+credentials.getAEClientToConnect()+" with user "+credentials.getAEUserLogin());
 		try{

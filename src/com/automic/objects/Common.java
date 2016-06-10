@@ -919,6 +919,7 @@ public class Common extends ObjectTemplate{
 			if (delete.getMessageBox().getNumber() == 4006507) {  //active
 				TaskFilter taskFilter = new TaskFilter();
 				taskFilter.setObjectName(name);
+				
 				ActivityList list = new ActivityList(taskFilter);
 				connection.sendRequestAndWait(list);
 				//for (Task t : list) removeTask(t);

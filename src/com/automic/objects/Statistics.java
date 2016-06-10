@@ -55,6 +55,7 @@ public class Statistics  extends ObjectTemplate{
 		if (req.getMessageBox() != null) {
 			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 		}
+		//req.resultIterator()
 		return req;
 		
 	}
@@ -82,7 +83,9 @@ public class Statistics  extends ObjectTemplate{
 			if (req.getMessageBox() != null) {
 				System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 			}
+			
 			return req.size();
+			
 		}
 	
 }
