@@ -2,6 +2,7 @@ package com.automic.objects;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.uc4.api.SearchResultItem;
@@ -13,7 +14,9 @@ import com.uc4.api.objects.User;
 import com.uc4.api.objects.UserPrivileges.Privilege;
 import com.uc4.api.objects.UserRight;
 import com.uc4.api.objects.UserRight.Type;
+import com.uc4.api.systemoverview.UserListItem;
 import com.uc4.communication.Connection;
+import com.uc4.communication.requests.DisconnectUser;
 import com.uc4.communication.requests.MoveUserToClient;
 import com.uc4.communication.requests.UserList;
 
@@ -36,6 +39,27 @@ public class Users extends ObjectTemplate{
 			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 		}
 		return req;
+	}
+	
+	public String disconnectActiveUser(String UserName) throws IOException{
+		UserList list = getUserList();
+		Iterator<UserListItem> it = list.iterator();
+		boolean UserFound = false;
+		while(it.hasNext()){
+			UserListItem uli = it.next();
+			if(uli.getName().toString().equalsIgnoreCase(UserName)){
+				UserFound = true;
+				DisconnectUser req = new DisconnectUser(uli);
+				connection.sendRequestAndWait(req);
+				if(req.getMessageBox()!=null){
+					return req.getMessageBox().getText();
+				}else{
+					return null;
+				}
+				
+			}
+		}
+		return "User not found.";
 	}
 	
 	public User getUserFromName(String UserName) throws IOException{
