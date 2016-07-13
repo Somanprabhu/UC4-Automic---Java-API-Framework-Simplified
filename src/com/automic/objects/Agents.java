@@ -98,6 +98,17 @@ public class Agents extends ObjectTemplate{
 	public ArrayList<AgentListItem> getAgentListWithTypeFilter(String TypeFilter) throws IOException {
 		return getAgentListWithNameAndTypeFilter(".*",TypeFilter);
 	}
+	
+	public AgentList getSimpleAgentList() throws TimeoutException, IOException{
+		AgentList list = new AgentList();
+		connection.sendRequestAndWait(list);
+		if (list.getMessageBox() != null) {
+			System.out.println(" -- "+list.getMessageBox().getText().toString().replace("\n", ""));
+			return null;
+		}
+		return list;
+	}
+	
 	public ArrayList<AgentListItem> getAgentListWithNameAndTypeFilter(String NameFilter, String TypeFilter) throws IOException {
 		ArrayList<AgentListItem> objList = new ArrayList<AgentListItem>();
 		AgentList list = new AgentList();

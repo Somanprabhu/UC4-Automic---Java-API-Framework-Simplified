@@ -25,6 +25,7 @@ import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
 import com.uc4.communication.TimeoutException;
 import com.uc4.communication.requests.ActivityList;
+import com.uc4.communication.requests.CacheList;
 import com.uc4.communication.requests.CancelTask;
 import com.uc4.communication.requests.CloseObject;
 import com.uc4.communication.requests.CreateObject;
@@ -41,6 +42,8 @@ import com.uc4.communication.requests.GetReplaceList;
 import com.uc4.communication.requests.ImportObject;
 import com.uc4.communication.requests.MoveObject;
 import com.uc4.communication.requests.OpenObject;
+import com.uc4.communication.requests.QuarantineList;
+import com.uc4.communication.requests.QueueList;
 import com.uc4.communication.requests.QuickSearch;
 import com.uc4.communication.requests.RenameObject;
 import com.uc4.communication.requests.ReplaceObject;
@@ -76,6 +79,42 @@ public class Common extends ObjectTemplate{
 	
 	**/
 
+	public QueueList getQueueList() throws TimeoutException, IOException{
+		QueueList req = new QueueList();
+
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+			return null;
+		}
+		
+		return req;
+	}
+	
+	public QuarantineList getQuarantineList() throws TimeoutException, IOException{
+		QuarantineList req = new QuarantineList();
+
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+			return null;
+		}
+		
+		return req;
+	}
+	
+	public CacheList getCacheList() throws TimeoutException, IOException{
+		CacheList req = new CacheList();
+
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+			return null;
+		}
+		
+		return req;
+	}
+	
 	public GetChangeLog getChanges() throws TimeoutException, IOException{
 		GetChangeLog req = new GetChangeLog();
 		req.selectAllChangeTypes();

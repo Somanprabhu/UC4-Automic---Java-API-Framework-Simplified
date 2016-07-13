@@ -92,6 +92,17 @@ public class Clients extends ObjectTemplate{
 				Say(" ++ Client: "+Client.getClient()+" Successfully Started.");
 			}
 		}
+	
+		public ClientList getSimpleClientList() throws TimeoutException, IOException{
+			ClientList req = new ClientList();
+			connection.sendRequestAndWait(req);
+			if (req.getMessageBox() != null) {
+				System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+				return null;
+			}else{
+				return req;
+			}
+		}
 		
 		public ArrayList<ClientListItem> getClientList() throws TimeoutException, IOException{
 			ClientList clList = new ClientList();
