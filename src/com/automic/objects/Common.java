@@ -815,7 +815,7 @@ public class Common extends ObjectTemplate{
 			if (req.getMessageBox() != null) {
 				System.err.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 			}else{
-				Say(" \t ++ Object: "+objName+" Successfully reclaimed");
+				//Say(" \t ++ Object: "+objName+" Successfully reclaimed");
 			}
 		}else{
 			UC4ObjectName objName = new UC4ObjectName(ObjectName);
@@ -824,7 +824,7 @@ public class Common extends ObjectTemplate{
 			if (req.getMessageBox() != null) {
 				System.err.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 			}else{
-				Say(" \t ++ Object: "+objName+" Successfully reclaimed");
+				//Say(" \t ++ Object: "+objName+" Successfully reclaimed");
 			}
 		}
 		
@@ -838,7 +838,7 @@ public class Common extends ObjectTemplate{
 		if (close.getMessageBox() != null) {
 			System.err.println(" -- "+close.getMessageBox().getText().toString().replace("\n", ""));
 		}else{
-			Say(" \t ++ Object: "+obj.getName()+" Successfully closed");
+			//Say(" \t ++ Object: "+obj.getName()+" Successfully closed");
 		}
 	}	
 	

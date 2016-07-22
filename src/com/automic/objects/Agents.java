@@ -18,6 +18,7 @@ import com.uc4.communication.TimeoutException;
 import com.uc4.communication.requests.AgentGroupList;
 import com.uc4.communication.requests.AgentList;
 import com.uc4.communication.requests.DisconnectHost;
+import com.uc4.communication.requests.RenewTransferKey;
 import com.uc4.communication.requests.SetHostAuthorizations;
 import com.uc4.communication.requests.StartHost;
 import com.uc4.communication.requests.TerminateHost;
@@ -50,6 +51,17 @@ public class Agents extends ObjectTemplate{
 			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
 		}else{
 			Say(" ++ Agent: "+item.getName()+" Successfully Shutdown.");
+		}
+	}
+	
+
+	public void renewAgentTransferKey(AgentListItem item) throws IOException{
+		RenewTransferKey req = new RenewTransferKey(item);
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		}else{
+			//Say(" ++ Agent: "+item.getName()+" Key Renewal Request OK.");
 		}
 	}
 	
