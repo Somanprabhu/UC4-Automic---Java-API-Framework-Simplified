@@ -30,11 +30,21 @@ public final class ConnectionManager {
 			System.out.println(" -- ERROR: Could Not Connect to Host: " + credentials.getAEHostnameOrIp());
 			System.out.println(" --     Hint: is the host or IP reachable?");
 			System.exit(998);
-			
 		}
 		
+		String PASSWORD = credentials.getAEUserPassword();
+		
+		// #1 - Fix. if password passed with single quotes, they are interpreted as characters.. removing them if detected:
+		if(PASSWORD.startsWith("'") && PASSWORD.endsWith("'")){
+			PASSWORD = PASSWORD.substring(1, PASSWORD.length()-1);
+		}
+		
+		String ClearPwd = PASSWORD;
+		
 		CreateSession sess = conn.login(credentials.getAEClientToConnect(), credentials.getAEUserLogin(), 
-				credentials.getAEDepartment(), credentials.getAEUserPassword(), credentials.getAEMessageLanguage());
+				credentials.getAEDepartment(), ClearPwd, credentials.getAEMessageLanguage());
+		
+		//#1 Fix Done
 		
 		if(sess.getMessageBox()!=null){
 			System.out.println("-- Error: " + sess.getMessageBox()); 
