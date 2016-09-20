@@ -40,9 +40,20 @@ public final class ConnectionManager {
 		}
 		
 		String ClearPwd = PASSWORD;
-		
-		CreateSession sess = conn.login(credentials.getAEClientToConnect(), credentials.getAEUserLogin(), 
+		CreateSession sess = null;
+		try{
+		sess = conn.login(credentials.getAEClientToConnect(), credentials.getAEUserLogin(), 
 				credentials.getAEDepartment(), ClearPwd, credentials.getAEMessageLanguage());
+		}catch(RuntimeException e){
+			if(e.getMessage().contains("Null input buffer")){
+				System.out.println("-- Error: Login Failed: Tt seems you are trying to login with an invalid encrypted password that cannot be decoded. Please Check.");
+			}else{
+				System.out.println("-- Error: Login Failed. Unknown Runtime Error. Send the following stacktrace to vendor:");
+				e.printStackTrace();
+			}
+			
+			System.exit(99);
+		}
 		
 		//#1 Fix Done
 		
