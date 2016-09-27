@@ -57,6 +57,10 @@ private ObjectBroker broker;
 		return add.getJobPlanTask();
 	}
 	
+	/**
+	 * @deprecated replaced by getTasksFromNameAndJobPlan
+	 * 
+	 */
 	public JobPlanTask getTaskFromNameAndJobPlan(JobPlan jobPlan, String TaskName) throws IOException{
 		Iterator<JobPlanTask> it = jobPlan.taskIterator();
 		while(it.hasNext()){
@@ -66,6 +70,19 @@ private ObjectBroker broker;
 			}
 		}
 		return null;
+	}
+	
+	public ArrayList<JobPlanTask> getTasksFromNameAndJobPlan(JobPlan jobPlan, String TaskName) throws IOException{
+		Iterator<JobPlanTask> it = jobPlan.taskIterator();
+		ArrayList<JobPlanTask> TaskLists = new ArrayList<JobPlanTask>();
+		
+		while(it.hasNext()){
+			JobPlanTask jpt = it.next();
+			if(jpt.getTaskName().equals(TaskName)){
+				TaskLists.add(jpt);
+			}
+		}
+		return TaskLists;
 	}
 	
 	public ArrayList<Job> getAllJobsFromJobPlan(JobPlan jobPlan) throws IOException{
