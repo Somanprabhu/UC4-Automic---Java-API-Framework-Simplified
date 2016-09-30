@@ -53,6 +53,7 @@ import com.uc4.communication.requests.SaveObject;
 import com.uc4.communication.requests.SearchObject;
 import com.uc4.communication.requests.TemplateList;
 import com.uc4.communication.requests.VersionControlList;
+import com.uc4.communication.requests.XMLRequest;
 
 
 
@@ -94,6 +95,16 @@ public class Common extends ObjectTemplate{
 	public QuarantineList getQuarantineList() throws TimeoutException, IOException{
 		QuarantineList req = new QuarantineList();
 
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+			return null;
+		}
+		
+		return req;
+	}
+	
+	public XMLRequest sendGenericXMLRequestAndWait(XMLRequest req) throws TimeoutException, IOException{
 		connection.sendRequestAndWait(req);
 		if (req.getMessageBox() != null) {
 			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
@@ -343,6 +354,23 @@ public class Common extends ObjectTemplate{
 		// BUG: All filters unselected?!
 		ser.setTypeUSER(true);
 		ser.setTypeUSRG(true);
+		//ser.unselectAllObjectTypes();
+		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
+		ser.setName(ObjectName);
+		connection.sendRequestAndWait(ser);
+		Iterator<SearchResultItem> it =  ser.resultIterator();
+		List<SearchResultItem> results = new ArrayList<SearchResultItem>();
+		while(it.hasNext()){
+			SearchResultItem item = it.next();
+			results.add(item);
+		}
+	return results;
+	}
+	public List<SearchResultItem> searchHostgroups(String ObjectName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		SearchObject ser = new SearchObject();
+		// BUG: All filters unselected?!
+		ser.setTypeHOSTG(true);
 		//ser.unselectAllObjectTypes();
 		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
 		ser.setName(ObjectName);
