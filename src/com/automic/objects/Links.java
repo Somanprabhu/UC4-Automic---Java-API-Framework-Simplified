@@ -24,7 +24,7 @@ public class Links extends ObjectTemplate{
 	public void createObjectLink(String SourceObjectName, IFolder TargetFolder) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		// 1- searching for the object first
-		List<SearchResultItem> results = broker.common.searchObject(SourceObjectName);
+		List<SearchResultItem> results = broker.searches.searchObject(SourceObjectName);
 		if(results.size() != 1){
 			System.out.println(" -- Error, Object Name: "+ SourceObjectName +" mapped to "+results.size() + " objects: Cannot locate!");
 			System.exit(1);

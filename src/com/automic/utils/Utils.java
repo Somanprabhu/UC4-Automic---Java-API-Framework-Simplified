@@ -4,6 +4,16 @@ import com.uc4.api.Template;
 
 public class Utils {
 
+	public static boolean isInteger( String input ) {
+	    try {
+	        Integer.parseInt( input );
+	        return true;
+	    }
+	    catch( Exception e ) {
+	        return false;
+	    }
+	}
+	
 	// List is incomplete.. add as necessary!!
 	public static Template convertStringToTemplate(String s){
 		

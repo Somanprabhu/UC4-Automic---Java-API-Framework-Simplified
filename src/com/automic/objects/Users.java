@@ -172,7 +172,7 @@ public class Users extends ObjectTemplate{
 		}
 		UC4UserName user = new UC4UserName(UserName);
 		ObjectBroker broker = getBrokerInstance();
-		List<SearchResultItem> foundUsers = broker.common.searchUsersAndGroups(user.getName());
+		List<SearchResultItem> foundUsers = broker.searches.searchUsersAndGroups(user.getName());
 		if(foundUsers.isEmpty()){
 			System.out.println(" \t -- Error, Could Not Find User: " + user.getName());
 			return false;

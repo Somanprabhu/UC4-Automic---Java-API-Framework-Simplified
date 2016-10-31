@@ -9,7 +9,9 @@ import com.uc4.api.UC4ObjectName;
 import com.uc4.api.objects.Queue;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
+import com.uc4.communication.TimeoutException;
 import com.uc4.communication.requests.ModifyQueueStatus;
+import com.uc4.communication.requests.QueueList;
 
 public class Queues extends ObjectTemplate{
 
@@ -20,6 +22,13 @@ public class Queues extends ObjectTemplate{
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}
+	
+	
+	public QueueList getQueueList() throws TimeoutException, IOException{
+		QueueList req = new QueueList();
+		return (QueueList) getBrokerInstance().common.sendGenericXMLRequestAndWait(req);
+	}
+	
 	public Queue getQueueFromObject(UC4Object object){return (Queue) object;}
 	public ArrayList<UC4Object> getAllQueues() throws IOException{
 		ObjectBroker broker = getBrokerInstance();

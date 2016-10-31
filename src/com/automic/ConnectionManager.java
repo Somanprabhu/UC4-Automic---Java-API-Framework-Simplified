@@ -5,12 +5,14 @@ import java.net.ConnectException;
 import java.nio.channels.UnresolvedAddressException;
 import java.util.ArrayList;
 
+import com.automic.utils.Utils;
 import com.uc4.communication.Connection;
 import com.uc4.communication.requests.CreateSession;
 
 public final class ConnectionManager {
 
 	private static Connection conn = null;
+
 	
 	public static ArrayList<Connection> ConnectionList = new ArrayList<Connection>();
 	
@@ -33,7 +35,9 @@ public final class ConnectionManager {
 		}
 		
 		String PASSWORD = credentials.getAEUserPassword();
-		
+
+
+
 		// #1 - Fix. if password passed with single quotes, they are interpreted as characters.. removing them if detected:
 		if(PASSWORD.startsWith("'") && PASSWORD.endsWith("'")){
 			PASSWORD = PASSWORD.substring(1, PASSWORD.length()-1);
