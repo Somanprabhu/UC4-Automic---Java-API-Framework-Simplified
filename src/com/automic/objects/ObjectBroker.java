@@ -45,6 +45,7 @@ public class ObjectBroker {
 	public Versions versions;
 	public Imports imports;
 	public Exports exports;
+	public ServiceLevelObjectives servicelevelobjectives;
 	
 	public ObjectBroker(Connection conn, boolean verbose){
 		this.connection = conn;
@@ -88,6 +89,8 @@ public class ObjectBroker {
 		versions = new Versions(this.connection,verbose);
 		imports = new Imports(this.connection,verbose);
 		exports = new Exports(this.connection,verbose);
+		servicelevelobjectives = new ServiceLevelObjectives(this.connection, verbose);
+		
 	}
 	public void setConnection(Connection conn){
 		this.connection = conn;

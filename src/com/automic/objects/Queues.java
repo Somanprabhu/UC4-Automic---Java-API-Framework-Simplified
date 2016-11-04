@@ -30,6 +30,7 @@ public class Queues extends ObjectTemplate{
 	}
 	
 	public Queue getQueueFromObject(UC4Object object){return (Queue) object;}
+	
 	public ArrayList<UC4Object> getAllQueues() throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		return broker.common.getAllObjects(ObjectTypeEnum.QUEUE);

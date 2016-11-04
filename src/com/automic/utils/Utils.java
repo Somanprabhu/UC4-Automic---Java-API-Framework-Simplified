@@ -1,5 +1,6 @@
 package com.automic.utils;
 
+import com.uc4.api.MessageBox;
 import com.uc4.api.Template;
 
 public class Utils {
@@ -12,6 +13,11 @@ public class Utils {
 	    catch( Exception e ) {
 	        return false;
 	    }
+	}
+	public static String getErrorString(MessageBox msg){
+		String s = " -- "+msg.getText().toString();
+		return s;
+		
 	}
 	
 	// List is incomplete.. add as necessary!!

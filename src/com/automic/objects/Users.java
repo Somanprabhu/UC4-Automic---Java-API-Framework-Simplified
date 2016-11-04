@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.automic.utils.Utils;
+import com.uc4.api.InvalidUC4NameException;
 import com.uc4.api.SearchResultItem;
 import com.uc4.api.Template;
 import com.uc4.api.UC4UserName;
@@ -16,8 +18,12 @@ import com.uc4.api.objects.UserRight;
 import com.uc4.api.objects.UserRight.Type;
 import com.uc4.api.systemoverview.UserListItem;
 import com.uc4.communication.Connection;
+import com.uc4.communication.TimeoutException;
+import com.uc4.communication.requests.ActivateLDAPConnection;
+import com.uc4.communication.requests.DeactivateLDAPConnection;
 import com.uc4.communication.requests.DisconnectUser;
 import com.uc4.communication.requests.MoveUserToClient;
+import com.uc4.communication.requests.SynchronizeLDAP;
 import com.uc4.communication.requests.UserList;
 
 public class Users extends ObjectTemplate{
@@ -40,6 +46,77 @@ public class Users extends ObjectTemplate{
 		}
 		return req;
 	}
+	
+	public SynchronizeLDAP synchronizeLDAPUser(String UserName) throws TimeoutException, IOException{
+		UC4UserName uname = null;
+		try{
+			uname = new UC4UserName(UserName);
+		}catch(InvalidUC4NameException e){
+			System.out.println(" -- Error: Username not a valid Automic name: userName.");
+			return null;
+		}
+		SynchronizeLDAP req = new SynchronizeLDAP(uname);
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(Utils.getErrorString(req.getMessageBox()));
+		}
+		return req;
+	}
+	
+	public DeactivateLDAPConnection DeactivateLDAPConnection(UserListItem item) throws TimeoutException, IOException{
+		DeactivateLDAPConnection req = new DeactivateLDAPConnection(item);
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(Utils.getErrorString(req.getMessageBox()));
+		}
+		return req;
+	}
+	
+	public DeactivateLDAPConnection DeactivateLDAPConnection(String username) throws IOException{
+		boolean UserFound = false;
+		UserList list = this.getBrokerInstance().users.getUserList();
+		Iterator<UserListItem> it = list.iterator();
+		while(it.hasNext()){
+			UserListItem item = it.next();
+			if(item.getName().toString().equalsIgnoreCase(username)){
+				UserFound=true;
+				return DeactivateLDAPConnection(item);
+			}
+		}
+		if(!UserFound){
+			System.out.println(" -- Error: User Not Found: " + username);
+			return null;
+		}
+		return null;
+	}
+	
+	public ActivateLDAPConnection activateLDAPConnection(UserListItem item) throws TimeoutException, IOException{
+		ActivateLDAPConnection req = new ActivateLDAPConnection(item);
+		connection.sendRequestAndWait(req);
+		if (req.getMessageBox() != null) {
+			System.out.println(Utils.getErrorString(req.getMessageBox()));
+		}
+		return req;
+	}
+	
+	public ActivateLDAPConnection activateLDAPConnection(String username) throws IOException{
+		boolean UserFound = false;
+		UserList list = this.getBrokerInstance().users.getUserList();
+		Iterator<UserListItem> it = list.iterator();
+		while(it.hasNext()){
+			UserListItem item = it.next();
+			if(item.getName().toString().equalsIgnoreCase(username)){
+				UserFound=true;
+				return activateLDAPConnection(item);
+			}
+		}
+		if(!UserFound){
+			System.out.println(" -- Error: User Not Found: " + username);
+			return null;
+		}
+		return null;
+	}
+	
 	
 	public String disconnectActiveUser(String UserName) throws IOException{
 		UserList list = getUserList();
