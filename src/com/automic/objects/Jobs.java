@@ -112,7 +112,7 @@ public class Jobs extends ObjectTemplate {
 	public void createJob(String JobName, String TemplateName, IFolder folder)
 			throws IOException {
 		ObjectBroker broker = getBrokerInstance();
-		Template template = com.automic.utils.Utils.convertStringToTemplate(TemplateName);
+		Template template = Template.getTemplateFor(TemplateName.toUpperCase());
 		if ( template == null){
 			System.out.println(" -- Error! Template Name " + TemplateName +" Does Not Seem To Match Any Existing Template..");
 		}else{

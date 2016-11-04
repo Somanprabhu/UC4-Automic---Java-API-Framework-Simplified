@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.xml.sax.SAXException;
 
+import com.automic.utils.Utils;
 import com.uc4.api.DateTime;
 import com.uc4.api.FolderListItem;
 import com.uc4.api.QuickSearchItem;
@@ -65,109 +66,99 @@ public class Common extends ObjectTemplate{
 		return new ObjectBroker(this.connection,true);
 	}
 	
-	// Sends a generic XMLRequest to the engine
-	public XMLRequest sendGenericXMLRequestAndWait(XMLRequest req) throws TimeoutException, IOException{
-		return sendGenericXMLRequestAndWait(req,false);
-	}
+	// ####################
+	// 
+	// Generic XMLRequest Methods
+	//
+	// ####################
 	
-	// Sends a generic XMLRequest to the engine with or without showing the response
-	public XMLRequest sendGenericXMLRequestAndWait(XMLRequest req,boolean showResponse) throws TimeoutException, IOException{
-		connection.sendRequestAndWait(req);
-		if (req.getMessageBox() != null) {
-			if(showResponse){System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));}
-			return null;
-		}
-		return req;
-	}
 
 	// Move a single object to a different folder
-	public void moveObject(String ObjectName, IFolder FolderSource, IFolder FolderTarget) throws IOException{
+	public boolean moveObject(String ObjectName, IFolder FolderSource, IFolder FolderTarget) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		FolderList folderList = broker.folders.getFolderContent(FolderSource);
 		Iterator<FolderListItem> it = folderList.iterator();
-		boolean ObjectNotFound = true;
-		while(it.hasNext() && ObjectNotFound){
+		while(it.hasNext()){
 			FolderListItem item = it.next();
 			if(item.getName().equalsIgnoreCase(ObjectName)){
-				ObjectNotFound = false;
 				MoveObject mov = new MoveObject(item,FolderSource,FolderTarget);
-				connection.sendRequestAndWait(mov);
-				if (mov.getMessageBox() != null) {
-					System.out.println(" -- "+mov.getMessageBox().getText().toString().replace("\n", ""));
-				}else{
-					Say(" \t ++ Object: "+item.getName()+" From: "+FolderSource.fullPath()+" Successfully moved to Folder: "+FolderTarget.fullPath());
+				sendGenericXMLRequestAndWait(mov);
+				if (mov.getMessageBox() == null) {
+					Say(Utils.getSuccessString("Object: "+item.getName()+" From: "+FolderSource.fullPath()+" Successfully moved to Folder: "+FolderTarget.fullPath()));
+					return true;
 				}
 			}
 		}
+		return false;
 	}
 
 	// Replace an object with another one
-	public void replaceObject(String SourceObjectName, String TargetObjectName) throws IOException{
+	public boolean replaceObject(String SourceObjectName, String TargetObjectName) throws IOException{
 		
 		UC4ObjectName sourceName = new UC4ObjectName(SourceObjectName);
 		UC4ObjectName targetName = new UC4ObjectName(TargetObjectName);
 		List<SearchResultItem> results = getBrokerInstance().searches.searchObject(SourceObjectName);
 		SearchResultItem[] items = new SearchResultItem[results.size()];
 		items = results.toArray(items);
-		GetReplaceList repList = new GetReplaceList(sourceName);
-		connection.sendRequestAndWait(repList);
+		GetReplaceList req = new GetReplaceList(sourceName);
 		
-		ReplaceObject rep = new ReplaceObject(repList,targetName,1);
-		connection.sendRequestAndWait(rep);
-		if (rep.getMessageBox() != null) {
-			System.out.println(" -- "+rep.getMessageBox().getText().toString().replace("\n", ""));
-		}else{
-			Say(" \t ++ Object "+ SourceObjectName +" Successfully Replaced by: "+TargetObjectName);
-		}
+		sendGenericXMLRequestAndWait(req);
 
+		ReplaceObject req1 = new ReplaceObject(req,targetName,1);
+		sendGenericXMLRequestAndWait(req1);
+		
+		if (req1.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Object "+ SourceObjectName +" Successfully Replaced by: "+TargetObjectName));
+			return true;
+		}
+		return false;
 	}
 	
 	// Rename an object
-	public void renameObject(String SourceObjectName, String TargetObjectName, IFolder folder) throws IOException{
+	public boolean renameObject(String SourceObjectName, String TargetObjectName, IFolder folder) throws IOException{
 		UC4ObjectName sourceName = new UC4ObjectName(SourceObjectName);
 		UC4ObjectName targetName = new UC4ObjectName(TargetObjectName);
 		String SourceObjectTitle = "";
-		List<SearchResultItem> items = getBrokerInstance().searches.searchObject(SourceObjectName);
+	//	List<SearchResultItem> items = getBrokerInstance().searches.searchObject(SourceObjectName);
 		// this method should always only be used on exact objects and not on * or ? expressions.. the items List should always yield exactly one element
-		if(items.size()==1){
-			SourceObjectTitle = items.get(0).getTitle();
-		}
-		RenameObject ren = new RenameObject(sourceName,targetName,folder,SourceObjectTitle); // empty String is the Object Title
+	//	if(items.size()==1){
+	//		SourceObjectTitle = items.get(0).getTitle();
+	//	}
+		RenameObject req = new RenameObject(sourceName,targetName,folder,SourceObjectTitle);
+		sendGenericXMLRequestAndWait(req);
 		
-		connection.sendRequestAndWait(ren);
-		if (ren.getMessageBox() != null) {
-			System.out.println(" -- "+ren.getMessageBox().getText().toString().replace("\n", ""));
-		}else{
-			Say(" \t ++ Object "+ SourceObjectName +" Successfully Renamed to: "+TargetObjectName);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Object: "+ SourceObjectName +" Successfully Renamed to: "+TargetObjectName));
+			return true;
 		}
+		return false;
 
 	}
 	
 	// Rename a Folder
-	public void renameFolder(String SourceFolderName, String TargetFolderName) throws IOException{
+	public boolean renameFolder(String SourceFolderName, String TargetFolderName) throws IOException{
 		IFolder sourceFolder = getBrokerInstance().folders.getFolderByName(SourceFolderName);
 		UC4ObjectName targetName = new UC4ObjectName(TargetFolderName);
-		RenameObject ren = new RenameObject(sourceFolder,targetName); // empty String is the Object Title
-		connection.sendRequestAndWait(ren);
-		if (ren.getMessageBox() != null) {
-			System.out.println(" -- "+ren.getMessageBox().getText().toString().replace("\n", ""));
-		}else{
-			Say(" \t ++ Object "+ sourceFolder.fullPath() +" Successfully Renamed to: "+targetName);
+		RenameObject req = new RenameObject(sourceFolder,targetName); // empty String is the Object Title
+		sendGenericXMLRequestAndWait(req);
+		
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Object: "+ sourceFolder.fullPath() +" Successfully Renamed to: "+targetName));
+			return true;
 		}
-
+		return false;
 	}
 	
 	// Rename a Folder
-	public void renameFolder(IFolder SourceFolder, String TargetFolderName) throws IOException{
+	public boolean renameFolder(IFolder SourceFolder, String TargetFolderName) throws IOException{
 		UC4ObjectName targetName = new UC4ObjectName(TargetFolderName);
-		RenameObject ren = new RenameObject(SourceFolder,targetName); // empty String is the Object Title
-		connection.sendRequestAndWait(ren);
-		if (ren.getMessageBox() != null) {
-			System.out.println(" -- "+ren.getMessageBox().getText().toString().replace("\n", ""));
-		}else{
-			Say(" \t ++ Object "+ SourceFolder.fullPath() +" Successfully Renamed to: "+targetName);
+		RenameObject req = new RenameObject(SourceFolder,targetName); // empty String is the Object Title
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Object: "+ SourceFolder.fullPath() +" Successfully Renamed to: "+targetName));
+			return true;
 		}
-
+		return false;
 	}
 	
 	// the method below can potentially do a lot of harm - use with caution!
@@ -187,30 +178,30 @@ public class Common extends ObjectTemplate{
 	// "GEN.TEST1.TASK3.DEEP_RENAMED";
 
 	// Deep Rename ..
-	public void deepRenameObjects(String ExistingPatternName, String NewPatternName) throws IOException{
+	public boolean deepRenameObjects(String ExistingPatternName, String NewPatternName) throws IOException{
 
-			DeepRename deepRename = new DeepRename();
-			deepRename.setNamePattern(NewPatternName);
-			deepRename.setCleanPattern(ExistingPatternName);		
-			connection.sendRequestAndWait(deepRename);
-			if (deepRename.getMessageBox() != null) {
-				System.out.println(" -- "+deepRename.getMessageBox().toString().replace("\n", ""));
-			}else{
-				Say(" \t ++ Object(s) with Pattern: "+ExistingPatternName+" Successfully renamed to Pattern: "+NewPatternName);
+			DeepRename req = new DeepRename();
+			req.setNamePattern(NewPatternName);
+			req.setCleanPattern(ExistingPatternName);
+			sendGenericXMLRequestAndWait(req);
+			if (req.getMessageBox() == null) {
+				Say(Utils.getSuccessString("Object(s) with Pattern: "+ExistingPatternName+" Successfully renamed to Pattern: "+NewPatternName));
+				return true;
 			}
+			return false;
 	}
 	
 	// Duplicate an existing object
-	public void duplicateObject(String SourceObjectName, String TargetObjectName, IFolder folder) throws IOException{
+	public boolean duplicateObject(String SourceObjectName, String TargetObjectName, IFolder folder) throws IOException{
 		UC4Object obj = openObject(SourceObjectName, true);
 		UC4ObjectName dupName = new UC4ObjectName(TargetObjectName);
-		DuplicateObject dup = new DuplicateObject(obj,dupName,folder);
-		connection.sendRequestAndWait(dup);
-		if (dup.getMessageBox() != null) {
-			System.out.println(" -- "+dup.getMessageBox().toString().replace("\n", ""));
-		}else{
-			Say(" \t ++ Object: "+obj.getName()+" Successfully saved in folder "+folder);
+		DuplicateObject req = new DuplicateObject(obj,dupName,folder);
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString(" \t ++ Object: "+obj.getName()+" Successfully saved in folder "+folder));
+			return true;
 		}
+		return false;
 	}
 	
 	// Open an Automic Object (of any kind)
@@ -221,83 +212,78 @@ public class Common extends ObjectTemplate{
 		else if (name.indexOf('-')  != -1) objName = new UC4HostName(name);
 		else objName = new UC4ObjectName(name);		
 
-		OpenObject open = new OpenObject(objName,readOnly,true);
-		connection.sendRequestAndWait(open);
-
-		if (open.getMessageBox() != null) {
-			System.err.println(" -- "+open.getMessageBox().toString().replace("\n", ""));
-			return null;
+		OpenObject req = new OpenObject(objName,readOnly,true);
+		
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			return req.getUC4Object();
 		}
-		return open.getUC4Object();
+		return null;
 	}
 	
 	// Save an Automic Object (of any kind)
-	public void saveObject(UC4Object obj) throws IOException {
-		//Say(" \t ++ Saving object: "+obj.getName()+"(Type: "+obj.getType()+")");
-		SaveObject save = new SaveObject(obj);
-		connection.sendRequestAndWait(save);
-		if (save.getMessageBox() != null) {
-			System.out.println("\t -- "+save.getMessageBox().getText().toString().replace("\n", ""));
+	public boolean saveObject(UC4Object obj) throws IOException {
+		
+		SaveObject req = new SaveObject(obj);
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Object: "+obj.getName()+" Successfully saved"));
+			return true;
 		}
-		Say(" \t ++ Object: "+obj.getName()+" Successfully saved");
+		return false;
 	}
 
 	// Resets the "open" flag in DB, forcing an already open object to be closed and available
-	public void reclaimObject(String ObjectName) throws TimeoutException, IOException{
+	public boolean reclaimObject(String ObjectName) throws TimeoutException, IOException{
 		if(ObjectName.contains("/")){
 			UC4UserName objName = new UC4UserName(ObjectName);
 			ResetOpenFlag req = new ResetOpenFlag(objName);
-			connection.sendRequestAndWait(req);	
-			if (req.getMessageBox() != null) {
-				System.err.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
-			}else{
-				//Say(" \t ++ Object: "+objName+" Successfully reclaimed");
+			sendGenericXMLRequestAndWait(req);
+			if (req.getMessageBox() == null) {
+				return true;
 			}
+			return false;
 		}else{
 			UC4ObjectName objName = new UC4ObjectName(ObjectName);
 			ResetOpenFlag req = new ResetOpenFlag(objName);
-			connection.sendRequestAndWait(req);	
-			if (req.getMessageBox() != null) {
-				System.err.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
-			}else{
-				//Say(" \t ++ Object: "+objName+" Successfully reclaimed");
+			sendGenericXMLRequestAndWait(req);
+			if (req.getMessageBox() == null) {
+				return true;
 			}
 		}
-		
+		return false;
 	}
 	
 	// close an Automic Object (of any kind)
-	public void closeObject(UC4Object obj) throws IOException {
-		//Say(" \t ++ Closing object: "+obj.getName()+"(Type: "+obj.getType()+")");
-		CloseObject close = new CloseObject(obj);
-		connection.sendRequestAndWait(close);	
-		if (close.getMessageBox() != null) {
-			System.err.println(" -- "+close.getMessageBox().getText().toString().replace("\n", ""));
-		}else{
-			//Say(" \t ++ Object: "+obj.getName()+" Successfully closed");
+	public boolean closeObject(UC4Object obj) throws IOException {
+
+		CloseObject req = new CloseObject(obj);
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			//Say(Utils.getSuccessString("Object: "+obj.getName()+" Successfully closed"));
+			return true;
 		}
+		return false;
 	}	
 	
 	// close an Automic Object (of any kind)
-	public void saveAndCloseObject(UC4Object obj) throws IOException {
-			SaveObject save = new SaveObject(obj);
-			connection.sendRequestAndWait(save);
-			if (save.getMessageBox() != null) {
-				System.out.println(" -- "+save.getMessageBox().getText().toString().replace("\n", ""));
-			}else{
-				CloseObject close = new CloseObject(obj);
-				connection.sendRequestAndWait(close);	
-				if (close.getMessageBox() != null) {
-					System.err.println("\t -- "+close.getMessageBox().getText().toString().replace("\n", ""));
-				}else{
-					Say(" \t ++ Object: "+obj.getName()+" Successfully saved & closed");
+	public boolean saveAndCloseObject(UC4Object obj) throws IOException {
+			SaveObject req = new SaveObject(obj);
+			sendGenericXMLRequestAndWait(req);
+			if (req.getMessageBox() == null) {
+				CloseObject req1 = new CloseObject(obj);
+				sendGenericXMLRequestAndWait(req1);
+				if(req1.getMessageBox() == null){
+					Say(Utils.getSuccessString("Object: "+obj.getName()+" Successfully saved & closed"));
+					return true;
 				}
 			}
+			return false;
 		}	
 
 	// Create an empty Automic Object (of any kind)
 	public void createObject(String name, String templateName, IFolder fold) throws IOException{
-		Template template = com.automic.utils.Utils.convertStringToTemplate(templateName);
+		Template template = Template.getTemplateFor(templateName.toUpperCase());
 		if ( template == null){
 			System.out.println(" -- Error! Template Name " + templateName +" Does Not Seem To Match Any Existing Template..");
 		}else{
@@ -306,89 +292,61 @@ public class Common extends ObjectTemplate{
 	}
 	
 	// Create an empty Automic Object (of any kind)
-	public void createObject(String name, Template template, IFolder fold) throws IOException {
+	public boolean createObject(String name, Template template, IFolder fold) throws IOException {
 		//Say(" \t ++ Creating object: "+name+" of Type: "+template.getType());
 		UC4ObjectName objName = null;
 		if (name.indexOf('/') != -1) objName = new UC4UserName(name);
 		else if (template.isTimezone()) objName = new UC4TimezoneName(name);
 		else objName = new UC4ObjectName(name);		
 
-		CreateObject create = new CreateObject(objName,template,fold);
-		connection.sendRequestAndWait(create);
-		if (create.getMessageBox() != null) {
-			System.out.println(create.getMessageBox().getText().toString().replace("\n", ""));
-		}else{
-			Say(" \t ++ Object: "+name+" Successfully created (Type: "+template.getType()+")");
+		CreateObject req = new CreateObject(objName,template,fold);
+		sendGenericXMLRequestAndWait(req);
+		if(req.getMessageBox() == null){
+			Say(Utils.getSuccessString("Object: "+name+" Successfully created (Type: "+template.getType()+")"));
+			return true;
 		}
+		return false;
 	}
 
 	// Delete an Automic Object (of any kind)
-	public void deleteObject(String name, boolean ignoreError) throws IOException {
-		//Say(" \t ++ Deleting object: "+name);
+	public boolean deleteObject(String name, boolean ignoreError) throws IOException {
 
 		UC4ObjectName objName = null;
 		if (name.indexOf('/') != -1) objName = new UC4UserName(name);
 		else objName = new UC4ObjectName(name);
 
-		DeleteObject delete = new DeleteObject(objName);
-		connection.sendRequestAndWait(delete);	
-		if (delete.getMessageBox() != null) {
-			
-			if (delete.getMessageBox().getNumber() == 4006507) {  //active
-				TaskFilter taskFilter = new TaskFilter();
-				taskFilter.setObjectName(name);
-				
-				ActivityList list = new ActivityList(taskFilter);
-				connection.sendRequestAndWait(list);
-				//for (Task t : list) removeTask(t);
-				//connection.sendRequestAndWait(delete);
-				if ( delete.getMessageBox() == null)
-				{	Say(" \t ++ Object: "+name+" Successfully deleted. ");
-					return;
-				}
-			}
-			
-			if (ignoreError) {
-				System.out.println(delete.getMessageBox().getText().toString().replace("\n", ""));
-				return;
-			}
-			System.out.println((delete.getMessageBox().getText().toString().replace("\n", "")));
-		}else{		
-			Say(" \t ++ Object: "+name+" Successfully deleted. ");
+		DeleteObject req = new DeleteObject(objName);
+		
+		sendGenericXMLRequestAndWait(req);
+		if(req.getMessageBox() == null){
+			Say(Utils.getSuccessString(" \t ++ Object: "+name+" Successfully deleted. "));
+			return true;
 		}
+		if (req.getMessageBox().getNumber() == 4006507) {  //cannot delete because task is active
+			// the message from the Engine should be enough. This is left as a reference.
+			return false;
+		}
+		return false;
 	}
 	
 	// Delete an Automic Object (of any kind)
-	public void deleteObject(String name, IFolder fold, boolean ignoreError) throws IOException {
+	public boolean deleteObject(String name, IFolder fold, boolean ignoreError) throws IOException {
 		UC4ObjectName objName = null;
 		if (name.indexOf('/') != -1) objName = new UC4UserName(name);
 		else objName = new UC4ObjectName(name);
 
-		DeleteObject delete = new DeleteObject(objName, fold);
-		connection.sendRequestAndWait(delete);	
-		if (delete.getMessageBox() != null) {
-			
-			if (delete.getMessageBox().getNumber() == 4006507) {  //active
-				TaskFilter taskFilter = new TaskFilter();
-				taskFilter.setObjectName(name);
-				ActivityList list = new ActivityList(taskFilter);
-				connection.sendRequestAndWait(list);
-				//for (Task t : list) removeTask(t);
-				//connection.sendRequestAndWait(delete);
-				if ( delete.getMessageBox() == null )
-				{	Say(" \t ++ Object: "+name+" Successfully deleted. ");
-					return;
-				}
-			}
-			
-			if (ignoreError) {
-				System.out.println(delete.getMessageBox().getText().toString().replace("\n", ""));
-				return;
-			}
-			System.out.println((delete.getMessageBox().getText().toString().replace("\n", "")));
-		}else{		
-			Say(" \t ++ Object: "+name+" Successfully deleted. ");
+		DeleteObject req = new DeleteObject(objName,fold);
+		
+		sendGenericXMLRequestAndWait(req);
+		if(req.getMessageBox() == null){
+			Say(Utils.getSuccessString(" \t ++ Object: "+name+" Successfully deleted. "));
+			return true;
 		}
+		if (req.getMessageBox().getNumber() == 4006507) {  //cannot delete because task is active
+			// the message from the Engine should be enough. This is left as a reference.
+			return false;
+		}
+		return false;
 	}
 	
 	public ArrayList<UC4Object> getAllObjects(String objectType) throws IOException{
@@ -416,6 +374,7 @@ public class Common extends ObjectTemplate{
 		}
 		return ObjList;
 	}
+	
 	public ArrayList<FolderListItem> listAllObjects(String objectType) throws IOException{
 		return listAllObjectsWithNameFilter(objectType,".*");
 	}

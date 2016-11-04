@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.automic.utils.Utils;
 import com.uc4.api.Task;
 import com.uc4.api.TaskFilter;
 import com.uc4.communication.Connection;
@@ -49,71 +50,79 @@ public class ActivityWindow extends ObjectTemplate{
 		
 	public boolean deactivateTask(int RunID, boolean force) throws IOException {		
 		DeactivateTask req = new DeactivateTask(RunID, force); // force
-		connection.sendRequestAndWait(req);		
-		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
-			return false;
+		sendGenericXMLRequestAndWait(req);
+		
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Task "+ RunID +" Deactivated."));
+			return true;
 		}
-		return true;
+		return false;
 	}
+	
 	public boolean quitTask(int RunID) throws IOException {		
-		QuitTask req = new QuitTask(RunID); // force
-		connection.sendRequestAndWait(req);		
-		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
-			return false;
+		QuitTask req = new QuitTask(RunID);
+		sendGenericXMLRequestAndWait(req);
+		
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Task "+ RunID +" Quitted."));
+			return true;
 		}
-		return true;
+		return false;
 	}
 	
 	
 	public boolean restartTask(int RunID) throws IOException {		
 		RestartTask req = new RestartTask(RunID); // force
-		connection.sendRequestAndWait(req);		
-		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
-			return false;
+		sendGenericXMLRequestAndWait(req);
+		
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Task "+ RunID +" Restarted."));
+			return true;
 		}
-		return true;
+		return false;
 	}
 	
 	public boolean cancelTask(int RunID,boolean Recursive) throws IOException {		
-		CancelTask req = new CancelTask(RunID, Recursive); // force
-		connection.sendRequestAndWait(req);		
-		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
-			return false;
+		CancelTask req = new CancelTask(RunID, Recursive);
+		sendGenericXMLRequestAndWait(req);
+		
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Task "+ RunID +" Cancelled."));
+			return true;
 		}
-		return true;
+		return false;
 	}
 	public boolean addComment(int RunID,String comment) throws IOException {		
-		AddComment req = new AddComment(RunID, comment); // force
-		connection.sendRequestAndWait(req);		
-		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
-			return false;
+		AddComment req = new AddComment(RunID, comment);
+		sendGenericXMLRequestAndWait(req);
+		
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Task Comment Added on Runid: "+ RunID));
+			return true;
 		}
-		return true;
+		return false;
 	}
 	
 	public boolean stopTask(int RunID,boolean force) throws IOException {		
-		SuspendTask req = new SuspendTask(RunID, force); // force
-		connection.sendRequestAndWait(req);		
-		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
-			return false;
+		SuspendTask req = new SuspendTask(RunID, force);
+		sendGenericXMLRequestAndWait(req);
+		
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Task "+ RunID +" Stopped."));
+			return true;
 		}
-		return true;
+		return false;
 	}
 	
 	public boolean modifyStatus(int RunID, int oldStatus, int newStatus) throws IOException {		
 		ModifyTaskState req = new ModifyTaskState(RunID, oldStatus, newStatus); // force
-		connection.sendRequestAndWait(req);		
-		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
-			return false;
+		sendGenericXMLRequestAndWait(req);
+		
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Task "+ RunID +" Status Modified to: " + newStatus));
+			return true;
 		}
-		return true;
+		return false;
 		/* 
 		Status	Description
 		1300	Preparing
