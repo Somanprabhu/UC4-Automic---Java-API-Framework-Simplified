@@ -66,15 +66,18 @@ public class Variables extends ObjectTemplate{
 		ObjectBroker broker = getBrokerInstance();
 		return broker.common.getAllObjects(ObjectTypeEnum.VARA);
 	}
+	
 	public ArrayList<UC4Object> getAllVariablesWithFilter(String filter) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		return broker.common.getAllObjectsWithNameFilter(ObjectTypeEnum.VARA,filter);
 	}
+	
 	public Variable getVariableFromName(String VarName) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		Variable Var = (Variable) broker.common.openObject(VarName, false);
 		return Var;
 	}
+	
 	public boolean updateValueInVariable(Variable var, String key, String value, boolean keepABackup) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		if(keepABackup){
@@ -85,6 +88,7 @@ public class Variables extends ObjectTemplate{
 		var.add(key,value);
 		return broker.common.saveAndCloseObject(var);				
 	}
+	
 	public void ShowVariableContent(Variable var){
 		Iterator<String> it = var.keyIterator();
 		System.out.println(" ++ Content for Variable: "+var.getName());
@@ -93,6 +97,7 @@ public class Variables extends ObjectTemplate{
 			System.out.println("  => " +key+" : "+var.get(key));
 		}
 	}
+	
 	public boolean createBackendVariable(String Name, IFolder folder, String HostAgent, String Login, String Result, 
 			ArrayList<BackendCommand> windowsCommands,  ArrayList<BackendCommand> unixCommands) throws IOException {
 		
@@ -101,7 +106,7 @@ public class Variables extends ObjectTemplate{
 		Variable vara = (Variable) broker.common.openObject(Name,true); 
 		BackendVariable backend = vara.backend();	
 		
-		Say(" %% Setting backend info ... ");
+		//Say(" %% Setting backend info ... ");
 		
 		backend.setHost(new UC4HostName(HostAgent));
 		backend.setLogin(new UC4ObjectName(Login));
@@ -119,11 +124,12 @@ public class Variables extends ObjectTemplate{
 			backend.addUnixCommand(cmd);
 		}
 
-		System.out.println(" ++ Backend Variable Created");
+		//System.out.println(" ++ Backend Variable Created");
 		
 		return broker.common.saveAndCloseObject(vara);				
 		
 	}
+	
 	public boolean addWinCommandToBackendVariable(String Variablename, BackendCommand WinCmd) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		Variable vara = (Variable) broker.common.openObject(Variablename, true);
@@ -131,6 +137,7 @@ public class Variables extends ObjectTemplate{
 		backend.addWindowsCommand(WinCmd);
 		return broker.common.saveAndCloseObject(vara);				
 	}
+	
 	public boolean addUnixCommandToBackendVariable(String Variablename, BackendCommand WinCmd) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		Variable vara = (Variable) broker.common.openObject(Variablename, true);
