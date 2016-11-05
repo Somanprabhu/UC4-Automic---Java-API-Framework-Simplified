@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.automic.utils.Utils;
 import com.uc4.api.Template;
 import com.uc4.api.UC4ObjectName;
 import com.uc4.api.UC4TimezoneName;
@@ -25,6 +26,7 @@ public class Folders extends ObjectTemplate{
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}
+	
 	public IFolder getFolderFromObject(UC4Object object){return (IFolder) object;}
 	
 	public IFolder getRootFolder() throws IOException{
@@ -43,13 +45,12 @@ public class Folders extends ObjectTemplate{
 			IFolder myFolder, boolean onlyExtractFolderObjects) {
 		if(onlyExtractFolderObjects){
 			if( myFolder.getType().equals("FOLD")){folderList.add(myFolder);}
-			if( myFolder.getType().equals("FOLD") && myFolder.subfolder() != null){
-				
+			if( myFolder.getType().equals("FOLD") && myFolder.subfolder() != null){	
 				Iterator<IFolder> it0 = myFolder.subfolder();
 				while (it0.hasNext()){
 					addFoldersToList(folderList,it0.next(),onlyExtractFolderObjects);
 				}
-				}
+			}
 		}else{
 			folderList.add(myFolder);
 			if(  myFolder.subfolder() != null){
@@ -57,7 +58,7 @@ public class Folders extends ObjectTemplate{
 				while (it0.hasNext()){
 					addFoldersToList(folderList,it0.next(),onlyExtractFolderObjects);
 				}
-				}
+			}
 		}
 
 	}
@@ -131,16 +132,17 @@ public class Folders extends ObjectTemplate{
 		 }
 		 if(foundFolders.size() == 1){return foundFolders.get(0);}
 		 else{
-			 System.out.println(" -- Error: "+foundFolders.size()+" Folder(s) Found corresponding to name: " + FolderName);
-			 if(foundFolders.size() == 0){
-				 System.out.println("  => Are you sure the Folder specified exists in the Target Client?");
+			 System.out.println(Utils.getWarningString(foundFolders.size()+" Folder(s) Found corresponding to name: " + FolderName));
+			 if(foundFolders.size() == 0){ 
+				 // No folder found
+				 System.out.println(Utils.getWarningString("=> Are you sure the Folder specified exists in the Target Client?"));
 			 }else{
+				 // Too many folders found
 				 for(int i=0;i<foundFolders.size();i++){
 					 System.out.println("  ----> "+foundFolders.get(i).fullPath());
 				 }
-				 System.out.println("  => Please select only one folder. HINT: Try passing the full path name. Ex: \"0002/CUSTOM.DEMOS/ARCHIVE/ABC/JOBS\" or \"SWINVM1 - 0002/CUSTOM.DEMOS/ARCHIVE/ABC/JOBS\"");
+				 System.out.println(Utils.getWarningString("  => Please select only one folder. HINT: Try passing the full path name. Ex: \"0002/CUSTOM.DEMOS/ARCHIVE/ABC/JOBS\" or \"SWINVM1 - 0002/CUSTOM.DEMOS/ARCHIVE/ABC/JOBS\""));
 			 }
-			 System.exit(1);
 		 }
 		 return null;
 	}
@@ -179,25 +181,24 @@ public class Folders extends ObjectTemplate{
 	}
 	
 	// Delete a Folder
-	public void deleteFolder(IFolder fold) throws IOException {
+	public boolean deleteFolder(IFolder fold) throws IOException {
 		//System.out.print("Deleting folder "+ fold.getName() + " ... ");
-		DeleteObject delete = new DeleteObject(fold);
-		connection.sendRequestAndWait(delete);	
-		if (delete.getMessageBox() != null) {
-			System.out.println(" -- "+delete.getMessageBox().getText().toString().replace("\n", ""));
-			//System.out.println("Failed to delete object:"+fold.fullPath());
-		}else{
-			Say("\t ++ Folder: "+fold.fullPath()+" Successfully Deleted.");
-		}
-	}
-	// Create a Folder
-	public void createFolder(String FolderName, IFolder fold) throws IOException {
+		DeleteObject req = new DeleteObject(fold);
+		sendGenericXMLRequestAndWait(req);
 		
-		getBrokerInstance().common.createObject(FolderName, "FOLD", fold);
-
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Folder: "+fold.fullPath()+" Successfully Deleted."));
+			return true;
+		}
+		return false;
 	}
 	
-	// Create an empty Automic Object (of any kind)
+	// Create a Folder
+	public boolean createFolder(String FolderName, IFolder fold) throws IOException {
+		return getBrokerInstance().common.createObject(FolderName, "FOLD", fold);
+	}
+	
+	@Deprecated
 	public boolean createFolderSilently(String name, IFolder fold) throws IOException {
 		UC4ObjectName objName = null;
 		if (name.indexOf('/') != -1) objName = new UC4UserName(name);

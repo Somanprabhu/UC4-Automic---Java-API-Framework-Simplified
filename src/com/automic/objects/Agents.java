@@ -68,25 +68,27 @@ public class Agents extends ObjectTemplate{
 		return false;
 	}
 	
-	public void disconnectAgent(String AgentName) throws IOException{
+	public boolean disconnectAgent(String AgentName) throws IOException{
 		DisconnectHost req = new DisconnectHost(getAgentListItemByName(AgentName));
-		connection.sendRequestAndWait(req);
-		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
-		}else{
-			Say(" ++ Agent: "+AgentName+" Successfully Shutdown.");
+		sendGenericXMLRequestAndWait(req);
+		
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Agent: "+AgentName+" Successfully Disconnected."));
+			return true;
 		}
+		return false;
 	}
 	
-	public void TerminateAgent(String AgentName) throws IOException{
+	public boolean TerminateAgent(String AgentName) throws IOException{
 		UC4HostName agent = new UC4HostName(AgentName);
 		TerminateHost req = new TerminateHost(agent);
-		connection.sendRequestAndWait(req);
-		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
-		}else{
-			Say(" ++ Agent: "+AgentName+" Successfully Shutdown.");
+		sendGenericXMLRequestAndWait(req);
+		
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Agent: "+AgentName+" Successfully Shutdown."));
+			return true;
 		}
+		return false;
 	}
 	
 	public void createAgentClientAssignment(String AgentClientAssignmentName, IFolder FolderLocation) throws IOException{
@@ -115,13 +117,12 @@ public class Agents extends ObjectTemplate{
 	}
 	
 	public AgentList getSimpleAgentList() throws TimeoutException, IOException{
-		AgentList list = new AgentList();
-		connection.sendRequestAndWait(list);
-		if (list.getMessageBox() != null) {
-			System.out.println(" -- "+list.getMessageBox().getText().toString().replace("\n", ""));
-			return null;
+		AgentList req = new AgentList();
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			return req;
 		}
-		return list;
+		return req;
 	}
 	
 	public ArrayList<AgentListItem> getAgentListWithNameAndTypeFilter(String NameFilter, String TypeFilter) throws IOException {

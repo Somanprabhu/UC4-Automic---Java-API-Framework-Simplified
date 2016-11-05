@@ -14,14 +14,18 @@ public class Promptsets extends ObjectTemplate{
 		super(conn, verbose);
 		
 	}
+	
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}
+	
 	public PromptSet getPromptSetFromObject(UC4Object object){return (PromptSet) object;}
+	
 	public ArrayList<UC4Object> getAllPromptsets() throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		return broker.common.getAllObjects(ObjectTypeEnum.PRPT);
 	}
+	
 	public ArrayList<UC4Object> getAllPromptsetsWithFilter(String filter) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		return broker.common.getAllObjectsWithNameFilter(ObjectTypeEnum.PRPT,filter);

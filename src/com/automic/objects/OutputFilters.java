@@ -19,9 +19,9 @@ public class OutputFilters extends ObjectTemplate {
 	}
 	public OutputFilter getOutputFilterFromObject(UC4Object object){return (OutputFilter) object;}
 	
-	public void createOutputFilter(String OFilternName, IFolder FolderLocation) throws IOException{
+	public boolean createOutputFilter(String OFilternName, IFolder FolderLocation) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
-		broker.common.createObject(OFilternName, Template.FILTER_OUTPUT, FolderLocation);
+		return broker.common.createObject(OFilternName, Template.FILTER_OUTPUT, FolderLocation);
 	}
 
 }

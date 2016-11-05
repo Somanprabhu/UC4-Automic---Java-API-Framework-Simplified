@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import org.xml.sax.SAXException;
 
+import com.automic.utils.Utils;
 import com.uc4.api.objects.IFolder;
 import com.uc4.communication.Connection;
 import com.uc4.communication.requests.ImportObject;
@@ -21,15 +22,16 @@ private ObjectBroker broker;
 		return new ObjectBroker(this.connection,true);
 	}
 	
-	public void importObjects(String FilePathForImport, IFolder folder, boolean overwriteObject, boolean overwriteFolderLinks) throws SAXException, IOException{
+	public boolean importObjects(String FilePathForImport, IFolder folder, boolean overwriteObject, boolean overwriteFolderLinks) throws SAXException, IOException{
 		File file = new File(FilePathForImport);
-		ImportObject imp = new ImportObject(file, folder, overwriteObject, overwriteFolderLinks);
-		connection.sendRequestAndWait(imp);
-		if (imp.getMessageBox() != null) {
-			System.out.println(" -- "+imp.getMessageBox().getText().toString().replace("\n", ""));
-		}else{
-			Say(" \t ++ Object(s) Successfully Imported.");
+		ImportObject req = new ImportObject(file, folder, overwriteObject, overwriteFolderLinks);
+		sendGenericXMLRequestAndWait(req);
+		
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Object(s) Successfully Imported."));
+			return true;
 		}
+		return false;
 	}
 }
 

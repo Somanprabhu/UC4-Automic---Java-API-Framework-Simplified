@@ -20,8 +20,8 @@ public class Logins extends ObjectTemplate{
 		return new ObjectBroker(this.connection,true);
 	}
 	public Login getLoginFromObject(UC4Object object){return (Login) object;}
+	
 	public void getLoginContent(Login login) throws IOException{
-		//System.out.println("Content of Login: "+myLogin.getName());
 		Iterator<LoginDefinition> it = login.iterator();
 		while(it.hasNext()){
 			LoginDefinition def = it.next();

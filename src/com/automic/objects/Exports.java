@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.automic.utils.Utils;
 import com.uc4.api.FolderListItem;
 import com.uc4.api.UC4ObjectName;
 import com.uc4.api.objects.IFolder;
@@ -29,84 +30,86 @@ private ObjectBroker broker;
 	
 	
 	// only works in v11+
-	public void  exportFolder(IFolder folder, String FilePathForExport) throws IOException{
+	public boolean  exportFolder(IFolder folder, String FilePathForExport) throws IOException{
 		File file = new File(FilePathForExport);
-		ExportObject exp = new ExportObject(folder,file,true);
-		connection.sendRequestAndWait(exp);
-		if (exp.getMessageBox() != null) {
-			System.out.println(" -- "+exp.getMessageBox().getText().toString().replace("\n", ""));
-		}else{
-			Say(" \t ++ Folder Successfully Exported.");
+		ExportObject req = new ExportObject(folder,file,true);
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Folder Successfully Exported."));
+			return true;
 		}
-	}
-	// only works in v11+
-	public void  exportFolders(IFolder[] folder, String FilePathForExport) throws IOException{
-		File file = new File(FilePathForExport);
-		ExportObject exp = new ExportObject(folder,file,true);
-		connection.sendRequestAndWait(exp);
-		if (exp.getMessageBox() != null) {
-			System.out.println(" -- "+exp.getMessageBox().getText().toString().replace("\n", ""));
-		}else{
-			Say(" \t ++ Folders Successfully Exported.");
-		}
+		return false;
 	}
 	
-	public void  exportObject(String ObjectName, String FilePathForExport) throws IOException{
+	// only works in v11+
+	public boolean  exportFolders(IFolder[] folder, String FilePathForExport) throws IOException{
+		File file = new File(FilePathForExport);
+		ExportObject req = new ExportObject(folder,file,true);
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Folders Successfully Exported."));
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean  exportObject(String ObjectName, String FilePathForExport) throws IOException{
 		UC4ObjectName objName = new UC4ObjectName(ObjectName);
 		File file = new File(FilePathForExport);
-		ExportObject exp = new ExportObject(objName,file);
-		connection.sendRequestAndWait(exp);
-		if (exp.getMessageBox() != null) {
-			System.out.println(" -- "+exp.getMessageBox().getText().toString().replace("\n", ""));
-		}else{
-			Say(" \t ++ Object(s) Successfully Exported.");
+		ExportObject req = new ExportObject(objName,file);
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Object(s) Successfully Exported."));
+			return true;
 		}
+		return false;
 	}
 	
 	//v11+ only
 	public ArrayList<UC4ObjectName> getReferencedObjects(String ObjectName) throws TimeoutException, IOException{
 		UC4ObjectName objName = new UC4ObjectName(ObjectName);
-	ArrayList<UC4ObjectName> ObjArray = new ArrayList<UC4ObjectName>();
+		ArrayList<UC4ObjectName> ObjArray = new ArrayList<UC4ObjectName>();
 	
-		FindReferencedObjects exp = new FindReferencedObjects(objName);
-		connection.sendRequestAndWait(exp);
-		if (exp.getMessageBox() != null) {
-			System.out.println(" -- "+exp.getMessageBox().getText().toString().replace("\n", ""));
-		}else{
-			Iterator<UC4ObjectName> it = exp.iterator();
+		FindReferencedObjects req = new FindReferencedObjects(objName);
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Object(s) Successfully Exported."));
+			Iterator<UC4ObjectName> it = req.iterator();
 			while(it.hasNext()){
 				ObjArray.add(it.next());
 			}
 			return ObjArray;
 		}
-		return null;
+		return ObjArray;
 	}
-	public void  exportObjectWithReferences(String ObjectName, String FilePathForExport) throws IOException{
+	
+	public boolean exportObjectWithReferences(String ObjectName, String FilePathForExport) throws IOException{
 		UC4ObjectName objName = new UC4ObjectName(ObjectName);
 		File file = new File(FilePathForExport);
-		ExportWithReferences exp = new ExportWithReferences(objName,file);
-		connection.sendRequestAndWait(exp);
-		if (exp.getMessageBox() != null) {
-			System.out.println(" -- "+exp.getMessageBox().getText().toString().replace("\n", ""));
-		}else{
-			Say(" \t ++ Object(s) Successfully Exported.");
+		ExportWithReferences req = new ExportWithReferences(objName,file);
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Object(s) Successfully Exported."));
+			return true;
 		}
+		return false;
 	}
 	
 	public void  exportObject(FolderListItem item, String FilePathForExport) throws IOException{
 		exportObject(item.getName(), FilePathForExport);
 	}
 
-	public void  exportObjects(UC4ObjectName[] objectNames, String FilePathForExport) throws IOException{
+	public boolean exportObjects(UC4ObjectName[] objectNames, String FilePathForExport) throws IOException{
 		File file = new File(FilePathForExport);
-		ExportObject exp = new ExportObject(objectNames,file);
-		connection.sendRequestAndWait(exp);
-		if (exp.getMessageBox() != null) {
-			System.out.println(" -- "+exp.getMessageBox().getText().toString().replace("\n", ""));
-		}else{
-			Say(" \t ++ Objects "+" Successfully Exported to File: "+FilePathForExport.toString());
+		ExportObject req = new ExportObject(objectNames,file);
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Objects "+" Successfully Exported to File: "+FilePathForExport.toString()));
+			return true;
 		}
+		return false;
 	}
+	
 	public void exportFolderContent(FolderList ItemList, String FilePathForExport)throws IOException{
 		ArrayList<UC4ObjectName> ObjList = new ArrayList<UC4ObjectName>();
 		Iterator<FolderListItem> it = ItemList.iterator();

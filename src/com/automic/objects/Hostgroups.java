@@ -19,20 +19,24 @@ public class Hostgroups extends ObjectTemplate{
 		super(conn, verbose);
 		
 	}
+	
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}
+	
 	public HostGroup getHostgroupFromObject(UC4Object object){return (HostGroup) object;}
+	
 	public ArrayList<UC4Object> getAllHostgroups() throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		return broker.common.getAllObjects(ObjectTypeEnum.HOSTG);
 	}
+	
 	public ArrayList<UC4Object> getAllHostgroupsWithFilter(String filter) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		return broker.common.getAllObjectsWithNameFilter(ObjectTypeEnum.HOSTG,filter);
 	}
 	
-	public void setAllMode(String hostgroup, boolean isParallel, boolean isForce, int ParallelLimit) throws IOException{
+	public boolean setAllMode(String hostgroup, boolean isParallel, boolean isForce, int ParallelLimit) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		UC4Object obj = broker.common.openObject(hostgroup, false);
 		HostGroup hg = (HostGroup) obj;
@@ -40,86 +44,86 @@ public class Hostgroups extends ObjectTemplate{
 		hg.setEnforced(isForce);
 		//hg.setHostGroupType("WINDOWS");
 		hg.setMaxParallelJobs(ParallelLimit);
-		broker.common.saveAndCloseObject(hg);
+		return broker.common.saveAndCloseObject(hg);
 	}
 	
-	public void setLoadDependentMode(String hostgroup) throws IOException{
+	public boolean setLoadDependentMode(String hostgroup) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		UC4Object obj = broker.common.openObject(hostgroup, false);
 		HostGroup hg = (HostGroup) obj;
 		hg.setExecuteLoadDependent();
-		broker.common.saveAndCloseObject(hg);
+		return broker.common.saveAndCloseObject(hg);
 	}
 	
-	public void setAnyMode(String hostgroup) throws IOException{
+	public boolean setAnyMode(String hostgroup) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		UC4Object obj = broker.common.openObject(hostgroup, false);
 		HostGroup hg = (HostGroup) obj;
 		hg.setExecuteOnAnyHost();;
-		broker.common.saveAndCloseObject(hg);
+		return broker.common.saveAndCloseObject(hg);
 	}
 	
-	public void setFirstMode(String hostgroup) throws IOException{
+	public boolean setFirstMode(String hostgroup) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		UC4Object obj = broker.common.openObject(hostgroup, false);
 		HostGroup hg = (HostGroup) obj;
 		hg.setExecuteOnFirstHost();;
-		broker.common.saveAndCloseObject(hg);
+		return broker.common.saveAndCloseObject(hg);
 	}
 	
-	public void setNextMode(String hostgroup) throws IOException{
+	public boolean setNextMode(String hostgroup) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		UC4Object obj = broker.common.openObject(hostgroup, false);
 		HostGroup hg = (HostGroup) obj;
 		hg.setExecuteOnNextHost();
-		broker.common.saveAndCloseObject(hg);
+		return broker.common.saveAndCloseObject(hg);
 	}
 	
-	public void setType(String hostgroup, String HostType) throws IOException{
+	public boolean setType(String hostgroup, String HostType) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		UC4Object obj = broker.common.openObject(hostgroup, false);
 		HostGroup hg = (HostGroup) obj;
 		hg.setHostGroupType(HostType);
-		broker.common.saveAndCloseObject(hg);
+		return broker.common.saveAndCloseObject(hg);
 	}
 	
-	public void setAllMode(HostGroup hostgroup, boolean isParallel, boolean isForce, int ParallelLimit) throws IOException{
+	public boolean setAllMode(HostGroup hostgroup, boolean isParallel, boolean isForce, int ParallelLimit) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		hostgroup.setExecuteOnAllHosts();
 		hostgroup.setEnforced(isForce);
 		//hg.setHostGroupType("WINDOWS");
 		hostgroup.setMaxParallelJobs(ParallelLimit);
-		broker.common.saveAndCloseObject(hostgroup);
+		return broker.common.saveAndCloseObject(hostgroup);
 	}
 	
-	public void setLoadDependentMode(HostGroup hostgroup) throws IOException{
+	public boolean setLoadDependentMode(HostGroup hostgroup) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		hostgroup.setExecuteLoadDependent();
-		broker.common.saveAndCloseObject(hostgroup);
+		return broker.common.saveAndCloseObject(hostgroup);
 	}
 	
-	public void setAnyMode(HostGroup hostgroup) throws IOException{
+	public boolean setAnyMode(HostGroup hostgroup) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		hostgroup.setExecuteOnAnyHost();
-		broker.common.saveAndCloseObject(hostgroup);
+		return broker.common.saveAndCloseObject(hostgroup);
 	}
 	
-	public void setFirstMode(HostGroup hostgroup) throws IOException{
+	public boolean setFirstMode(HostGroup hostgroup) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		hostgroup.setExecuteOnFirstHost();
-		broker.common.saveAndCloseObject(hostgroup);
+		return broker.common.saveAndCloseObject(hostgroup);
 	}
 	
-	public void setNextMode(HostGroup hostgroup) throws IOException{
+	public boolean setNextMode(HostGroup hostgroup) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		hostgroup.setExecuteOnNextHost();
-		broker.common.saveAndCloseObject(hostgroup);
+		return broker.common.saveAndCloseObject(hostgroup);
 	}
 	
-	public void setType(HostGroup hostgroup, String HostType) throws IOException{
+	public boolean setType(HostGroup hostgroup, String HostType) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		hostgroup.setHostGroupType(HostType);
-		broker.common.saveAndCloseObject(hostgroup);
+		return broker.common.saveAndCloseObject(hostgroup);
 	}
 	
 	public AgentGroupSimulation simulateHostGroup(String hostgroup) throws IOException{
@@ -129,50 +133,51 @@ public class Hostgroups extends ObjectTemplate{
 		return obj;
 	}
 	
-	public void addHostToHostgroup(String hostgroup, String Hostname) throws IOException{
+	public boolean addHostToHostgroup(String hostgroup, String Hostname) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		UC4Object obj = broker.common.openObject(hostgroup, false);
 		HostGroup hg = (HostGroup) obj;
 		HostGroupItem newItem = new HostGroupItem(Hostname);
 		hg.addHost(newItem);
-		broker.common.saveAndCloseObject(hg);
+		return broker.common.saveAndCloseObject(hg);
 	}
-	public void clearHosts(HostGroup hostgroup) throws IOException{
+	 
+	public boolean clearHosts(HostGroup hostgroup) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		hostgroup.clear();
-		broker.common.saveAndCloseObject(hostgroup);
+		return broker.common.saveAndCloseObject(hostgroup);
 	}
 	
-	public void addHostItemToHostgroup(HostGroup hostgroup, HostGroupItem item) throws IOException{
+	public boolean addHostItemToHostgroup(HostGroup hostgroup, HostGroupItem item) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		hostgroup.addHost(item);
-		broker.common.saveAndCloseObject(hostgroup);
+		return broker.common.saveAndCloseObject(hostgroup);
 	}
 	
-	public void addHostsToHostgroup(String hostgroup, String HostnameFilter) throws IOException{
+	public boolean addHostsToHostgroup(String hostgroup, String HostnameFilter) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		UC4Object obj = broker.common.openObject(hostgroup, false);
 		HostGroup hg = (HostGroup) obj;
-		addHostsToHostgroup(hg,HostnameFilter);
+		return addHostsToHostgroup(hg,HostnameFilter);
 	}
 	
-	public void addHostsToHostgroup(HostGroup hostgroup, String HostnameFilter) throws IOException{
+	public boolean addHostsToHostgroup(HostGroup hostgroup, String HostnameFilter) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		ArrayList<AgentListItem> agentList = broker.agents.getAgentListWithNameFilter(HostnameFilter);
 		for(int i=0;i<agentList.size();i++){
 			HostGroupItem newItem = new HostGroupItem(agentList.get(i).getName().getName());
 			hostgroup.addHost(newItem);
 		}
-		broker.common.saveAndCloseObject(hostgroup);
+		return broker.common.saveAndCloseObject(hostgroup);
 	}
 	
-	public void addHostsToHostgroup(HostGroup hostgroup, ArrayList<AgentListItem> agentList) throws IOException{
+	public boolean addHostsToHostgroup(HostGroup hostgroup, ArrayList<AgentListItem> agentList) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		for(int i=0;i<agentList.size();i++){
 			HostGroupItem newItem = new HostGroupItem(agentList.get(i).getName().getName());
 			hostgroup.addHost(newItem);
 		}
-		broker.common.saveAndCloseObject(hostgroup);
+		return broker.common.saveAndCloseObject(hostgroup);
 	}
 	
 	// Method below might seem a bit complex.. however it is necessary because the Java API provides no easy way to remove a host 
@@ -183,7 +188,7 @@ public class Hostgroups extends ObjectTemplate{
 	// 3- clear the content of the hostgroup
 	// 4- iterate over the new list and add all hosts to the hostgroup
 	
-	public void removeHostFromHostgroup(String hostgroup, String Hostname) throws IOException{
+	public boolean removeHostFromHostgroup(String hostgroup, String Hostname) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		UC4Object obj = broker.common.openObject(hostgroup, false);
 		HostGroup hg = (HostGroup) obj;
@@ -201,17 +206,17 @@ public class Hostgroups extends ObjectTemplate{
 		for(int i=0;i<finalList.size();i++){
 			hg.addHost(finalList.get(i));
 		}
-		broker.common.saveAndCloseObject(hg);
+		return broker.common.saveAndCloseObject(hg);
 	}
 	
-	public void removeHostsFromHostgroup(String hostgroup, String HostnameFilter) throws IOException{
+	public boolean removeHostsFromHostgroup(String hostgroup, String HostnameFilter) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		UC4Object obj = broker.common.openObject(hostgroup, false);
 		HostGroup hg = (HostGroup) obj;
-		removeHostsFromHostgroup(hg,HostnameFilter);
+		return removeHostsFromHostgroup(hg,HostnameFilter);
 	}
 	
-	public void removeHostsFromHostgroup(HostGroup hostgroup, String HostnameFilter) throws IOException{
+	public boolean removeHostsFromHostgroup(HostGroup hostgroup, String HostnameFilter) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 
 		ArrayList<HostGroupItem> finalList = new ArrayList<HostGroupItem>();
@@ -228,8 +233,9 @@ public class Hostgroups extends ObjectTemplate{
 		for(int i=0;i<finalList.size();i++){
 			hostgroup.addHost(finalList.get(i));
 		}
-		broker.common.saveAndCloseObject(hostgroup);
+		return broker.common.saveAndCloseObject(hostgroup);
 	}
+	
 	public ArrayList<HostGroupItem> getListOfMatchingHosts(HostGroup hostgroup, String HostnameFilter) throws IOException{
 
 		ArrayList<HostGroupItem> MatchingList = new ArrayList<HostGroupItem>();

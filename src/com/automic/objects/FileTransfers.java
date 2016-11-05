@@ -22,16 +22,21 @@ public class FileTransfers extends ObjectTemplate{
 		return broker.common.getAllObjects(ObjectTypeEnum.JOBF);
 	}
 	
-	public void setJobTransferPriority(UC4Object object, int priority) throws IOException{
+	public boolean setJobTransferPriority(UC4Object object, int priority) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		FileTransfer ft = (FileTransfer) object;
 		ft.attributes().setPriority(priority);;
-		broker.common.saveObject(ft);
+		return broker.common.saveObject(ft);
 	}
+	
 	public FileTransfer getFTFromObject(UC4Object object){return (FileTransfer) object;}
+	
 	public String getSourceFileFromFT(FileTransfer ft){return ft.settings().getSourceFile();}
+	
 	public void setSourceFileFromFT(FileTransfer ft, String SourceFile){ft.settings().setSourceFile(SourceFile);}
+	
 	public String getDestinationFileFromFT(FileTransfer ft){return ft.settings().getDestinationFile();}
+	
 	public void setDestinationFileFromFT(FileTransfer ft, String DestinationFile){ft.settings().setDestinationFile(DestinationFile);}
 	
 }

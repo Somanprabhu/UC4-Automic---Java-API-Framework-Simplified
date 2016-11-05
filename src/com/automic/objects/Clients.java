@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.automic.utils.Utils;
 import com.uc4.api.SearchResultItem;
 import com.uc4.api.objects.Client;
 import com.uc4.api.systemoverview.ClientListItem;
@@ -19,7 +20,6 @@ public class Clients extends ObjectTemplate{
 
 		public Clients(Connection conn, boolean verbose) {
 			super(conn, verbose);
-			
 		}
 		
 		private ObjectBroker getBrokerInstance(){
@@ -53,55 +53,58 @@ public class Clients extends ObjectTemplate{
 			return SettingValue;
 		}
 		
-		public void suspendCurrentClient() throws TimeoutException, IOException{
+		public boolean suspendCurrentClient() throws TimeoutException, IOException{
 			SuspendClient req = new SuspendClient();
-			connection.sendRequestAndWait(req);
-			if (req.getMessageBox() != null) {
-				System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
-			}else{
-				Say(" ++ Client: "+connection.getSessionInfo().getClient()+" Successfully Stopped.");
+			sendGenericXMLRequestAndWait(req);
+			
+			if (req.getMessageBox() == null) {
+				Say(Utils.getSuccessString("Client: "+connection.getSessionInfo().getClient()+" Successfully Stopped."));
+				return true;
 			}
+			return false;			
 		}
 		
-		public void resumeCurrentClient() throws TimeoutException, IOException{
+		public boolean resumeCurrentClient() throws TimeoutException, IOException{
 			ResumeClient req = new ResumeClient();
-			connection.sendRequestAndWait(req);
-			if (req.getMessageBox() != null) {
-				System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
-			}else{
-				Say(" ++ Client: "+connection.getSessionInfo().getClient()+" Successfully Started.");
+			sendGenericXMLRequestAndWait(req);
+			
+			if (req.getMessageBox() == null) {
+				Say(Utils.getSuccessString("Client: "+connection.getSessionInfo().getClient()+" Successfully Started."));
+				return true;
 			}
+			return false;		
 		}
 		
-		public void suspendAClient(ClientListItem Client) throws TimeoutException, IOException{
+		public boolean suspendAClient(ClientListItem Client) throws TimeoutException, IOException{
 			SuspendClient req = new SuspendClient(Client);
-			connection.sendRequestAndWait(req);
-			if (req.getMessageBox() != null) {
-				System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
-			}else{
-				Say(" ++ Client: "+Client.getClient()+" Successfully Stopped.");
+			sendGenericXMLRequestAndWait(req);
+			
+			if (req.getMessageBox() == null) {
+				Say(Utils.getSuccessString("Client: "+Client.getClient()+" Successfully Stopped."));
+				return true;
 			}
+			return false;	
 		}
 		
-		public void resumeAClient(ClientListItem Client) throws TimeoutException, IOException{
+		public boolean resumeAClient(ClientListItem Client) throws TimeoutException, IOException{
 			ResumeClient req = new ResumeClient(Client);
-			connection.sendRequestAndWait(req);
-			if (req.getMessageBox() != null) {
-				System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
-			}else{
-				Say(" ++ Client: "+Client.getClient()+" Successfully Started.");
+			sendGenericXMLRequestAndWait(req);
+			
+			if (req.getMessageBox() == null) {
+				Say(Utils.getSuccessString("Client: "+Client.getClient()+" Successfully Started."));
+				return true;
 			}
+			return false;	
 		}
 	
 		public ClientList getSimpleClientList() throws TimeoutException, IOException{
 			ClientList req = new ClientList();
-			connection.sendRequestAndWait(req);
-			if (req.getMessageBox() != null) {
-				System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
-				return null;
-			}else{
+			sendGenericXMLRequestAndWait(req);
+			
+			if (req.getMessageBox() == null) {
 				return req;
 			}
+			return req;	
 		}
 		
 		public ArrayList<ClientListItem> getClientList() throws TimeoutException, IOException{
@@ -115,6 +118,7 @@ public class Clients extends ObjectTemplate{
 			}
 			return clients;
 		}
+		
 		public void displayClientList(ArrayList<ClientListItem> clients) throws TimeoutException, IOException{
 			System.out.println("\nNumber Of Clients Defined: "+clients.size());
 			//System.out.println("Client:[Client Name]:[Client Title]:[Client Active]:[# Of Objects In Client]:[# of Users In Client]");

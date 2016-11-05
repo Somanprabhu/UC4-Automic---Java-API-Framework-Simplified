@@ -20,23 +20,25 @@ public class Connections extends ObjectTemplate{
 	
 	// should contain stuff for all connection types: DatabaseConnection, RAConnection, SAPConnection
 		public DatabaseConnection getDBConnectionFromObject(UC4Object object){return (DatabaseConnection) object;}
+		
 		public RAConnection getRAConnectionFromObject(UC4Object object){return (RAConnection) object;}
+		
 		public SAPConnection getSAPConnectionFromObject(UC4Object object){return (SAPConnection) object;}
 		
 		public void createDBConnection(String DBConnectionName, IFolder FolderLocation) throws IOException{
 			ObjectBroker broker = getBrokerInstance();
 			broker.common.createObject(DBConnectionName, Template.CONN_DB, FolderLocation);
 		}
+		
 		public void createSAPConnection(String EventName, IFolder FolderLocation) throws IOException{
 			ObjectBroker broker = getBrokerInstance();
 			broker.common.createObject(EventName, Template.CONN_SAP, FolderLocation);
 		}
+		
 		// below method is probably wrong...
-		public void createRAConnectiont(String EventName, IFolder FolderLocation) throws IOException{
-			ObjectBroker broker = getBrokerInstance();
-			broker.common.createObject(EventName, Template.CONN_SQL, FolderLocation);
-		}
+//		public void createRAConnection(String EventName, IFolder FolderLocation) throws IOException{
+//			ObjectBroker broker = getBrokerInstance();
+//			broker.common.createObject(EventName, Template.CONN_SQL, FolderLocation);
+//		}
 	
-		
-		
 }

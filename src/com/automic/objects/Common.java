@@ -282,12 +282,13 @@ public class Common extends ObjectTemplate{
 		}	
 
 	// Create an empty Automic Object (of any kind)
-	public void createObject(String name, String templateName, IFolder fold) throws IOException{
+	public boolean createObject(String name, String templateName, IFolder fold) throws IOException{
 		Template template = Template.getTemplateFor(templateName.toUpperCase());
 		if ( template == null){
 			System.out.println(" -- Error! Template Name " + templateName +" Does Not Seem To Match Any Existing Template..");
+			return false;
 		}else{
-		createObject(name, template, fold);
+		return createObject(name, template, fold);
 		}
 	}
 	

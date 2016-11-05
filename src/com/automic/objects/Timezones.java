@@ -14,33 +14,40 @@ public class Timezones extends ObjectTemplate {
 	public Timezones(Connection conn, boolean verbose) {
 		super(conn, verbose);
 	}
+	
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}
+	
 	public TimeZone getTimezoneFromObject(UC4Object object){return (TimeZone) object;}
 	
-	public void createStdTimezoneEvent(String TZName, IFolder FolderLocation) throws IOException{
+	public boolean createStdTimezoneEvent(String TZName, IFolder FolderLocation) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
-		broker.common.createObject(TZName, Template.TZ, FolderLocation);
+		return broker.common.createObject(TZName, Template.TZ, FolderLocation);
 	}
-	public void createESTTimezone(String TZName, IFolder FolderLocation) throws IOException{
+	
+	public boolean createESTTimezone(String TZName, IFolder FolderLocation) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
-		broker.common.createObject(TZName, Template.TZ_EST, FolderLocation);
+		return broker.common.createObject(TZName, Template.TZ_EST, FolderLocation);
 	}
-	public void createCSTTimezone(String TZName, IFolder FolderLocation) throws IOException{
+	
+	public boolean createCSTTimezone(String TZName, IFolder FolderLocation) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
-		broker.common.createObject(TZName, Template.TZ_CST, FolderLocation);
+		return broker.common.createObject(TZName, Template.TZ_CST, FolderLocation);
 	}
-	public void createGMTTimezone(String TZName, IFolder FolderLocation) throws IOException{
+	
+	public boolean createGMTTimezone(String TZName, IFolder FolderLocation) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
-		broker.common.createObject(TZName, Template.TZ_GMT, FolderLocation);
+		return broker.common.createObject(TZName, Template.TZ_GMT, FolderLocation);
 	}
-	public void createPSTTimezone(String TZName, IFolder FolderLocation) throws IOException{
+	
+	public boolean createPSTTimezone(String TZName, IFolder FolderLocation) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
-		broker.common.createObject(TZName, Template.TZ_PST, FolderLocation);
+		return broker.common.createObject(TZName, Template.TZ_PST, FolderLocation);
 	}
-	public void createCETTimezone(String TZName, IFolder FolderLocation) throws IOException{
+	
+	public boolean createCETTimezone(String TZName, IFolder FolderLocation) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
-		broker.common.createObject(TZName, Template.TZ_CET, FolderLocation);
+		return broker.common.createObject(TZName, Template.TZ_CET, FolderLocation);
 	}
 }

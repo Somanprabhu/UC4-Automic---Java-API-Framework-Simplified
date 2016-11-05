@@ -19,8 +19,8 @@ public class Syncs extends ObjectTemplate {
 	}
 	public Sync getSyncFromObject(UC4Object object){return (Sync) object;}
 	
-	public void createSync(String SyncName, IFolder FolderLocation) throws IOException{
+	public boolean createSync(String SyncName, IFolder FolderLocation) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
-		broker.common.createObject(SyncName, Template.SYNC, FolderLocation);
+		return broker.common.createObject(SyncName, Template.SYNC, FolderLocation);
 	}
 }

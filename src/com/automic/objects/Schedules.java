@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.automic.utils.ObjectTypeEnum;
+import com.automic.utils.Utils;
 import com.uc4.api.DateTime;
 import com.uc4.api.Time;
 import com.uc4.api.UC4ObjectName;
@@ -28,10 +29,13 @@ public class Schedules extends ObjectTemplate{
 		super(conn, verbose);
 
 	}
+	
 	private ObjectBroker getBrokerInstance() {
 		return new ObjectBroker(this.connection, true);
 	}
+	
 	public Schedule getScheduleFromObject(UC4Object object){return (Schedule) object;}
+	
 	public void setTaskTime(ScheduleTask task, int Hours, int Minutes, int Seconds){
 		short hours = (short)Hours;
 		short minutes = (short)Minutes;
@@ -41,65 +45,70 @@ public class Schedules extends ObjectTemplate{
 	}
 	
 	// Modify a property of a Schedule object
-	public void setSchedulePriority(UC4Object object, int priority)
+	public boolean setSchedulePriority(UC4Object object, int priority)
 			throws IOException {
 		ObjectBroker broker = getBrokerInstance();
 		Schedule schedule = (Schedule) object;
 		schedule.attributes().setPriority(priority);
-		broker.common.saveObject(schedule);
+		return broker.common.saveObject(schedule);
 	}
+	
 	public ScheduleMonitor getScheduleMonitorFromActiveSchedule(int runID) throws TimeoutException, IOException{
 		ScheduleMonitor req = new ScheduleMonitor(runID, true);
-		connection.sendRequestAndWait(req);
-		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
-		}
+		sendGenericXMLRequestAndWait(req);
 		
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString(""));
+			return req;
+		}
 		return req;
 	}
 	public ReloadNextTurnaround reloadAtNextTurnaround(Schedule sched) throws TimeoutException, IOException{
 		ReloadNextTurnaround req = new ReloadNextTurnaround(sched);
-		connection.sendRequestAndWait(req);
-		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString(""));
+			return req;
 		}
-		
 		return req;
 	}
 
 	public AddScheduleTask addSchedTask(String ObjectName) throws TimeoutException, IOException{
 		AddScheduleTask req = new AddScheduleTask(new UC4ObjectName(ObjectName));
-		//req.getScheduleTask().s
-		connection.sendRequestAndWait(req);
-		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString(""));
+			return req;
 		}
 		return req;
 	}
 	
 	public RunScheduledTask runScheduledTask(ScheduleMonitor.Task task) throws TimeoutException, IOException{
 		RunScheduledTask req = new RunScheduledTask(task);
-		connection.sendRequestAndWait(req);
-		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString(""));
+			return req;
 		}
 		return req;
 	}
 	
 	public ResetScheduleTask resetScheduledTask(ScheduleMonitor.Task task) throws TimeoutException, IOException{
 		ResetScheduleTask req = new ResetScheduleTask(task);
-		connection.sendRequestAndWait(req);
-		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString(""));
+			return req;
 		}
 		return req;
 	}
 	
 	public ModifyStartTime setNewStartTimeForTask(int runID, DateTime start, UC4TimezoneName tz) throws TimeoutException, IOException{
 		ModifyStartTime req = new ModifyStartTime(runID, start,tz);
-		connection.sendRequestAndWait(req);
-		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString(""));
+			return req;
 		}
 		return req;
 	}
@@ -115,8 +124,6 @@ public class Schedules extends ObjectTemplate{
 		}
 		return ObjList;
 	}
-	
-
 	
 	public ArrayList<UC4Object> getAllSchedules() throws IOException {
 		ObjectBroker broker = getBrokerInstance();

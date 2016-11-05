@@ -248,5 +248,4 @@ private ObjectBroker broker;
 		QuickSearch exp = new QuickSearch(ObjectName);
 		return (ArrayList<QuickSearchItem>) quickSearch(exp);
 	}
-	
 }

@@ -14,11 +14,21 @@ public class Utils {
 	        return false;
 	    }
 	}
+	
 	public static String getErrorString(MessageBox msg){
 		String s = " -- "+msg.getText().toString();
 		return s;
-		
 	}
+	
+	public static String getErrorString(String msg){
+		String s = " -- "+msg;
+		return s;
+	}
+	
+	public static String getWarningString(String s){
+		return " %% Warning: "+s;
+	}
+	
 	public static String getSuccessString(String s){
 		return "\t ++ " + s;
 	}

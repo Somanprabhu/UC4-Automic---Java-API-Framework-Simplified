@@ -3,6 +3,7 @@ package com.automic.objects;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.automic.utils.Utils;
 import com.uc4.api.DateTime;
 import com.uc4.api.StatisticSearchItem;
 import com.uc4.api.UC4ObjectName;
@@ -27,21 +28,24 @@ public class Statistics  extends ObjectTemplate{
 	
 	public GetLastRuntimes getLastRuntimes(String ObjName) throws TimeoutException, IOException{
 		GetLastRuntimes req = new GetLastRuntimes(new UC4ObjectName(ObjName));
-		connection.sendRequestAndWait(req);
-		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString(""));
+			return req;
 		}
 		return req;
 	}
 	
 	public ObjectStatistics getObjectStatistics(String ObjName) throws TimeoutException, IOException{
 		ObjectStatistics req = new ObjectStatistics(new UC4ObjectName(ObjName));
-		connection.sendRequestAndWait(req);
-		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString(""));
+			return req;
 		}
 		return req;
 	}
+	
 	public GenericStatistics getGenericStatistics(int Client, String Agentname) throws TimeoutException, IOException{
 
 		GenericStatistics req = new GenericStatistics();
@@ -50,14 +54,12 @@ public class Statistics  extends ObjectTemplate{
 		req.setClient(Client);
 		req.setSourceHost(Agentname);
 		
-		connection.sendRequestAndWait(req);
-		
-		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString(""));
+			return req;
 		}
-		//req.resultIterator()
 		return req;
-		
 	}
 		public int getGenericStatisticsCount(int Client, String Agentname) throws TimeoutException, IOException{
 
@@ -67,7 +69,7 @@ public class Statistics  extends ObjectTemplate{
 			req.setClient(Client);
 			req.setSourceHost(Agentname);
 
-			connection.sendRequestAndWait(req);
+			sendGenericXMLRequestAndWait(req);
 			
 			if (req.getMessageBox() != null && req.getMessageBox().getText().toString().contains("too many statistics")) {
 				//System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
@@ -77,15 +79,8 @@ public class Statistics  extends ObjectTemplate{
 				 String processed = toProc.replace("5000", "").replaceAll("[^0-9]","");
 				
 				return Integer.parseInt(processed);
-				
-			}
-			
-			if (req.getMessageBox() != null) {
-				System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
-			}
-			
-			return req.size();
-			
+			}			
+			return req.size();			
 		}
 	
 }

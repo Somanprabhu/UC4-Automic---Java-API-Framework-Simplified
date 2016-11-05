@@ -18,24 +18,31 @@ public class Events extends ObjectTemplate{
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}
+	
 	// should contain stuff for all event types: ConsoleEvent, DatabaseEvent, FileEvent and TimeEvent
 	public TimeEvent getTimeEventFromObject(UC4Object object){return (TimeEvent) object;}
+	
 	public DatabaseEvent getDBEventFromObject(UC4Object object){return (DatabaseEvent) object;}
+	
 	public ConsoleEvent getConsoleEventFromObject(UC4Object object){return (ConsoleEvent) object;}
+	
 	public FileEvent getFileEventFromObject(UC4Object object){return (FileEvent) object;}
 	
 	public void createTimeEvent(String EventName, IFolder FolderLocation) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		broker.common.createObject(EventName, Template.EVNT_TIME, FolderLocation);
 	}
+	
 	public void createConsoleEvent(String EventName, IFolder FolderLocation) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		broker.common.createObject(EventName, Template.EVNT_CONS, FolderLocation);
 	}
+	
 	public void createDBEvent(String EventName, IFolder FolderLocation) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		broker.common.createObject(EventName, Template.EVNT_DB, FolderLocation);
 	}
+	
 	public void createFileEvent(String EventName, IFolder FolderLocation) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		broker.common.createObject(EventName, Template.EVNT_FILE, FolderLocation);

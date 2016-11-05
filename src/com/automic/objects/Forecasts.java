@@ -2,6 +2,7 @@ package com.automic.objects;
 
 import java.io.IOException;
 
+import com.automic.utils.Utils;
 import com.uc4.communication.Connection;
 import com.uc4.communication.requests.ForecastList;
 
@@ -16,9 +17,9 @@ public class Forecasts extends ObjectTemplate{
 	
 	public ForecastList getClientForecast() throws IOException{
 		ForecastList req = new ForecastList();
-		connection.sendRequestAndWait(req);
-		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		sendGenericXMLRequestAndWait(req);		
+		if (req.getMessageBox() == null) {
+			return req;
 		}
 		return req;
 	}

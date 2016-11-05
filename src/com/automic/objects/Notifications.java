@@ -18,9 +18,11 @@ public class Notifications  extends ObjectTemplate{
 		super(conn, verbose);
 
 	}
+	
 	private ObjectBroker getBrokerInstance() {
 		return new ObjectBroker(this.connection, true);
 	}
+	
 	public ArrayList<UC4Object> getAllSchedules() throws IOException {
 		ObjectBroker broker = getBrokerInstance();
 		return broker.common.getAllObjects(ObjectTypeEnum.CALL);
@@ -33,12 +35,12 @@ public class Notifications  extends ObjectTemplate{
 				filter);
 	}
 	// Modify a property of a Schedule object
-	public void setNotificationPriority(UC4Object object, int priority)
+	public boolean setNotificationPriority(UC4Object object, int priority)
 			throws IOException {
 		ObjectBroker broker = getBrokerInstance();
 		Notification notification = (Notification) object;
 		notification.attributes().setPriority(priority);
-		broker.common.saveObject(notification);
+		return broker.common.saveObject(notification);
 	}
 	
 	public ArrayList<Entry> getActiveNotifications() throws TimeoutException, IOException{
