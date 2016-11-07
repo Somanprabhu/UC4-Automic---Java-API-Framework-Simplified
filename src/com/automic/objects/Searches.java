@@ -127,6 +127,26 @@ private ObjectBroker broker;
 		return genericSearch(ser);
 	}
 	
+	public List<SearchResultItem> searchUsers(String ObjectName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		SearchObject ser = new SearchObject();
+		ser.setTypeUSER(true);
+		ser.setTypeUSRG(false);
+		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
+		ser.setName(ObjectName);
+		return genericSearch(ser);
+	}
+	
+	public List<SearchResultItem> searchGroups(String ObjectName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		SearchObject ser = new SearchObject();
+		ser.setTypeUSER(false);
+		ser.setTypeUSRG(true);
+		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
+		ser.setName(ObjectName);
+		return genericSearch(ser);
+	}
+	
 	public List<SearchResultItem> searchHostgroups(String ObjectName) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		SearchObject ser = new SearchObject();
@@ -149,6 +169,16 @@ private ObjectBroker broker;
 		ObjectBroker broker = getBrokerInstance();
 		SearchObject ser = new SearchObject();
 		ser.selectAllObjectTypes();
+		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
+		ser.setName(ObjectName);
+		return genericSearch(ser);
+	}
+	
+	public List<SearchResultItem> searchObjectExcludeFolders(String ObjectName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		SearchObject ser = new SearchObject();
+		ser.selectAllObjectTypes();
+		ser.setTypeFOLD(false);
 		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
 		ser.setName(ObjectName);
 		return genericSearch(ser);

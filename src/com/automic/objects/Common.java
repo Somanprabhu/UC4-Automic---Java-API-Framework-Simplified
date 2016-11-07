@@ -135,6 +135,20 @@ public class Common extends ObjectTemplate{
 
 	}
 	
+	// Rename an object
+	//RenameObject ren = new RenameObject(tmp, new UC4ObjectName(Integer.toString(client)), tree.root(), title);
+	public boolean renameObject(UC4ObjectName SourceObjectName, UC4ObjectName TargetObjectName, IFolder folder, String Title) throws IOException{
+		RenameObject req = new RenameObject(SourceObjectName,TargetObjectName,folder,Title);
+		sendGenericXMLRequestAndWait(req);
+		
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Object: "+ SourceObjectName +" Successfully Renamed to: "+TargetObjectName));
+			return true;
+		}
+		return false;
+
+	}
+	
 	// Rename a Folder
 	public boolean renameFolder(String SourceFolderName, String TargetFolderName) throws IOException{
 		IFolder sourceFolder = getBrokerInstance().folders.getFolderByName(SourceFolderName);

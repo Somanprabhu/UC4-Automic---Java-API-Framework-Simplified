@@ -11,14 +11,19 @@ import com.automic.AECredentials;
 import com.automic.ConnectionManager;
 import com.automic.utils.Utils;
 import com.uc4.api.SearchResultItem;
+import com.uc4.api.Template;
+import com.uc4.api.UC4ObjectName;
 import com.uc4.api.objects.Client;
+import com.uc4.api.objects.IFolder;
 import com.uc4.api.systemoverview.ClientListItem;
 import com.uc4.communication.Connection;
 import com.uc4.communication.TimeoutException;
 import com.uc4.communication.requests.ClientList;
+import com.uc4.communication.requests.FolderTree;
 import com.uc4.communication.requests.ResumeClient;
 import com.uc4.communication.requests.SearchObject;
 import com.uc4.communication.requests.SuspendClient;
+import com.uc4.communication.requests.TemplateList;
 
 public class Clients extends ObjectTemplate{
 
@@ -34,6 +39,27 @@ public class Clients extends ObjectTemplate{
 //			ObjectBroker broker = getBrokerInstance();
 //			broker.common.createObject(name, Template., fold)
 //		}
+		
+		public boolean createClient(int client, String title) throws TimeoutException, IOException {
+			//Get folder tree
+			FolderTree tree = new FolderTree();
+			ObjectBroker broker = getBrokerInstance();
+			IFolder RootFolder = broker.folders.getRootFolder();
+				
+			//Get client template
+			TemplateList req = new TemplateList(RootFolder);
+			sendGenericXMLRequestAndWait(req);
+		
+			Template clntTemplate = req.getTemplate("CLNT");
+			
+			//Create temporary CLNT object
+			UC4ObjectName tmp = new UC4ObjectName("TMP."+client);
+			broker.common.createObject(tmp.getName(), clntTemplate, RootFolder);
+			
+			//Rename temporary object to the client number, this action creates the new client.
+			return broker.common.renameObject(tmp, new UC4ObjectName(Integer.toString(client)), tree.root(), title);
+
+		}
 		
 		public Client getCurrentClient() throws IOException{
 			ObjectBroker broker = getBrokerInstance();

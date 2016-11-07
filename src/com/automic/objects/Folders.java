@@ -160,11 +160,13 @@ public class Folders extends ObjectTemplate{
 			 }else{
 				 FullPath = folder.fullPath().trim();
 			 }
+		
 			 if(FullPath.equalsIgnoreCase(FolderName.trim())){
+				 
 				 return folder;
 			}
 		 }
-
+		 
 		 return null;
 	}
 	
@@ -224,6 +226,7 @@ public class Folders extends ObjectTemplate{
 		if(!OnlyExtractFolderObjects){FolderList.add(getRootFolder());}
 		
 		Iterator<IFolder> it = rootFolder.subfolder();
+		FolderList.add(rootFolder);
 		while (it.hasNext()){
 			IFolder myFolder = it.next();
 			if(! myFolder.getName().equals("<No Folder>")){
