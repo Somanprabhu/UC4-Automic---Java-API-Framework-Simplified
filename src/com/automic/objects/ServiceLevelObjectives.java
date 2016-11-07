@@ -18,14 +18,10 @@ public class ServiceLevelObjectives extends ObjectTemplate{
 	
 	public ServiceLevelObjectiveList getSLOs() throws IOException{
 		ServiceLevelObjectiveList req = new ServiceLevelObjectiveList();
-		connection.sendRequestAndWait(req);
-		if (req.getMessageBox() != null) {
-			System.out.println(Utils.getErrorString(req.getMessageBox()));;
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			return req;
 		}
 		return req;
-	}
-	
-	public void test(ServiceLevelObjective slo){
-		//slo.
 	}
 }

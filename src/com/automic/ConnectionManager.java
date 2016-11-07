@@ -20,6 +20,41 @@ public final class ConnectionManager {
 		
 	}
 	
+	public static boolean attemptConnection(AECredentials credentials) throws IOException{
+		try{
+			conn = Connection.open(credentials.getAEHostnameOrIp(), credentials.getAECPPort());
+		}catch (UnresolvedAddressException e){
+			return false;
+		}catch (ConnectException c){
+			return false;
+		}
+		
+		String PASSWORD = credentials.getAEUserPassword();
+
+		// #1 - Fix. if password passed with single quotes, they are interpreted as characters.. removing them if detected:
+		if(PASSWORD.startsWith("'") && PASSWORD.endsWith("'")){
+			PASSWORD = PASSWORD.substring(1, PASSWORD.length()-1);
+		}
+		
+		String ClearPwd = PASSWORD;
+		CreateSession sess = null;
+		try{
+		sess = conn.login(credentials.getAEClientToConnect(), credentials.getAEUserLogin(), 
+				credentials.getAEDepartment(), ClearPwd, credentials.getAEMessageLanguage());
+		}catch(RuntimeException e){
+			if(e.getMessage().contains("Null input buffer")){
+				return false;
+			}else{
+				return false;
+			}
+		}
+		if(sess.getMessageBox()!=null){
+
+			return false;
+		}
+		return true;
+	}
+	
 	public static Connection connectToClient(AECredentials credentials) throws IOException{
 		
 		//System.out.println("Authenticating to Client "+credentials.getAEClientToConnect()+" with user "+credentials.getAEUserLogin());
@@ -28,6 +63,7 @@ public final class ConnectionManager {
 		}catch (UnresolvedAddressException e){
 			System.out.println(" -- ERROR: Could Not Resolve Host or IP: "+credentials.getAEHostnameOrIp());
 			System.exit(999);
+			
 		}catch (ConnectException c){
 			System.out.println(" -- ERROR: Could Not Connect to Host: " + credentials.getAEHostnameOrIp());
 			System.out.println(" --     Hint: is the host or IP reachable?");
@@ -35,8 +71,6 @@ public final class ConnectionManager {
 		}
 		
 		String PASSWORD = credentials.getAEUserPassword();
-
-
 
 		// #1 - Fix. if password passed with single quotes, they are interpreted as characters.. removing them if detected:
 		if(PASSWORD.startsWith("'") && PASSWORD.endsWith("'")){

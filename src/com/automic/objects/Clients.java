@@ -2,9 +2,13 @@ package com.automic.objects;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import com.automic.AECredentials;
+import com.automic.ConnectionManager;
 import com.automic.utils.Utils;
 import com.uc4.api.SearchResultItem;
 import com.uc4.api.objects.Client;
@@ -26,6 +30,11 @@ public class Clients extends ObjectTemplate{
 			return new ObjectBroker(this.connection,true);
 		}
 		
+//		public boolean createClient(int ClientNumber){
+//			ObjectBroker broker = getBrokerInstance();
+//			broker.common.createObject(name, Template., fold)
+//		}
+		
 		public Client getCurrentClient() throws IOException{
 			ObjectBroker broker = getBrokerInstance();
 			String name = connection.getSessionInfo().getClient();
@@ -33,23 +42,117 @@ public class Clients extends ObjectTemplate{
 			return client;
 		}
 		
-		public void setClientSetting(String SettingName, String SettingValue) throws IOException{
+		public boolean setCurrentClientSetting(String SettingName, String SettingValue) throws IOException{
 			ObjectBroker broker = getBrokerInstance();
 			String name = connection.getSessionInfo().getClient();
 			Client client = (Client) broker.common.openObject(name,true);
 			//client.setSetting("AUTO_FORECAST_DAYS", "10");
 			client.setSetting(SettingName, SettingValue);
-			broker.common.saveObject(client);
-			broker.common.closeObject(client);
+			return broker.common.saveAndCloseObject(client);
 		}
 		
-		public String getClientSetting(String SettingName) throws IOException{
+		public boolean setClientSetting(AECredentials creds, String SettingName, String SettingValue) throws IOException{
+			
+			// 0 - initiate a new connection & broker to a different client
+			Connection ConnToClient = ConnectionManager.connectToClient(creds);
+			ObjectBroker BrokerToClient = new ObjectBroker(ConnToClient,true);
+			
+			// 1 - get the client name from new connection
+			String name = ConnToClient.getSessionInfo().getClient();
+			
+			// 2 - open the Client via the new broker
+			Client client = (Client) BrokerToClient.common.openObject(name,false);
+
+			// 3 - set the Client Setting and save
+			client.setSetting(SettingName, SettingValue);	
+			return BrokerToClient.common.saveAndCloseObject(client);
+		}
+		
+		public String getCurrentClientSetting(String SettingName) throws IOException{
 			ObjectBroker broker = getBrokerInstance();
 			String name = connection.getSessionInfo().getClient();
 			Client client = (Client) broker.common.openObject(name,true);
 			String SettingValue = client.getSetting(SettingName);
 			broker.common.saveObject(client);
 			broker.common.closeObject(client);
+			return SettingValue;
+		}
+		
+		public HashMap<String, String> getCurrentClientSettings() throws IOException{
+			
+			HashMap<String, String> SettingsMap = new HashMap<String, String>();
+			
+			ObjectBroker broker = getBrokerInstance();
+			String name = connection.getSessionInfo().getClient();
+			Client client = (Client) broker.common.openObject(name,true);
+			
+			Iterator<String> settingIterator = client.settingNames();
+			while(settingIterator.hasNext()){
+				String SettingName = settingIterator.next();
+				String SettingValue = client.getSetting(SettingName);
+				SettingsMap.put(SettingName, SettingValue);
+			}
+			
+			return SettingsMap;
+		}
+		
+		public HashMap<String, String> getClientSettings(AECredentials creds) throws IOException{
+			
+			HashMap<String, String> SettingsMap = new HashMap<String, String>();
+			
+			// 0 - initiate a new connection & broker to a different client
+			Connection ConnToClient = ConnectionManager.connectToClient(creds);
+			ObjectBroker BrokerToClient = new ObjectBroker(ConnToClient,true);
+			String name = ConnToClient.getSessionInfo().getClient();
+			
+			Client client = (Client) BrokerToClient.common.openObject(name,true);
+			
+			Iterator<String> settingIterator = client.settingNames();
+			while(settingIterator.hasNext()){
+				String SettingName = settingIterator.next();
+				String SettingValue = client.getSetting(SettingName);
+				SettingsMap.put(SettingName, SettingValue);
+			}
+			
+			return SettingsMap;
+		}
+		
+		public boolean clearCurrentClientSettings() throws IOException{
+			
+			ObjectBroker broker = getBrokerInstance();
+			String name = connection.getSessionInfo().getClient();
+			Client client = (Client) broker.common.openObject(name,false);
+			client.clearSettings();
+			broker.common.saveObject(client);
+			return broker.common.saveAndCloseObject(client);
+		}
+		
+		public boolean clearClientSettings(AECredentials creds) throws IOException{
+			
+			// 0 - initiate a new connection & broker to a different client
+			Connection ConnToClient = ConnectionManager.connectToClient(creds);
+			ObjectBroker BrokerToClient = new ObjectBroker(ConnToClient,true);
+			String name = ConnToClient.getSessionInfo().getClient();
+			
+			Client client = (Client) BrokerToClient.common.openObject(name,false);
+			client.clearSettings();
+
+			return BrokerToClient.common.saveAndCloseObject(client);
+		}
+		
+		public String getClientSetting(AECredentials creds, String SettingName) throws IOException{
+			// 0 - initiate a new connection & broker to a different client
+			Connection ConnToClient = ConnectionManager.connectToClient(creds);
+			ObjectBroker BrokerToClient = new ObjectBroker(ConnToClient,true);
+			
+			// 1 - get the client name from new connection
+			String name = ConnToClient.getSessionInfo().getClient();
+			
+			// 2 - open the Client via the new broker
+			Client client = (Client) BrokerToClient.common.openObject(name,true);
+
+			String SettingValue = client.getSetting(SettingName);
+
 			return SettingValue;
 		}
 		
@@ -78,7 +181,6 @@ public class Clients extends ObjectTemplate{
 		public boolean suspendAClient(ClientListItem Client) throws TimeoutException, IOException{
 			SuspendClient req = new SuspendClient(Client);
 			sendGenericXMLRequestAndWait(req);
-			
 			if (req.getMessageBox() == null) {
 				Say(Utils.getSuccessString("Client: "+Client.getClient()+" Successfully Stopped."));
 				return true;

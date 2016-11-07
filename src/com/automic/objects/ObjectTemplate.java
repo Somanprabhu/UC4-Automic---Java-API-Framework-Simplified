@@ -30,7 +30,7 @@ public class ObjectTemplate {
 		public XMLRequest sendGenericXMLRequestAndWait(XMLRequest req,boolean showResponse) throws TimeoutException, IOException{
 			connection.sendRequestAndWait(req);
 			if (req.getMessageBox() != null) {
-				if(showResponse){Utils.getErrorString(req.getMessageBox());}
+				if(showResponse){System.out.println(Utils.getErrorString(req.getMessageBox()));}
 				return null;
 			}
 			return req;

@@ -5,11 +5,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.automic.AECredentials;
+import com.automic.ConnectionManager;
 import com.automic.utils.Utils;
 import com.uc4.api.InvalidUC4NameException;
 import com.uc4.api.SearchResultItem;
 import com.uc4.api.Template;
 import com.uc4.api.UC4UserName;
+import com.uc4.api.objects.Client;
 import com.uc4.api.objects.IFolder;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.api.objects.User;
@@ -145,9 +148,26 @@ public class Users extends ObjectTemplate{
 		return user;
 	}
 	
+	public User createAdminUserInClient(AECredentials creds, String Username, String Password, IFolder folder) throws IOException{
+		
+		// 0 - initiate a new connection & broker to a different client
+		Connection ConnToClient = ConnectionManager.connectToClient(creds);
+		ObjectBroker BrokerToClient = new ObjectBroker(ConnToClient,true);
+		
+		return createUserInClient(BrokerToClient, Username, Password, folder);
+	}
+	
 	public User createAdminUserInCurrentClient(String Username, String Password, IFolder folder) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
-		broker.common.createObject(Username, Template.USER, folder);
+		return createUserInClient(broker, Username, Password, folder);
+	}
+	
+	private User createUserInClient(ObjectBroker broker, String Username, String Password, IFolder folder) throws IOException{
+        
+		IFolder destFolder = null;
+		if(folder == null){destFolder = broker.folders.getRootFolder();}
+		else{destFolder = folder;}
+		broker.common.createObject(Username, Template.USER,destFolder);
 		User user = getUserFromObject(broker.common.openObject(Username, false));
 		user.attributes().setPassword(Password);
 		user.attributes().setActive(true);
@@ -241,7 +261,15 @@ public class Users extends ObjectTemplate{
 			Say(Utils.getErrorString("You can only move a client when connected to Client 0. Current Client is: "+currentClient));
 			return false;
 		}
-		UC4UserName user = new UC4UserName(UserName);
+		
+		UC4UserName user = null;
+		if(UserName.contains(" ")){
+			user = new UC4UserName(UserName.split(" ")[2]);
+		}
+		else{
+			user = new UC4UserName(UserName);
+		}
+				
 		ObjectBroker broker = getBrokerInstance();
 		List<SearchResultItem> foundUsers = broker.searches.searchUsersAndGroups(user.getName());
 		if(foundUsers.isEmpty()){
@@ -254,7 +282,12 @@ public class Users extends ObjectTemplate{
 		}
 		SearchResultItem item = foundUsers.get(0);
 		
-		IFolder UserFolder = broker.folders.getFolderByName(item.getFolder());
+		IFolder UserFolder = null; 
+		if(!item.getFolder().contains(" ")){
+			UserFolder = broker.folders.getRootFolder();
+		}else{
+			UserFolder = broker.folders.getFolderByFullPathName(item.getFolder());
+		}
 
 		MoveUserToClient req = new MoveUserToClient(user,UserFolder,client);
 		sendGenericXMLRequestAndWait(req);
