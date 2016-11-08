@@ -42,7 +42,7 @@ public class Clients extends ObjectTemplate{
 		
 		public boolean createClient(int client, String title) throws TimeoutException, IOException {
 			//Get folder tree
-			FolderTree tree = new FolderTree();
+			
 			ObjectBroker broker = getBrokerInstance();
 			IFolder RootFolder = broker.folders.getRootFolder();
 				
@@ -57,7 +57,7 @@ public class Clients extends ObjectTemplate{
 			broker.common.createObject(tmp.getName(), clntTemplate, RootFolder);
 			
 			//Rename temporary object to the client number, this action creates the new client.
-			return broker.common.renameObject(tmp, new UC4ObjectName(Integer.toString(client)), tree.root(), title);
+			return broker.common.renameObject(tmp, new UC4ObjectName(Integer.toString(client)), RootFolder, title);
 
 		}
 		

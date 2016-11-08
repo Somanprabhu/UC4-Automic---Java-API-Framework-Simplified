@@ -124,6 +124,9 @@ public class Common extends ObjectTemplate{
 	//	if(items.size()==1){
 	//		SourceObjectTitle = items.get(0).getTitle();
 	//	}
+		
+		ObjectBroker broker = getBrokerInstance();
+		broker.common.reclaimObject(sourceName.getName());
 		RenameObject req = new RenameObject(sourceName,targetName,folder,SourceObjectTitle);
 		sendGenericXMLRequestAndWait(req);
 		
@@ -138,6 +141,9 @@ public class Common extends ObjectTemplate{
 	// Rename an object
 	//RenameObject ren = new RenameObject(tmp, new UC4ObjectName(Integer.toString(client)), tree.root(), title);
 	public boolean renameObject(UC4ObjectName SourceObjectName, UC4ObjectName TargetObjectName, IFolder folder, String Title) throws IOException{
+		
+		ObjectBroker broker = getBrokerInstance();
+		broker.common.reclaimObject(SourceObjectName.getName());
 		RenameObject req = new RenameObject(SourceObjectName,TargetObjectName,folder,Title);
 		sendGenericXMLRequestAndWait(req);
 		
