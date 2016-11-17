@@ -13,6 +13,7 @@ public class AECredentials {
 	private String AEUserLogin;  	// AE User Login
 	private String AEUserPassword; 	// AE User Password
 	private char AEMessageLanguage; // Language: 'E' or 'D', or 'F'
+	private boolean isSSO;
 	
 	public AECredentials(String AEHostnameOrIp,int AECPPort,int AEClientToConnect,String AEUserLogin, String AEDepartment,String AEUserPassword,char AEMessageLanguage ){
 		
@@ -23,7 +24,24 @@ public class AECredentials {
 		this.AEUserLogin = AEUserLogin;
 		this.AEUserPassword = AEUserPassword;
 		this.AEMessageLanguage = AEMessageLanguage;
+		this.isSSO = false;
+	}
+	
+	// for SSO
+	public AECredentials(String AEHostnameOrIp,int AECPPort,int AEClientToConnect,char AEMessageLanguage ){
 		
+		this.AEHostnameOrIp = AEHostnameOrIp;
+		this.AECPPort = AECPPort;
+		this.AEClientToConnect = AEClientToConnect;
+		this.AEDepartment = "";
+		this.AEUserLogin = "";
+		this.AEUserPassword = "";
+		this.AEMessageLanguage = AEMessageLanguage;
+		this.isSSO = true;
+	}
+	
+	public boolean getSSO(){
+		return this.isSSO;
 	}
 	public void setAEHostnameOrIp(String aEHostnameOrIp) {
 		AEHostnameOrIp = aEHostnameOrIp;

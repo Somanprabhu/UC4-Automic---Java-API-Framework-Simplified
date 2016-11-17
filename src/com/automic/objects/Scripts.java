@@ -29,4 +29,5 @@ public class Scripts extends ObjectTemplate{
 		ObjectBroker broker = getBrokerInstance();
 		return broker.common.getAllObjectsWithNameFilter(ObjectTypeEnum.SCRI,filter);
 	}
+	
 }

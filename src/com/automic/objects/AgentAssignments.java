@@ -7,6 +7,8 @@ import java.util.Iterator;
 import com.automic.utils.Utils;
 import com.uc4.api.UC4ObjectName;
 import com.uc4.api.objects.AgentAssignment;
+import com.uc4.api.objects.AgentAssignmentFilter;
+import com.uc4.api.objects.Authorizations.Entry;
 import com.uc4.api.systemoverview.AgentAssignmentListItem;
 import com.uc4.communication.Connection;
 import com.uc4.communication.TimeoutException;
@@ -104,6 +106,7 @@ public class AgentAssignments extends ObjectTemplate{
 	public PreviewAssignment previewAgentAssignment(String HSTAName) throws TimeoutException, IOException{
 		ObjectBroker broker = getBrokerInstance();
 		AgentAssignment HSTA = (AgentAssignment) broker.common.openObject(HSTAName, true);
+		
 		PreviewAssignment req = new PreviewAssignment(HSTA);
 		broker.common.sendGenericXMLRequestAndWait(req);
 		if (req.getMessageBox() == null) {
@@ -111,6 +114,80 @@ public class AgentAssignments extends ObjectTemplate{
 			return req;
 		}
 		return req;
+	}
+	
+	public ArrayList<AgentAssignmentFilter.Item> getAgentAssignmentFilters(String HSTAName) throws IOException{
+		ArrayList<AgentAssignmentFilter.Item> list = new ArrayList<AgentAssignmentFilter.Item>();
+		ObjectBroker broker = getBrokerInstance();
+		broker.common.reclaimObject(HSTAName);
+		AgentAssignment HSTA = (AgentAssignment) broker.common.openObject(HSTAName, true);
+		Iterator<AgentAssignmentFilter.Item> it = HSTA.filter().iterator();
+		while(it.hasNext()){
+			AgentAssignmentFilter.Item item = it.next();
+			list.add(item);
+		}
+		return list;
+	}
+	
+	public void addAgentAssignmentFilter(String HSTAName) throws IOException{
+		addAgentAssignmentFilter(HSTAName, "*", "*", "*", "*", "*", "*", "*", "*", "*",false);
+	}
+	
+	public void addAgentAssignmentFilter(String HSTAName, String HostName, String HostType) throws IOException{
+		addAgentAssignmentFilter(HSTAName, HostName, HostType, "*", "*", "*", "*", "*", "*", "*",false);
+	}
+	
+	public void addAgentAssignmentFilter(AgentAssignment HSTA) throws IOException{
+		addAgentAssignmentFilter(HSTA, "*", "*", "*", "*", "*", "*", "*", "*", "*",false);
+	}
+	
+	public void addAgentAssignmentFilter(AgentAssignment HSTA, String HostName, String HostType) throws IOException{
+		addAgentAssignmentFilter(HSTA, HostName, HostType, "*", "*", "*", "*", "*", "*", "*",false);
+	}
+	
+	public void AgentAssignmentClearFilters(String HSTAName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		broker.common.reclaimObject(HSTAName);
+		AgentAssignment HSTA = (AgentAssignment) broker.common.openObject(HSTAName, false);
+		HSTA.filter().clear();
+	}
+	
+	public void addAgentAssignmentFilter(AgentAssignment HSTA, String HostName, String HostType,
+			String Hardware,
+			String IpAddress,
+			String LicenseCategory,
+			String Role,
+			String Software,
+			String SoftwareVersion,
+			String Version,
+			boolean Reverse
+			) throws IOException{
+		
+		AgentAssignmentFilter.Item item = new AgentAssignmentFilter.Item(HostName,HostType);
+		item.setHardware(Hardware);
+		item.setIpAddress(IpAddress);
+		item.setLicenseCategory(LicenseCategory);
+		item.setNot(Reverse);
+		item.setRole(Role);
+		item.setSoftware(Software);
+		item.setSoftwareVersion(SoftwareVersion);
+		item.setVersion(Version);
+		HSTA.filter().addFilter(item);
+	}
+	
+	public void addAgentAssignmentFilter(String HSTAName, String HostName, String HostType,
+			String Hardware,
+			String IpAddress,
+			String LicenseCategory,
+			String Role,
+			String Software,
+			String SoftwareVersion,
+			String Version,
+			boolean Reverse
+			) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		AgentAssignment HSTA = (AgentAssignment) broker.common.openObject(HSTAName, false);
+		addAgentAssignmentFilter(HSTA,HostName,HostType,Hardware,IpAddress,LicenseCategory,Role,Software,SoftwareVersion,Version,Reverse );
 	}
 	
 	public AgentAssignmentList getAssignmentList() throws TimeoutException, IOException{

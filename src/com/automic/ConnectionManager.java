@@ -7,111 +7,77 @@ import java.util.ArrayList;
 
 import com.automic.utils.Utils;
 import com.uc4.communication.Connection;
+import com.uc4.communication.SSOConfiguration;
 import com.uc4.communication.requests.CreateSession;
 
 public final class ConnectionManager {
 
 	private static Connection conn = null;
-
-	
 	public static ArrayList<Connection> ConnectionList = new ArrayList<Connection>();
 	
-	public ConnectionManager(){
-		
+	// Leave constructor empty
+	public ConnectionManager(){}
+	
+	public static CreateSession attemptLogin(AECredentials credentials) throws IOException{
+		if(credentials.getSSO()){
+			return attemptSSOLogin(credentials);
+		}else{
+			return attemptStdLogin(credentials);
+		}
 	}
 	
-	public static boolean attemptConnection(AECredentials credentials) throws IOException{
-		try{
-			conn = Connection.open(credentials.getAEHostnameOrIp(), credentials.getAECPPort());
-		}catch (UnresolvedAddressException e){
-			return false;
-		}catch (ConnectException c){
-			return false;
-		}
+	// Try an SSO login to AE
+	public static CreateSession attemptSSOLogin(AECredentials credentials) throws IOException{		
+		conn = getConnection(credentials.getAEHostnameOrIp(), credentials.getAECPPort());
+		return LoginToAEwithSSO(conn,credentials.getAEClientToConnect());
+	}
+	
+	// Try a Standard login to AE
+	public static CreateSession attemptStdLogin(AECredentials credentials) throws IOException{
+		conn = getConnection(credentials.getAEHostnameOrIp(), credentials.getAECPPort());
 		
 		String PASSWORD = credentials.getAEUserPassword();
-
 		// #1 - Fix. if password passed with single quotes, they are interpreted as characters.. removing them if detected:
 		if(PASSWORD.startsWith("'") && PASSWORD.endsWith("'")){
 			PASSWORD = PASSWORD.substring(1, PASSWORD.length()-1);
 		}
-		
 		String ClearPwd = PASSWORD;
-		CreateSession sess = null;
-		try{
-		sess = conn.login(credentials.getAEClientToConnect(), credentials.getAEUserLogin(), 
-				credentials.getAEDepartment(), ClearPwd, credentials.getAEMessageLanguage());
-		}catch(RuntimeException e){
-			if(e.getMessage().contains("Null input buffer")){
-				return false;
-			}else{
-				return false;
-			}
-		}
-		if(sess.getMessageBox()!=null){
-
-			return false;
-		}
-		return true;
+		return LoginToAE(conn,credentials.getAEClientToConnect(), credentials.getAEUserLogin(), credentials.getAEDepartment(), ClearPwd, credentials.getAEMessageLanguage());
 	}
 	
-	public static Connection connectToClient(AECredentials credentials) throws IOException{
-		
-		//System.out.println("Authenticating to Client "+credentials.getAEClientToConnect()+" with user "+credentials.getAEUserLogin());
-		try{
-			conn = Connection.open(credentials.getAEHostnameOrIp(), credentials.getAECPPort());
-		}catch (UnresolvedAddressException e){
-			System.out.println(" -- ERROR: Could Not Resolve Host or IP: "+credentials.getAEHostnameOrIp());
-			System.exit(999);
-			
-		}catch (ConnectException c){
-			System.out.println(" -- ERROR: Could Not Connect to Host: " + credentials.getAEHostnameOrIp());
-			System.out.println(" --     Hint: is the host or IP reachable?");
-			System.exit(998);
-		}
-		
-		String PASSWORD = credentials.getAEUserPassword();
-
-		// #1 - Fix. if password passed with single quotes, they are interpreted as characters.. removing them if detected:
-		if(PASSWORD.startsWith("'") && PASSWORD.endsWith("'")){
-			PASSWORD = PASSWORD.substring(1, PASSWORD.length()-1);
-		}
-		
-		String ClearPwd = PASSWORD;
+	// Login to AE from an established Connection (the standard way)
+	private static CreateSession LoginToAE(Connection MyConnection, int Client, String Login, String Dept, String Pwd, char Language) throws IOException{
 		CreateSession sess = null;
+		
 		try{
-		sess = conn.login(credentials.getAEClientToConnect(), credentials.getAEUserLogin(), 
-				credentials.getAEDepartment(), ClearPwd, credentials.getAEMessageLanguage());
+		sess = conn.login(Client,Login,Dept,Pwd,Language);
 		}catch(RuntimeException e){
 			if(e.getMessage().contains("Null input buffer")){
-				System.out.println("-- Error: Login Failed: Tt seems you are trying to login with an invalid encrypted password that cannot be decoded. Please Check.");
+				System.out.println("-- Error: Login Failed: It seems you are trying to login with an invalid encrypted password that cannot be decoded. Please Check.");
 			}else{
 				System.out.println("-- Error: Login Failed. Unknown Runtime Error. Send the following stacktrace to vendor:");
 				e.printStackTrace();
 			}
 			
-			System.exit(99);
-		}
-		
-		//#1 Fix Done
-		
-		if(sess.getMessageBox()!=null){
-			System.out.println("-- Error: " + sess.getMessageBox()); 
-			System.exit(990);
 			return null;
 		}
-		// Check Server Version:
-		String serverVersion = conn.getSessionInfo().getServerVersion();
-		if(! SupportedAEVersions.SupportedVersions.contains(serverVersion)){
-			System.err.println( " -- Error! Version of the Automation Engine does not seem supported.");
-			System.err.println( " -- current version is: "+serverVersion);
-			System.err.println( " -- versions supported: "+SupportedAEVersions.SupportedVersions.toString());
-			System.exit(1);
+		return sess;
+	}
+	
+	private static CreateSession LoginToAEwithSSO(Connection myConnection,int ClientNum) throws IOException{
+		SSOConfiguration ssoconfig = new SSOConfiguration(ClientNum);
+		CreateSession sess = null;
+		try{
+			sess = myConnection.login(ssoconfig);
+		}catch(RuntimeException e){
+			if(e.getMessage().contains("Null input buffer")){
+				return null;
+			}else{
+				return null;
+			}
 		}
-		
-		ConnectionList.add(conn);
-		return conn;
-		
+		if(sess.getMessageBox()!=null){return null;}
+		return sess;
 	}
 	
 	public Connection switchToClient(AECredentials credentials) throws IOException{
@@ -130,4 +96,91 @@ public final class ConnectionManager {
 		}
 		return null;
 	}
+	
+	private static Connection getConnection(String Hostname, int PortNum) throws IOException{
+		try{
+			conn = Connection.open(Hostname, PortNum);
+		}catch (UnresolvedAddressException e){
+			System.out.println(" -- ERROR: Could Not Resolve Host or IP: "+Hostname);
+			System.exit(999);
+			
+		}catch (ConnectException c){
+			System.out.println(" -- ERROR: Could Not Connect to Host: " + Hostname);
+			System.out.println(" --     Hint: is the host or IP reachable?");
+			System.exit(998);
+		}
+		return conn;
+	}
+
+public static Connection connectToClientWithSSO(AECredentials credentials) throws IOException{
+		
+		conn = getConnection(credentials.getAEHostnameOrIp(),credentials.getAECPPort());
+	
+		CreateSession sess = LoginToAEwithSSO(conn,credentials.getAEClientToConnect());
+		
+		if(sess == null){
+			System.out.println("\t-- Error: Cound Not Connect Using SSO."); 
+			System.exit(999);
+		}
+		//#1 Fix Done
+		if(sess.getMessageBox()!=null){
+			System.out.println("-- Error: " + sess.getMessageBox()); 
+			System.exit(998);
+		}
+		
+		// Check Server Version:
+		String serverVersion = conn.getSessionInfo().getServerVersion();
+		if(! SupportedAEVersions.SupportedVersions.contains(serverVersion)){
+			System.err.println( " -- Error! Version of the Automation Engine does not seem supported.");
+			System.err.println( " -- current version is: "+serverVersion);
+			System.err.println( " -- versions supported: "+SupportedAEVersions.SupportedVersions.toString());
+			System.exit(1);
+		}
+		
+		ConnectionList.add(conn);
+		return conn;
+		
+	}
+
+	public static Connection connectToClient(AECredentials credentials) throws IOException{
+		if(credentials.getSSO()){
+			return connectToClientWithSSO(credentials);
+		}else{
+			return connectToClientwithSTD(credentials);
+		}
+	}
+
+private static Connection connectToClientwithSTD(AECredentials credentials) throws IOException{
+	conn = getConnection(credentials.getAEHostnameOrIp(),credentials.getAECPPort());
+	
+	String PASSWORD = credentials.getAEUserPassword();
+
+	// #1 - Fix. if password passed with single quotes, they are interpreted as characters.. removing them if detected:
+	if(PASSWORD.startsWith("'") && PASSWORD.endsWith("'")){
+		PASSWORD = PASSWORD.substring(1, PASSWORD.length()-1);
+	}
+	
+	String ClearPwd = PASSWORD;
+	CreateSession sess = LoginToAE(conn,credentials.getAEClientToConnect(),credentials.getAEUserLogin(),credentials.getAEDepartment(),
+		credentials.getAEUserPassword(),credentials.getAEMessageLanguage());
+	
+	//#1 Fix Done
+	if(sess.getMessageBox()!=null){
+		System.out.println("-- Error: " + sess.getMessageBox()); 
+		System.exit(999);
+	}
+	
+	// Check Server Version:
+	String serverVersion = conn.getSessionInfo().getServerVersion();
+	if(! SupportedAEVersions.SupportedVersions.contains(serverVersion)){
+		System.err.println( " -- Error! Version of the Automation Engine does not seem supported.");
+		System.err.println( " -- current version is: "+serverVersion);
+		System.err.println( " -- versions supported: "+SupportedAEVersions.SupportedVersions.toString());
+		System.exit(998);
+	}
+	
+	ConnectionList.add(conn);
+	return conn;
+	
+}
 }

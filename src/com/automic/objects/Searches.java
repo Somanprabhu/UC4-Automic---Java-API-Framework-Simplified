@@ -77,6 +77,26 @@ private ObjectBroker broker;
 		return genericSearch(ser);
 	}
 	
+	public List<SearchResultItem> searchCalls(String ObjectName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		SearchObject ser = new SearchObject();
+		ser.unselectAllObjectTypes();
+		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
+		ser.setName(ObjectName);
+		ser.setTypeCALL(true);
+		return genericSearch(ser);
+	}
+	
+	public List<SearchResultItem> searchEvents(String ObjectName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		SearchObject ser = new SearchObject();
+		ser.unselectAllObjectTypes();
+		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
+		ser.setName(ObjectName);
+		ser.setTypeEVNT(true);
+		return genericSearch(ser);
+	}
+	
 	public List<SearchResultItem> searchJobs(String ObjectName) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		SearchObject ser = new SearchObject();
@@ -127,6 +147,15 @@ private ObjectBroker broker;
 		return genericSearch(ser);
 	}
 	
+	public List<SearchResultItem> searchScripts(String ObjectName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		SearchObject ser = new SearchObject();
+		ser.setTypeSCRI(true);
+		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
+		ser.setName(ObjectName);
+		return genericSearch(ser);
+	}
+	
 	public List<SearchResultItem> searchUsers(String ObjectName) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		SearchObject ser = new SearchObject();
@@ -151,6 +180,15 @@ private ObjectBroker broker;
 		ObjectBroker broker = getBrokerInstance();
 		SearchObject ser = new SearchObject();
 		ser.setTypeHOSTG(true);
+		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
+		ser.setName(ObjectName);
+		return genericSearch(ser);
+	}
+	
+	public List<SearchResultItem> searchHostAssignments(String ObjectName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		SearchObject ser = new SearchObject();
+		ser.setTypeHSTA(true);
 		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
 		ser.setName(ObjectName);
 		return genericSearch(ser);
