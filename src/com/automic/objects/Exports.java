@@ -72,6 +72,23 @@ private ObjectBroker broker;
 		return false;
 	}
 	
+	public boolean  exportObjectSilent(String ObjectName, String FilePathForExport) throws IOException{
+		//UC4ObjectName objName = new UC4ObjectName(ObjectName);
+		UC4ObjectName objName = null;
+		if (ObjectName.indexOf('/') != -1) objName = new UC4UserName(ObjectName);
+		else if (ObjectName.indexOf('-')  != -1) objName = new UC4HostName(ObjectName);
+		else objName = new UC4ObjectName(ObjectName);		
+		
+		File file = new File(FilePathForExport);
+		ExportObject req = new ExportObject(objName,file);
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			//Say(Utils.getSuccessString("Object(s) Successfully Exported."));
+			return true;
+		}
+		return false;
+	}
+	
 	//v11+ only
 	public ArrayList<UC4ObjectName> getReferencedObjects(String ObjectName) throws TimeoutException, IOException{
 		UC4ObjectName objName = new UC4ObjectName(ObjectName);
