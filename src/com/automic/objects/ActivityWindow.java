@@ -2,20 +2,31 @@ package com.automic.objects;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-
 import com.automic.utils.Utils;
 import com.uc4.api.Task;
 import com.uc4.api.TaskFilter;
+import com.uc4.api.TaskPromptSetName;
+import com.uc4.api.objects.OCVPanel.CITValue;
+import com.uc4.api.objects.PromptElement;
+import com.uc4.api.prompt.LabelElement;
 import com.uc4.communication.Connection;
+import com.uc4.communication.TimeoutException;
 import com.uc4.communication.requests.ActivityList;
 import com.uc4.communication.requests.AddComment;
+import com.uc4.communication.requests.AdoptTask;
 import com.uc4.communication.requests.CancelTask;
 import com.uc4.communication.requests.DeactivateTask;
 import com.uc4.communication.requests.ModifyTaskState;
 import com.uc4.communication.requests.QuitTask;
 import com.uc4.communication.requests.RestartTask;
+import com.uc4.communication.requests.SubmitPrompt;
 import com.uc4.communication.requests.SuspendTask;
+import com.uc4.communication.requests.TaskPromptSetContent;
+import com.uc4.communication.requests.TaskPromptSetNames;
+import com.uc4.communication.requests.XMLRequest;
 
 public class ActivityWindow extends ObjectTemplate{
 
@@ -34,6 +45,7 @@ public class ActivityWindow extends ObjectTemplate{
 		List<Task> tasks = new ArrayList<Task>();
 		for (Task t : list) {
 			tasks.add(t);
+			
 		}
 		return tasks;
 	}
@@ -59,6 +71,133 @@ public class ActivityWindow extends ObjectTemplate{
 		return false;
 	}
 	
+	public boolean adoptTask(int RunID) throws IOException {		
+		AdoptTask req = new AdoptTask(RunID); // force
+		sendGenericXMLRequestAndWait(req);
+		
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Task "+ RunID +" Adopted."));
+			return true;
+		}
+		return false;
+	}
+	
+	public TaskPromptSetNames getTaskPromptsetNames(int RunID) throws IOException{
+		//adoptTask(RunID);
+		ArrayList<TaskPromptSetName> array = new ArrayList<TaskPromptSetName>();
+		TaskPromptSetNames req = new TaskPromptSetNames(RunID);
+		sendGenericXMLRequestAndWait(req);
+
+		return req;
+	}
+	
+	public ArrayList<TaskPromptSetName> getTaskPromptsetNamesAsArray(int RunID) throws IOException{
+		//adoptTask(RunID);
+		ArrayList<TaskPromptSetName> array = new ArrayList<TaskPromptSetName>();
+		TaskPromptSetNames req = new TaskPromptSetNames(RunID);
+		sendGenericXMLRequestAndWait(req);
+
+		Iterator<TaskPromptSetName> it = req.iterator();
+		while(it.hasNext()){
+			array.add(it.next());
+		}
+		return array;
+	}
+	
+	public void test(TaskPromptSetNames prptNames, int RunID) throws TimeoutException, IOException{
+		// getting all prompts
+		System.out.println("prpt names size:" + prptNames.size());
+		Iterator<TaskPromptSetName> it0 = prptNames.iterator();
+		while(it0.hasNext()){
+			TaskPromptSetName tName = it0.next();
+			TaskPromptSetContent req = new TaskPromptSetContent(tName, RunID);
+			sendGenericXMLRequestAndWait(req);
+			System.out.println("Type of prptset:" + req.getType());
+			Iterator<PromptElement> it1 = req.iterator();
+			
+			while(it1.hasNext()){
+				PromptElement elmt = it1.next();
+				
+				//DateElement, LabelElement, NumberElement, OnChangeResetElement, RadioGroupElement, TimeElement
+				//LabelElement Lelmt = (LabelElement) elmt;
+				System.out.println("Values: "+elmt.getMessageInsert()+" | "+elmt.getVariable()+" | "+elmt.getValue());
+				elmt.setValue("GAGA");
+			}
+			SubmitPrompt sumbit = new SubmitPrompt(prptNames, req);
+			sendGenericXMLRequestAndWait(sumbit);
+			if(sumbit.getMessageBox() != null){
+				System.out.println(sumbit.getMessageBox().getText());
+			}else{
+				System.out.println("Done?");
+			}
+		}	
+		
+	}
+	
+	public void showPromptSetContent(TaskPromptSetNames prptNames, int RunID) throws TimeoutException, IOException{
+		// getting all prompts
+		Iterator<TaskPromptSetName> it0 = prptNames.iterator();
+		while(it0.hasNext()){
+			TaskPromptSetName tName = it0.next();
+			System.out.println("\t %% Promptset Found:" + tName);
+			
+			TaskPromptSetContent req = new TaskPromptSetContent(tName, RunID);
+			sendGenericXMLRequestAndWait(req);
+			Iterator<PromptElement> it1 = req.iterator();
+			while(it1.hasNext()){
+				PromptElement elmt = it1.next();
+				System.out.println("\t %% [Variable Name | Variable Value]: "+" [ "+elmt.getVariable()+" | "+elmt.getValue()+" ]");
+			}
+		}
+		
+	}
+	
+	//"PromptName1['&VAR1#':'Value 1','&VAR2#':'dsfsdf']|PromptName2['&VAR1#':'Value 1','&VAR2#':'dsfsdf']"
+	public void submitPromptSetContent(TaskPromptSetNames prptNames, HashMap<String, HashMap<String, String>> map, int RunID) throws TimeoutException, IOException{
+		
+		ArrayList<TaskPromptSetContent> AlLContents = new ArrayList<TaskPromptSetContent>();
+		
+		// FOR EACH PROMPT
+		Iterator<TaskPromptSetName> it0 = prptNames.iterator();
+		while(it0.hasNext()){
+			TaskPromptSetName tName = it0.next();
+
+			// getting all Vars for the given promptset
+			HashMap<String, String> AllVarsFromInput = map.get(tName.getName().getName());
+			// IF there is no entry for the prompt then skip.
+			if(AllVarsFromInput != null){
+				System.out.println("\t %% Promptset Found:" + tName);
+				// Get the prompt's content
+				TaskPromptSetContent req = new TaskPromptSetContent(tName, RunID);
+				sendGenericXMLRequestAndWait(req);
+				Iterator<PromptElement> it1 = req.iterator();
+				// for each element of the individual prompt..
+				while(it1.hasNext()){
+					// Get the values to update and update them.
+					PromptElement elmt = it1.next();
+					String NewValue = AllVarsFromInput.get(elmt.getVariable());
+					elmt.setValue(NewValue);
+					System.out.println("\t %% Update of PromptSet entry "+tName+": [Variable Name | Variable Value]: "+" [ "+elmt.getVariable()+" | "+elmt.getValue()+" ]");
+					//System.out.println("New Value Found!" + NewValue);	
+				}	
+				AlLContents.add(req);
+			}
+		}
+		
+		TaskPromptSetContent[] ContentstockArr = new TaskPromptSetContent[AlLContents.size()];
+		ContentstockArr = AlLContents.toArray(ContentstockArr);
+		if(ContentstockArr.length>0){
+			SubmitPrompt sumbit = new SubmitPrompt(prptNames, ContentstockArr);
+			sendGenericXMLRequestAndWait(sumbit);
+			if(sumbit.getMessageBox() != null){
+				System.out.println(sumbit.getMessageBox().getText());
+			}else{
+				System.out.println("\t %% Done!");
+			}
+		}
+	}
+
+	
 	public boolean quitTask(int RunID) throws IOException {		
 		QuitTask req = new QuitTask(RunID);
 		sendGenericXMLRequestAndWait(req);
@@ -70,6 +209,21 @@ public class ActivityWindow extends ObjectTemplate{
 		return false;
 	}
 	
+	
+	public boolean restartTask(int RunID, boolean wait) throws IOException {		
+		RestartTask req = new RestartTask(RunID); // force
+		if(wait){
+			sendGenericXMLRequestAndWait(req);
+		}else{
+			sendGenericXMLRequest(req);
+		}
+		
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Task "+ RunID +" Restarted."));
+			return true;
+		}
+		return false;
+	}
 	
 	public boolean restartTask(int RunID) throws IOException {		
 		RestartTask req = new RestartTask(RunID); // force

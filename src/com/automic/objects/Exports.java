@@ -97,7 +97,7 @@ private ObjectBroker broker;
 		FindReferencedObjects req = new FindReferencedObjects(objName);
 		sendGenericXMLRequestAndWait(req);
 		if (req.getMessageBox() == null) {
-			Say(Utils.getSuccessString("Object(s) Successfully Exported."));
+			//Say(Utils.getSuccessString("Object(s) Successfully Exported."));
 			Iterator<UC4ObjectName> it = req.iterator();
 			while(it.hasNext()){
 				ObjArray.add(it.next());
