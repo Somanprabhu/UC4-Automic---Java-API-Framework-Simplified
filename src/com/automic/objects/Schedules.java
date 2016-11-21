@@ -137,4 +137,14 @@ public class Schedules extends ObjectTemplate{
 				filter);
 	}
 	
+	public ScheduleTask createScheduleTaskFromObject(String ObjName) throws TimeoutException, IOException{
+		AddScheduleTask req = new AddScheduleTask(new UC4ObjectName(ObjName));
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			//Say(Utils.getSuccessString(""));
+			return req.getScheduleTask();
+		}
+		return null;
+	}
+	
 }
