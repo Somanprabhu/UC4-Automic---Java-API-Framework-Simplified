@@ -4,13 +4,23 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+
+import org.xml.sax.SAXException;
 
 import com.automic.utils.Utils;
+import com.automic.utils.XMLUtils;
 import com.uc4.api.FolderListItem;
+import com.uc4.api.SearchResultItem;
 import com.uc4.api.UC4HostName;
 import com.uc4.api.UC4ObjectName;
 import com.uc4.api.UC4UserName;
 import com.uc4.api.objects.IFolder;
+import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
 import com.uc4.communication.TimeoutException;
 import com.uc4.communication.requests.ExportObject;
@@ -66,6 +76,44 @@ private ObjectBroker broker;
 		ExportObject req = new ExportObject(objName,file);
 		sendGenericXMLRequestAndWait(req);
 		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Object(s) Successfully Exported."));
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean  exportObject(SearchResultItem item, String FilePathForExport) throws IOException{
+		String ObjectName = item.getName();
+		UC4ObjectName objName = null;
+		if (ObjectName.indexOf('/') != -1) objName = new UC4UserName(ObjectName);
+		else if (ObjectName.indexOf('-')  != -1) objName = new UC4HostName(ObjectName);
+		else objName = new UC4ObjectName(ObjectName);		
+		
+		File file = new File(FilePathForExport);
+		ExportObject req = new ExportObject(objName,file);
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			System.out.println(item.getFolder());
+			Say(Utils.getSuccessString("Object(s) Successfully Exported."));
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean  exportObjectAndAddFolder(SearchResultItem item, String FilePathForExport) throws IOException, ParserConfigurationException, SAXException, TransformerFactoryConfigurationError, TransformerException{
+		//UC4ObjectName objName = new UC4ObjectName(ObjectName);
+		UC4ObjectName objName = null;
+		if (item.getName().indexOf('/') != -1) objName = new UC4UserName(item.getName());
+		else if (item.getName().indexOf('-')  != -1) objName = new UC4HostName(item.getName());
+		else objName = new UC4ObjectName(item.getName());		
+		List<SearchResultItem> items = getBrokerInstance().searches.searchObjectExcludeFolders(item.getName());
+		String FolderName = items.get(0).getFolder();
+		File file = new File(FilePathForExport);
+		ExportObject req = new ExportObject(objName,file);
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			XMLUtils.addFolderToXMLFile(file,FolderName);
+			System.out.println("Test:" + FolderName);
 			Say(Utils.getSuccessString("Object(s) Successfully Exported."));
 			return true;
 		}

@@ -222,17 +222,21 @@ public class Folders extends ObjectTemplate{
 	
 	// Returns a list of ALL Folders (including folders in folders, folders in folders in folders etc.)
 	public ArrayList<IFolder> getFoldersRecursively(IFolder rootFolder, boolean OnlyExtractFolderObjects ) throws IOException{
+		
 		ArrayList<IFolder> FolderList = new ArrayList<IFolder>();
 		if(!OnlyExtractFolderObjects){FolderList.add(getRootFolder());}
-		
-		Iterator<IFolder> it = rootFolder.subfolder();
 		FolderList.add(rootFolder);
-		while (it.hasNext()){
-			IFolder myFolder = it.next();
-			if(! myFolder.getName().equals("<No Folder>")){
-				addFoldersToList(FolderList,myFolder,OnlyExtractFolderObjects);
+		Iterator<IFolder> it = rootFolder.subfolder();
+		
+		if(it != null){
+			while (it.hasNext()){
+				IFolder myFolder = it.next();
+				if(! myFolder.getName().equals("<No Folder>")){
+					addFoldersToList(FolderList,myFolder,OnlyExtractFolderObjects);
+				}
 			}
 		}
+	
 		return FolderList; 
 	}
 }

@@ -203,6 +203,17 @@ private ObjectBroker broker;
 		return genericSearch(ser);
 	}
 	
+	public List<SearchResultItem> searchObject(String ObjectName, String Folder) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		SearchObject ser = new SearchObject();
+		ser.selectAllObjectTypes();
+	
+		// Needs to be the full path
+		ser.setSearchLocation(Folder, true);
+		ser.setName(ObjectName);
+		return genericSearch(ser);
+	}
+	
 	public List<SearchResultItem> searchObject(String ObjectName) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		SearchObject ser = new SearchObject();
@@ -228,6 +239,71 @@ private ObjectBroker broker;
 		ser.unselectAllObjectTypes();
 		ser.setTypeJOBP(true);
 		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
+		ser.setName(ObjectName);
+		return genericSearch(ser);
+	}
+	
+	public List<SearchResultItem> searchFolderWithLocation(String ObjectName, String ObjectTypes, String FullPathLocation,boolean SubFolders) throws IOException{
+		
+		ObjectBroker broker = getBrokerInstance();
+		SearchObject ser = new SearchObject();
+		ser.unselectAllObjectTypes();
+		if(ObjectTypes==null || ObjectTypes.equals("")){
+			ser.selectAllObjectTypes();
+		}else{
+			if("JOBP".matches(ObjectTypes)){ser.setTypeJOBP(true);}
+			if("CALE".matches(ObjectTypes)){ser.setTypeCALE(true);}
+			if("CALL".matches(ObjectTypes)){ser.setTypeCALL(true);}
+			if("CITC".matches(ObjectTypes)){ser.setTypeCITC(true);}
+			if("CLNT".matches(ObjectTypes)){ser.setTypeCLNT(true);}
+			if("CODE".matches(ObjectTypes)){ser.setTypeCODE(true);}
+			if("CONN".matches(ObjectTypes)){ser.setTypeCONN(true);}
+			if("CPIT".matches(ObjectTypes)){ser.setTypeCPIT(true);}
+			if("DASH".matches(ObjectTypes)){ser.setTypeDASH(true);}
+			if("DOCU".matches(ObjectTypes)){ser.setTypeDOCU(true);}
+			if("JOBP".matches(ObjectTypes)){ser.setTypeExecuteable();}
+			if("FILTER".matches(ObjectTypes)){ser.setTypeFILTER(true);}
+			if("FOLD".matches(ObjectTypes)){ser.setTypeFOLD(true);}
+			if("HOST".matches(ObjectTypes)){ser.setTypeHOST(true);}
+			if("HOSTG".matches(ObjectTypes)){ser.setTypeHOSTG(true);}
+			if("HSTA".matches(ObjectTypes)){ser.setTypeHSTA(true);}
+			if("JOBF".matches(ObjectTypes)){ser.setTypeJOBF(true);}
+			if("JOBG".matches(ObjectTypes)){ser.setTypeJOBG(true);}
+			if("JOBI".matches(ObjectTypes)){ser.setTypeJOBI(true);}
+			if("JOBQ".matches(ObjectTypes)){ser.setTypeJOBQ(true);}
+			if("JOBS".matches(ObjectTypes)){ser.setTypeJOBS(true);}
+			if("JSCH".matches(ObjectTypes)){ser.setTypeJSCH(true);}
+			if("LOGIN".matches(ObjectTypes)){ser.setTypeLOGIN(true);}
+			if("PERIOD".matches(ObjectTypes)){ser.setTypePERIOD(true);}
+			if("PRPT".matches(ObjectTypes)){ser.setTypePRPT(true);}
+			if("QUEUE".matches(ObjectTypes)){ser.setTypeQUEUE(true);}
+			if("SCRI".matches(ObjectTypes)){ser.setTypeSCRI(true);}
+			if("SERV".matches(ObjectTypes)){ser.setTypeSERV(true);}
+			if("SLO".matches(ObjectTypes)){ser.setTypeSLO(true);}
+			if("STORE".matches(ObjectTypes)){ser.setTypeSTORE(true);}
+			if("SYNC".matches(ObjectTypes)){ser.setTypeSYNC(true);}
+			if("TZ".matches(ObjectTypes)){ser.setTypeTZ(true);}
+			if("USER".matches(ObjectTypes)){ser.setTypeUSER(true);}
+			if("USRG".matches(ObjectTypes)){ser.setTypeUSRG(true);}
+			if("VARA".matches(ObjectTypes)){ser.setTypeVARA(true);}
+			if("XSL".matches(ObjectTypes)){ser.setTypeXSL(true);}
+		}
+		if(FullPathLocation == null || FullPathLocation.equals("")){
+			ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), SubFolders);
+		}else{
+			ser.setSearchLocation(FullPathLocation, SubFolders);
+		}
+		
+		ser.setName(ObjectName);
+		return genericSearch(ser);
+	}
+	
+	public List<SearchResultItem> searchFolderWithLocation(String ObjectName, String FullPathLocation) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		SearchObject ser = new SearchObject();
+		ser.unselectAllObjectTypes();
+		ser.setTypeFOLD(true);
+		ser.setSearchLocation(FullPathLocation, true);
 		ser.setName(ObjectName);
 		return genericSearch(ser);
 	}

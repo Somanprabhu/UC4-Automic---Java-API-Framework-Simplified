@@ -2,6 +2,7 @@ package com.automic.objects;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InvalidObjectException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -243,8 +244,13 @@ public class Common extends ObjectTemplate{
 	
 	// Save an Automic Object (of any kind)
 	public boolean saveObject(UC4Object obj) throws IOException {
+		SaveObject req = null;
+		try{
+			req = new SaveObject(obj);
+		}catch(InvalidObjectException e){
+			System.out.println("dfglkfjfg");
+		}
 		
-		SaveObject req = new SaveObject(obj);
 		sendGenericXMLRequestAndWait(req);
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Object: "+obj.getName()+" Successfully saved"));
@@ -289,6 +295,7 @@ public class Common extends ObjectTemplate{
 	// close an Automic Object (of any kind)
 	public boolean saveAndCloseObject(UC4Object obj) throws IOException {
 			SaveObject req = new SaveObject(obj);
+			this.setVerbose(true);
 			sendGenericXMLRequestAndWait(req);
 			if (req.getMessageBox() == null) {
 				CloseObject req1 = new CloseObject(obj);

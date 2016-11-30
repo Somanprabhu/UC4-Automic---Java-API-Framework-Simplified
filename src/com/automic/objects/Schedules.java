@@ -147,4 +147,26 @@ public class Schedules extends ObjectTemplate{
 		return null;
 	}
 	
+	public void removeAllTasksFromSchedule(Schedule sched) throws TimeoutException, IOException{
+		Iterator<ScheduleTask> it = sched.taskIterator();
+		while(it.hasNext()){
+			it.next();
+			it.remove();
+		}
+	}
+	
+	public void removeTasksFromSchedule(Schedule sched, String TaskNamePattern, String TaskNumPattern) throws TimeoutException, IOException{
+		Iterator<ScheduleTask> it = sched.taskIterator();
+		while(it.hasNext()){
+			ScheduleTask task = it.next();
+			if(task.getTaskName().matches(TaskNamePattern)){
+				if(Integer.toString(task.getLnr()).matches(TaskNumPattern)){
+					//System.out.println("\t ++ Info: The Following Task is selected for removal: [" + task.getTaskName() +" : " + task.getLnr()+ " ]");
+					it.remove();
+				}
+			}
+			
+		}
+	}
+	
 }
