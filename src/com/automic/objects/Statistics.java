@@ -2,6 +2,7 @@ package com.automic.objects;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.automic.utils.Utils;
 import com.uc4.api.DateTime;
@@ -34,6 +35,18 @@ public class Statistics  extends ObjectTemplate{
 			return req;
 		}
 		return req;
+	}
+
+	public StatisticSearchItem getObjectLastStatistics(String ObjName) throws TimeoutException, IOException{
+		ObjectStatistics req = new ObjectStatistics(new UC4ObjectName(ObjName));
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString(""));
+			Iterator<StatisticSearchItem> it = req.iterator();
+			StatisticSearchItem lastItem = it.next();
+			return lastItem;
+		}
+		return null;
 	}
 	
 	public ObjectStatistics getObjectStatistics(String ObjName) throws TimeoutException, IOException{

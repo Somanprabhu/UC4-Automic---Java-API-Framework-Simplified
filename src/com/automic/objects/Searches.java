@@ -250,6 +250,7 @@ private ObjectBroker broker;
 		ser.unselectAllObjectTypes();
 		if(ObjectTypes==null || ObjectTypes.equals("")){
 			ser.selectAllObjectTypes();
+			
 		}else{
 			if("JOBP".matches(ObjectTypes)){ser.setTypeJOBP(true);}
 			if("CALE".matches(ObjectTypes)){ser.setTypeCALE(true);}
@@ -288,6 +289,7 @@ private ObjectBroker broker;
 			if("VARA".matches(ObjectTypes)){ser.setTypeVARA(true);}
 			if("XSL".matches(ObjectTypes)){ser.setTypeXSL(true);}
 		}
+		
 		if(FullPathLocation == null || FullPathLocation.equals("")){
 			ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), SubFolders);
 		}else{
