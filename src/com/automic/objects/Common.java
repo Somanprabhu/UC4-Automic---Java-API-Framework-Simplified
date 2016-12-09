@@ -73,7 +73,7 @@ public class Common extends ObjectTemplate{
 	//
 	// ####################
 	
-
+	
 	// Move a single object to a different folder
 	public boolean moveObject(String ObjectName, IFolder FolderSource, IFolder FolderTarget) throws IOException{
 		ObjectBroker broker = getBrokerInstance();

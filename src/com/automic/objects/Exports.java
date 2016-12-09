@@ -113,13 +113,18 @@ private ObjectBroker broker;
 		sendGenericXMLRequestAndWait(req);
 		if (req.getMessageBox() == null) {
 			XMLUtils.addFolderToXMLFile(file,FolderName);
-			System.out.println("Test:" + FolderName);
 			Say(Utils.getSuccessString("Object(s) Successfully Exported."));
 			return true;
 		}
 		return false;
 	}
 	
+	public String getFolderFromExportXML(String ExportFile){
+		File file = new File(ExportFile);
+		
+		return ExportFile;
+		
+	}
 	public boolean  exportObjectSilent(String ObjectName, String FilePathForExport) throws IOException{
 		//UC4ObjectName objName = new UC4ObjectName(ObjectName);
 		UC4ObjectName objName = null;
