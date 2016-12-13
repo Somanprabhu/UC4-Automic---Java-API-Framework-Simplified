@@ -214,9 +214,20 @@ public class Common extends ObjectTemplate{
 	
 	// Duplicate an existing object
 	public boolean duplicateObject(String SourceObjectName, String TargetObjectName, IFolder folder) throws IOException{
+				
 		UC4Object obj = openObject(SourceObjectName, true);
-		UC4ObjectName dupName = new UC4ObjectName(TargetObjectName);
-		DuplicateObject req = new DuplicateObject(obj,dupName,folder);
+		
+//		UC4ObjectName objName = null;
+//		if (obj.getName().indexOf('/') != -1) objName = new UC4UserName(obj.getName());
+//		else if (obj.getName().indexOf('-')  != -1) objName = new UC4HostName(obj.getName());
+//		else objName = new UC4ObjectName(obj.getName());		
+
+		UC4ObjectName DupObjName = null;
+		if (TargetObjectName.indexOf('/') != -1) DupObjName = new UC4UserName(TargetObjectName);
+		else if (TargetObjectName.indexOf('-')  != -1) DupObjName = new UC4HostName(TargetObjectName);
+		else DupObjName = new UC4ObjectName(TargetObjectName);		
+
+		DuplicateObject req = new DuplicateObject(obj,DupObjName,folder);
 		sendGenericXMLRequestAndWait(req);
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString(" \t ++ Object: "+obj.getName()+" Successfully saved in folder "+folder));

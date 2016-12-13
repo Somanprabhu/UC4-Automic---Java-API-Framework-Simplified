@@ -58,6 +58,29 @@ public class Statistics  extends ObjectTemplate{
 		}
 		return req;
 	}
+	//"paltform1, platform 2"
+	public GenericStatistics getGenericStatistics(GenericStatistics req) throws TimeoutException, IOException{
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString(""));
+			return req;
+		}
+		return req;
+	}
+	
+	public GenericStatistics getGenericStatistics(String Agentname) throws TimeoutException, IOException{
+
+		GenericStatistics req = new GenericStatistics();
+		req.selectAllPlatforms();
+		req.selectAllTypes();
+		req.setSourceHost(Agentname);
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString(""));
+			return req;
+		}
+		return req;
+	}
 	
 	public GenericStatistics getGenericStatistics(int Client, String Agentname) throws TimeoutException, IOException{
 

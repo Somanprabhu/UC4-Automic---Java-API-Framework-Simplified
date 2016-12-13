@@ -41,6 +41,28 @@ public class Executions extends ObjectTemplate{
 			return false;
 		}
 	
+		// Execute an Automic Object (any object of the executable kind, JOBS, JOBP, EVENT, etc.)
+		public int executeObjectNow(String name,boolean Wait) throws IOException {
+
+			ExecuteObject req = new ExecuteObject(new UC4ObjectName(name));
+			
+			if(Wait){
+				sendGenericXMLRequestAndWait(req);
+				
+				if (req.getMessageBox() == null) {
+					Say(Utils.getSuccessString("Object: "+name+"++ Successfully executed with Run ID: "+req.getRunID()));
+					return req.getRunID();
+				}
+				return req.getRunID();
+				// RunID is 0 if failed.
+			}else{
+				sendGenericXMLRequest(req);
+				return -1;
+			}
+			
+
+		}
+		
 	// Execute an Automic Object (any object of the executable kind, JOBS, JOBP, EVENT, etc.)
 	public int executeObjectNow(String name) throws IOException {
 
@@ -53,6 +75,37 @@ public class Executions extends ObjectTemplate{
 		}
 		return req.getRunID();
 		// RunID is 0 if failed.
+	}
+	
+	// Execute an Automic Object (any object of the executable kind, JOBS, JOBP, EVENT, etc.)
+	public void executeObjectOnceNoWait(String name, String timezone, DateTime startDate, DateTime logicalDate) throws IOException {
+
+		ExecuteObject req = new ExecuteObject(new UC4ObjectName(name));
+		req.executeOnce(startDate, logicalDate, new UC4TimezoneName(timezone), false, null);
+		sendGenericXMLRequest(req);
+		
+//
+		//return req.getRunID();
+	}
+	
+	// Execute an Automic Object (any object of the executable kind, JOBS, JOBP, EVENT, etc.)
+	public int executeObjectOnce(String name, boolean Wait, String timezone, DateTime startDate, DateTime logicalDate) throws IOException {
+
+		ExecuteObject req = new ExecuteObject(new UC4ObjectName(name));
+		req.executeOnce(startDate, logicalDate, new UC4TimezoneName(timezone), false, null);
+		if(Wait){
+			sendGenericXMLRequestAndWait(req);
+			
+			if (req.getMessageBox() == null) {
+				Say(Utils.getSuccessString("Object: "+name+" Successfully executed with Run ID: "+req.getRunID()));
+				return req.getRunID();
+			}
+			return req.getRunID();
+		}else{
+			sendGenericXMLRequest(req);
+			return -1;
+		}
+
 	}
 	
 	// Execute an Automic Object (any object of the executable kind, JOBS, JOBP, EVENT, etc.)
