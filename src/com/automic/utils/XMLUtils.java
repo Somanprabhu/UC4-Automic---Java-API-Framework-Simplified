@@ -1,6 +1,11 @@
 package com.automic.utils;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -17,6 +22,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
@@ -34,17 +40,23 @@ public class XMLUtils {
 		domFactory.setIgnoringComments(true);
 		DocumentBuilder builder = domFactory.newDocumentBuilder(); 
 		Document doc = builder.parse(xmlfile); 
-
+		Node FirstChild = doc.getFirstChild();
 		//Text a = newRoot.createTextNode(FolderPath); 
+		
+		//Element textNode = doc.createElement("textNode");
 		Element newRoot = doc.createElement("Folder");
-		newRoot.setAttribute("Name", FolderPath.substring(4));
-		newRoot.appendChild(doc.getFirstChild());
-		doc.appendChild(newRoot);
+		//newRoot.setAttribute("Name", FolderPath.substring(4));
+		
+		newRoot.appendChild(doc.createTextNode(FolderPath.substring(4)));
+		//newRoot.appendChild(doc.getFirstChild());
+		FirstChild.appendChild(newRoot);
+		
 
 		// output to wrapped.xml
 		Transformer transformer = TransformerFactory.newInstance().newTransformer();
 		transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
 		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		transformer.setOutputProperty(OutputKeys.METHOD, "xml");
 		transformer.transform(new DOMSource(doc), new StreamResult(xmlfile));
 		
 	}
@@ -55,17 +67,33 @@ public class XMLUtils {
 		domFactory.setIgnoringComments(true);
 		DocumentBuilder builder = domFactory.newDocumentBuilder(); 
 		Document doc = builder.parse(xmlfile); 
-		System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-
 		NodeList nList = doc.getElementsByTagName("Folder");
 		
 		Node nNode = nList.item(0);
-
-		Element eElement = (Element) nNode;
-
-		System.out.println("Name : " + eElement.getAttribute("Name"));
-		return eElement.getAttribute("Name");
+		NamedNodeMap  nnm = nNode.getAttributes();
+		return nNode.getTextContent();
 	
 	}
 
+	public static File stripFolderFromXmlFile(String FilePath) throws IOException{
+		File inputFile = new File(FilePath);
+		File tempFile = new File(FilePath+"_TMP.xml");
+
+		BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+		BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+
+		String lineToRemove = "<Folder>";
+		String currentLine;
+
+		while((currentLine = reader.readLine()) != null) {
+		    // trim newline when comparing with lineToRemove
+		    String trimmedLine = currentLine.trim();
+		    if(trimmedLine.startsWith(lineToRemove)) continue;
+		    writer.write(currentLine + System.getProperty("line.separator"));
+		}
+		writer.close(); 
+		reader.close(); 
+		boolean successful = tempFile.renameTo(inputFile);
+		return tempFile;
+	}
 }

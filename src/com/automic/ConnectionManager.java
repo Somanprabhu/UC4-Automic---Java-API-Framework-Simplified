@@ -28,13 +28,15 @@ public final class ConnectionManager {
 	
 	// Try an SSO login to AE
 	public static CreateSession attemptSSOLogin(AECredentials credentials) throws IOException{		
-		conn = getConnection(credentials.getAEHostnameOrIp(), credentials.getAECPPort());
+		conn = getConnection(credentials.getAEHostnameOrIp(), credentials.getAECPPortList());
 		return LoginToAEwithSSO(conn,credentials.getAEClientToConnect());
 	}
 	
+
+
 	// Try a Standard login to AE
 	public static CreateSession attemptStdLogin(AECredentials credentials) throws IOException{
-		conn = getConnection(credentials.getAEHostnameOrIp(), credentials.getAECPPort());
+		conn = getConnection(credentials.getAEHostnameOrIp(), credentials.getAECPPortList());
 		
 		String PASSWORD = credentials.getAEUserPassword();
 		// #1 - Fix. if password passed with single quotes, they are interpreted as characters.. removing them if detected:
@@ -97,24 +99,50 @@ public final class ConnectionManager {
 		return null;
 	}
 	
-	private static Connection getConnection(String Hostname, int PortNum) throws IOException{
-		try{
-			conn = Connection.open(Hostname, PortNum);
-		}catch (UnresolvedAddressException e){
-			System.out.println(" -- ERROR: Could Not Resolve Host or IP: "+Hostname);
-			System.exit(999);
-			
-		}catch (ConnectException c){
-			System.out.println(" -- ERROR: Could Not Connect to Host: " + Hostname);
-			System.out.println(" --     Hint: is the host or IP reachable?");
-			System.exit(998);
+	private static Connection getConnection(String Hostname, ArrayList<Integer> PortList) {
+		for(int i=0;i<PortList.size();i++){
+			int Port = PortList.get(i);
+			try{
+				conn = Connection.open(Hostname, Port);
+			}catch (UnresolvedAddressException e){
+				System.out.println(" -- Error: Could Not Resolve Host or IP: "+Hostname);
+				System.exit(999);
+				
+			}catch (ConnectException c){
+				System.out.println(" -- Warning: Could Not Connect to [Hostname:Port]: [" + Hostname+":"+Port+"]");
+				//System.out.println(" --     Hint: is the host or IP reachable?");
+				continue;
+				//System.exit(998);
+			} catch (IOException e) {
+				System.out.println(" -- Unknown Error: Could Not Connect to Host / Port: " + Hostname+":"+Port);
+				continue;
+			}
+			System.out.println(" %% Info: Connection Successfully Established for [Hostname:Port]: [" + Hostname+":"+Port+"]\n");
+			return conn;
 		}
-		return conn;
+		System.out.println(" -- Error: Could not establish connection on any port!");
+		System.exit(996);
+		return null;
 	}
+	
+//	private static Connection getConnection(String Hostname, int PortNum) throws IOException{
+//		try{
+//			conn = Connection.open(Hostname, PortNum);
+//		}catch (UnresolvedAddressException e){
+//			System.out.println(" -- ERROR: Could Not Resolve Host or IP: "+Hostname);
+//			System.exit(999);
+//			
+//		}catch (ConnectException c){
+//			System.out.println(" -- ERROR: Could Not Connect to Host: " + Hostname);
+//			System.out.println(" --     Hint: is the host or IP reachable?");
+//			System.exit(998);
+//		}
+//		return conn;
+//	}
 
 public static Connection connectToClientWithSSO(AECredentials credentials) throws IOException{
 		
-		conn = getConnection(credentials.getAEHostnameOrIp(),credentials.getAECPPort());
+		conn = getConnection(credentials.getAEHostnameOrIp(),credentials.getAECPPortList());
 	
 		CreateSession sess = LoginToAEwithSSO(conn,credentials.getAEClientToConnect());
 		
@@ -151,7 +179,7 @@ public static Connection connectToClientWithSSO(AECredentials credentials) throw
 	}
 
 private static Connection connectToClientwithSTD(AECredentials credentials) throws IOException{
-	conn = getConnection(credentials.getAEHostnameOrIp(),credentials.getAECPPort());
+	conn = getConnection(credentials.getAEHostnameOrIp(),credentials.getAECPPortList());
 	
 	String PASSWORD = credentials.getAEUserPassword();
 

@@ -150,6 +150,8 @@ public class Folders extends ObjectTemplate{
 	// below method takes as an input either "AEV10 - 0005/UC4.APPLICATIONS/JFORUM_BREN"
 	// or simply: "0005/UC4.APPLICATIONS/JFORUM_BREN"
 	public IFolder getFolderByFullPathName(String FolderName) throws IOException{
+		if(FolderName.contains("<No Folder>")){return getNoFolderFolder();}
+		
 		 ArrayList<IFolder> allFolders = getAllFolders(true);
 		 for(IFolder folder : allFolders){
 			 String FullPath = "";

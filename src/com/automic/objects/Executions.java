@@ -3,6 +3,13 @@ package com.automic.objects;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import com.automic.utils.ReportTypeEnum;
 import com.automic.utils.Utils;
@@ -63,6 +70,23 @@ public class Executions extends ObjectTemplate{
 
 		}
 		
+		//public void 
+		
+		// Execute an Automic Object (any object of the executable kind, JOBS, JOBP, EVENT, etc.)
+		public int executeObjectNow(String name,int TimeOut) throws IOException {
+
+			ExecuteObject req = new ExecuteObject(new UC4ObjectName(name));
+			
+				sendGenericXMLRequestAndWait(req);
+				
+				if (req.getMessageBox() == null) {
+					Say(Utils.getSuccessString("Object: "+name+"++ Successfully executed with Run ID: "+req.getRunID()));
+					return req.getRunID();
+				}
+				return req.getRunID();
+				// RunID is 0 if failed.
+		}
+		
 	// Execute an Automic Object (any object of the executable kind, JOBS, JOBP, EVENT, etc.)
 	public int executeObjectNow(String name) throws IOException {
 
@@ -70,7 +94,7 @@ public class Executions extends ObjectTemplate{
 		sendGenericXMLRequestAndWait(req);
 		
 		if (req.getMessageBox() == null) {
-			Say(Utils.getSuccessString("Object: "+name+"++ Successfully executed with Run ID: "+req.getRunID()));
+			Say(Utils.getSuccessString("Object: "+name+" Successfully executed with Run ID: "+req.getRunID()));
 			return req.getRunID();
 		}
 		return req.getRunID();
@@ -83,11 +107,78 @@ public class Executions extends ObjectTemplate{
 		ExecuteObject req = new ExecuteObject(new UC4ObjectName(name));
 		req.executeOnce(startDate, logicalDate, new UC4TimezoneName(timezone), false, null);
 		sendGenericXMLRequest(req);
-		
-//
-		//return req.getRunID();
 	}
 	
+	class RunNow implements Callable<String>{
+		public String ObjectName;
+		public RunNow(String ObjName){
+			this.ObjectName = ObjName;
+		}
+	    @Override
+	    public String call() throws Exception {
+	       // Thread.sleep(4000); // Just to demo a long running task of 4 seconds.
+	    	int RunID = executeObjectNow(this.ObjectName);
+	        return Integer.toString(RunID);
+	    }
+	}
+	
+	class RunLater implements Callable<String>{
+		public String ObjectName;
+		public String TimeZone;
+		public DateTime StartDate;
+		public DateTime LogicalDate;
+		
+		public RunLater(String ObjName, String timezone, DateTime startDate, DateTime logicalDate){
+			this.ObjectName = ObjName;
+			this.TimeZone = timezone;
+			this.StartDate = startDate;
+			this.LogicalDate = logicalDate;
+		}
+	    @Override
+	    public String call() throws Exception {
+	       // Thread.sleep(4000); // Just to demo a long running task of 4 seconds.
+	    	int RunID = executeObjectOnce(this.ObjectName,true,this.TimeZone,this.StartDate,this.LogicalDate);
+	        return Integer.toString(RunID);
+	    }
+	}
+	
+	public int executeNowWithTimeout(String ObjectName, int Timeout) throws InterruptedException, ExecutionException {
+	        ExecutorService executor = Executors.newSingleThreadExecutor();
+	        Future<String> future = executor.submit(new RunNow(ObjectName));
+	        int RUNID=-99;
+	        try {
+	           // System.out.println("Started..");
+	        	String RunID = future.get(Timeout, TimeUnit.SECONDS);
+	            RUNID = Integer.parseInt(RunID);
+	            return RUNID;
+	        } catch (TimeoutException e) {
+	            future.cancel(true);
+	            //System.out.println(" -- Error. TimeOut Occured.");
+	            RUNID = -10;
+	        }
+
+	        executor.shutdownNow();
+	        return RUNID;
+	}
+	
+	public int executeLaterWithTimeout(String ObjectName, String timezone, DateTime startDate, DateTime logicalDate, int Timeout) throws InterruptedException, ExecutionException {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<String> future = executor.submit(new RunLater(ObjectName,timezone,startDate,logicalDate));
+        int RUNID=-99;
+        try {
+           // System.out.println("Started..");
+        	String RunID = future.get(Timeout, TimeUnit.SECONDS);
+            RUNID = Integer.parseInt(RunID);
+            return RUNID;
+        } catch (TimeoutException e) {
+            future.cancel(true);
+            //System.out.println(" -- Error. TimeOut Occured.");
+            RUNID = -10;
+        }
+
+        executor.shutdownNow();
+        return RUNID;
+}
 	// Execute an Automic Object (any object of the executable kind, JOBS, JOBP, EVENT, etc.)
 	public int executeObjectOnce(String name, boolean Wait, String timezone, DateTime startDate, DateTime logicalDate) throws IOException {
 
@@ -109,6 +200,16 @@ public class Executions extends ObjectTemplate{
 	}
 	
 	// Execute an Automic Object (any object of the executable kind, JOBS, JOBP, EVENT, etc.)
+	/**
+	 * 
+	 * @param name
+	 * @param timezone
+	 * @param startDate
+	 * @param logicalDate
+	 * @return
+	 * @throws IOException
+	 * @deprecated
+	 */
 	public int executeObjectOnce(String name, String timezone, DateTime startDate, DateTime logicalDate) throws IOException {
 
 		ExecuteObject req = new ExecuteObject(new UC4ObjectName(name));

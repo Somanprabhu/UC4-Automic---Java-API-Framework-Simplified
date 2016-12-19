@@ -26,13 +26,14 @@ public class GoAutomic {
 			
 			String AEHostnameOrIP = "192.168.1.179";
 			int AECPPrimaryPort = 2217;
+			String Ports = "2217,2218";
 			int AEClientNumber = 0; //5; // 330;
 			String AEUserLogin = "UC"; //"ARA"; //"BSP";
 			String AEUserDepartment = "UC"; //"ARA"; //"AUTOMIC";
 			String AEUserPassword = "UC"; //"oneAutomation";
 			char AEMessageLanguage = 'E';
 			
-			AECredentials myClientTarget = new AECredentials(AEHostnameOrIP,AECPPrimaryPort,AEClientNumber,AEUserDepartment,AEUserLogin,AEUserPassword,AEMessageLanguage);
+			AECredentials myClientTarget = new AECredentials(AEHostnameOrIP,Ports,AEClientNumber,AEUserDepartment,AEUserLogin,AEUserPassword,AEMessageLanguage);
 			ConnectionManager mgrTarget = new ConnectionManager();
 			Connection connSource = mgrTarget.connectToClient(myClientTarget);
 			
