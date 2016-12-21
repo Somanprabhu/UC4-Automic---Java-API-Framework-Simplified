@@ -1,6 +1,7 @@
 package com.automic;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class AECredentials {
 
@@ -14,10 +15,14 @@ public class AECredentials {
 	private String AEDepartment;    // User Department
 	private String AEUserLogin;  	// AE User Login
 	private String AEUserPassword; 	// AE User Password
+	
 	private char AEMessageLanguage; // Language: 'E' or 'D', or 'F'
 	private boolean isSSO;
 	private ArrayList<Integer> FinalPortCollection = new ArrayList<Integer>();
-	
+	private String DEFAULTCONNECTIONNAME = "DEFAULT_CONNECTION";
+	private String AEConnectionName = DEFAULTCONNECTIONNAME; 	// AE Connection Name
+	//<Connection Name, <Hostname,<List of Ports>>>
+	private HashMap<String,HashMap<String,ArrayList<Integer>>> HostPortMap = new HashMap<String,HashMap<String,ArrayList<Integer>>>();
 	/**
 	 * @deprecated
 	 * pass Port as a string or one or more ports separated by commas.
@@ -35,9 +40,16 @@ public class AECredentials {
 		this.isSSO = false;
 		
 		FinalPortCollection.add(AECPPort);
+		HashMap<String,ArrayList<Integer>> tempHash = new HashMap<String,ArrayList<Integer>>();
+		tempHash.put(AEHostnameOrIp, this.FinalPortCollection);
+		this.HostPortMap.put(DEFAULTCONNECTIONNAME,tempHash);
 	}
 	
 	// With Port Collection instead of singular port
+	/**
+	 * 
+	 * @deprecated
+	 */
 	public AECredentials(String AEHostnameOrIp,String PortList,int AEClientToConnect,String AEUserLogin, String AEDepartment,String AEUserPassword,char AEMessageLanguage ){
 		
 		this.AEHostnameOrIp = AEHostnameOrIp;
@@ -53,9 +65,37 @@ public class AECredentials {
 			Integer myPort = Integer.parseInt(PortsArray[i]);
 			this.FinalPortCollection.add(myPort);
 		}
+		HashMap<String,ArrayList<Integer>> tempHash = new HashMap<String,ArrayList<Integer>>();
+		tempHash.put(AEHostnameOrIp, this.FinalPortCollection);
+		this.HostPortMap.put(DEFAULTCONNECTIONNAME,tempHash);
+	}
+	
+	// With Port Collection instead of singular port
+	public AECredentials(HashMap<String,HashMap<String,ArrayList<Integer>>> HostPortMap,int AEClientToConnect,String AEUserLogin, String AEDepartment,String AEUserPassword,char AEMessageLanguage ){
+		
+		this.AEClientToConnect = AEClientToConnect;
+		this.AEDepartment = AEDepartment;
+		this.AEUserLogin = AEUserLogin;
+		this.AEUserPassword = AEUserPassword;
+		this.AEMessageLanguage = AEMessageLanguage;
+		this.isSSO = false;
+		//this.HostPortMap = HostPortMap;
+		this.HostPortMap=HostPortMap;
 	}
 	
 	// for SSO
+	public AECredentials(HashMap<String,HashMap<String,ArrayList<Integer>>> HostPortMap,int AEClientToConnect,char AEMessageLanguage ){
+		
+		this.AEClientToConnect = AEClientToConnect;
+		this.AEDepartment = "";
+		this.AEUserLogin = "";
+		this.AEUserPassword = "";
+		this.AEMessageLanguage = AEMessageLanguage;
+		this.isSSO = true;
+		//this.HostPortMap = HostPortMap;
+		this.HostPortMap=HostPortMap;
+	}
+	
 	/**
 	 * @deprecated
 	 * pass Port as a string or one or more ports separated by commas.
@@ -72,9 +112,17 @@ public class AECredentials {
 		this.AEMessageLanguage = AEMessageLanguage;
 		this.isSSO = true;
 		FinalPortCollection.add(AECPPort);
+		
+		HashMap<String,ArrayList<Integer>> tempHash = new HashMap<String,ArrayList<Integer>>();
+		tempHash.put(AEHostnameOrIp, this.FinalPortCollection);
+		this.HostPortMap.put(DEFAULTCONNECTIONNAME,tempHash);
+
 	}
 	
-	// for SSO & Port collection
+	/**
+	 * 
+	 * @deprecated
+	 */
 	public AECredentials(String AEHostnameOrIp,String PortList,int AEClientToConnect,char AEMessageLanguage ){
 		
 		this.AEHostnameOrIp = AEHostnameOrIp;
@@ -88,6 +136,12 @@ public class AECredentials {
 		for(int i=0;i<PortsArray.length;i++){
 			this.FinalPortCollection.add(Integer.parseInt(PortsArray[i]));
 		}
+		
+		HashMap<String,ArrayList<Integer>> tempHash = new HashMap<String,ArrayList<Integer>>();
+		tempHash.put(AEHostnameOrIp, this.FinalPortCollection);
+		this.HostPortMap.put(DEFAULTCONNECTIONNAME,tempHash);
+		
+		//this.HostPortMap.put(AEHostnameOrIp, this.FinalPortCollection);
 	}
 	
 	public boolean getSSO(){
@@ -147,5 +201,15 @@ public class AECredentials {
 	}
 	public char getAEMessageLanguage() {
 		return AEMessageLanguage;
+	}
+	
+	public HashMap<String,HashMap<String,ArrayList<Integer>>> getHostPortMap(){
+		return HostPortMap;
+	}
+	public void setAEConnName(String ConnectionName){
+		AEConnectionName = ConnectionName;
+	}
+	public String getAEConnName(){
+		return AEConnectionName;
 	}
 }
