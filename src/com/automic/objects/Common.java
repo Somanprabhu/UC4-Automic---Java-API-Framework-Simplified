@@ -300,14 +300,14 @@ public class Common extends ObjectTemplate{
 	//
 	public String getObjectTypeFromName(String ObjectName) throws IOException{
 		if(ObjectName.contains("*") || ObjectName.contains("?")){
-			return null;
+			return "";
 		}
 		ObjectBroker broker = getBrokerInstance();
 		List<SearchResultItem> list = broker.searches.searchObject(ObjectName);
 		if(list.size()>0){
 			return list.get(0).getObjectType();	
 		}else{
-			return null;
+			return "";
 		}
 	}
 			
