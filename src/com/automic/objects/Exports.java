@@ -105,13 +105,22 @@ private ObjectBroker broker;
 		
 		List<SearchResultItem> items = getBrokerInstance().searches.searchObjectExcludeFolders(item.getName());
 		String FolderName = items.get(0).getFolder();
+		String ObjectType = item.getObjectType();
 		File file = new File(FilePathForExport);
+		
+//		if(ObjectType.equals("STORE")){
+//			String nativeDir = file.getAbsolutePath().replace(".xml.tmp", "");
+//			getBrokerInstance().exports.extractBinariesFromStorage(item.getName(), nativeDir);
+//		}
+//		
 		ExportObject req = new ExportObject(objName,file);
 		sendGenericXMLRequestAndWait(req);
 		if (req.getMessageBox() == null) {
 			XMLUtils.addFolderToXMLFile(file,FolderName);
 			Say(Utils.getSuccessString("Object(s) Successfully Exported."));
 			return true;
+		}else{
+			System.out.println("\t -- Error: " + req.getMessageBox().getText());
 		}
 		return false;
 	}
@@ -157,6 +166,7 @@ private ObjectBroker broker;
 		Storage STORE = (Storage) broker.common.openObject(StorageObjName, true);
 		String DATASEPARATOR = "____";
 		String NAKEYWORD = "NA";
+		String RESOURCEMARKER = "RESOURCE";
 		Iterator<ResourceItem> iter = STORE.resourceItems().resourceItemsIterator();
 		while(iter.hasNext()){
 			ResourceItem item = iter.next();
@@ -171,6 +181,7 @@ private ObjectBroker broker;
 			if(!item.getPlatform().equals("*")){PLATFORM = item.getPlatform();}
 			
 			String FILENAME = 
+					DATASEPARATOR + RESOURCEMARKER + DATASEPARATOR+
 					item.getName() +DATASEPARATOR+
 					item.getFilename()+DATASEPARATOR +
 					VERSION+DATASEPARATOR+ 

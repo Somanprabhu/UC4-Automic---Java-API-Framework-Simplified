@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.automic.utils.Utils;
+import com.uc4.api.MessageBox;
 import com.uc4.api.PlatformSwHwType;
 import com.uc4.api.Template;
 import com.uc4.api.UC4ObjectName;
@@ -96,8 +97,8 @@ public class Storages extends ObjectTemplate{
 				req.setFileName(inputFile.getName());
 				sendGenericXMLRequestAndWait(req);
 				
-				if (req.getMessageBox() == null) {
-					Say("");
+				if (req.getMessageBox() != null) {
+					//System.out.println("Error occured:"+req.getMessageBox().getText());
 					return req;
 				}
 				return req;

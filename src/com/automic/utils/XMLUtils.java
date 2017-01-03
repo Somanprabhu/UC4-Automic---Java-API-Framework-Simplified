@@ -62,7 +62,7 @@ public class XMLUtils {
 	}
 	
 	public static String getFolderFromXMLFile(File xmlfile) throws ParserConfigurationException, SAXException, IOException, TransformerFactoryConfigurationError, TransformerException{
-		
+		//System.out.println("DEBUG:" + xmlfile.getAbsolutePath());
 		DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance(); 
 		domFactory.setIgnoringComments(true);
 		DocumentBuilder builder = domFactory.newDocumentBuilder(); 
@@ -75,6 +75,47 @@ public class XMLUtils {
 	
 	}
 
+	public static String getObjectTypeFromXmlFile(String FilePath) throws IOException{
+		File inputFile = new File(FilePath);
+
+		BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+
+		String currentLine;
+		boolean NextLineContainsType = false;
+		while((currentLine = reader.readLine()) != null) {
+		    // trim newline when comparing with lineToRemove
+		    String trimmedLine = currentLine.trim();
+		    if(trimmedLine.startsWith("<uc-export")){
+		    	NextLineContainsType = true;
+		    	continue;
+		    }
+		    if(NextLineContainsType){
+		    	String tLine = currentLine.trim();
+		    	return tLine.split(" ")[0].replace("<","");
+		    }
+		    
+		}
+		return "";
+	}
+	
+	public static String getObjectNameFromXmlFile(String FilePath) throws IOException{
+		File inputFile = new File(FilePath);
+
+		BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+
+		String currentLine;
+
+		while((currentLine = reader.readLine()) != null) {
+		    // trim newline when comparing with lineToRemove
+		    String trimmedLine = currentLine.trim();
+		    if(trimmedLine.contains(" name=")){
+		    	return trimmedLine.split("name=")[1].replaceAll(">","").replaceAll("\"","");
+		    }
+
+		}
+		return "";
+	}
+	
 	public static File stripFolderFromXmlFile(String FilePath) throws IOException{
 		File inputFile = new File(FilePath);
 		File tempFile = new File(FilePath+"_TMP.xml");
