@@ -1,61 +1,42 @@
 package com.automic.objects;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import org.xml.sax.SAXException;
-
 import com.automic.utils.Utils;
-import com.uc4.api.DateTime;
 import com.uc4.api.FolderListItem;
-import com.uc4.api.QuickSearchItem;
 import com.uc4.api.SearchResultItem;
-import com.uc4.api.TaskFilter;
 import com.uc4.api.Template;
 import com.uc4.api.UC4HostName;
 import com.uc4.api.UC4ObjectName;
 import com.uc4.api.UC4TimezoneName;
 import com.uc4.api.UC4UserName;
-import com.uc4.api.VersionControlListItem;
-import com.uc4.api.objects.ExecuteRecurring;
 import com.uc4.api.objects.IFolder;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
 import com.uc4.communication.TimeoutException;
-import com.uc4.communication.requests.ActivityList;
 import com.uc4.communication.requests.CacheList;
-import com.uc4.communication.requests.CancelTask;
 import com.uc4.communication.requests.CloseObject;
 import com.uc4.communication.requests.CreateObject;
 import com.uc4.communication.requests.DeepRename;
+import com.uc4.communication.requests.DeepRename.AbortIfNameExistsMode;
+import com.uc4.communication.requests.DeepRename.IncludeFolderNamesMode;
 import com.uc4.communication.requests.DeleteObject;
 import com.uc4.communication.requests.DuplicateObject;
-import com.uc4.communication.requests.ExecuteObject;
-import com.uc4.communication.requests.ExportObject;
-import com.uc4.communication.requests.ExportWithReferences;
-import com.uc4.communication.requests.FindReferencedObjects;
 import com.uc4.communication.requests.FolderList;
 import com.uc4.communication.requests.GetChangeLog;
+import com.uc4.communication.requests.GetObjectProperties;
 import com.uc4.communication.requests.GetReplaceList;
-import com.uc4.communication.requests.ImportObject;
 import com.uc4.communication.requests.MoveObject;
 import com.uc4.communication.requests.OpenObject;
 import com.uc4.communication.requests.QuarantineList;
-import com.uc4.communication.requests.QueueList;
-import com.uc4.communication.requests.QuickSearch;
 import com.uc4.communication.requests.RenameObject;
 import com.uc4.communication.requests.ReplaceObject;
 import com.uc4.communication.requests.ResetOpenFlag;
-import com.uc4.communication.requests.RestoreObjectVersion;
 import com.uc4.communication.requests.SaveObject;
-import com.uc4.communication.requests.SearchObject;
 import com.uc4.communication.requests.TemplateList;
-import com.uc4.communication.requests.VersionControlList;
-import com.uc4.communication.requests.XMLRequest;
 
 public class Common extends ObjectTemplate{
 	
@@ -73,6 +54,52 @@ public class Common extends ObjectTemplate{
 	//
 	// ####################
 	
+	
+	public String getContainingFolderAsString(UC4ObjectName name) throws IOException{
+		GetObjectProperties props = new GetObjectProperties(name);
+		sendGenericXMLRequestAndWait(props);
+		
+		return props.getHomeFolder();
+	}
+
+	public IFolder getContainingFolder(String ObjectName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		return broker.folders.getFolderByFullPathName(ObjectName);
+	}
+	
+	public UC4ObjectName getUC4ObjectNameFromString(String ObjectName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		String TYPE = broker.common.getObjectTypeFromName(ObjectName);
+	
+		if (TYPE.equalsIgnoreCase("USER")){
+			return new UC4UserName(ObjectName);
+		}
+		
+		if(TYPE.equalsIgnoreCase("TZ")){
+			return new UC4TimezoneName(ObjectName);
+		}
+		
+		if(TYPE.equalsIgnoreCase("HOST")){
+			return new UC4HostName(ObjectName);
+		}
+		
+		return new UC4ObjectName(ObjectName);
+	}
+	
+	public boolean isHostnameValid(String ObjectName){
+		UC4HostName uc4 = new UC4HostName("TESTHOSTNAME");
+		return uc4.isValid(ObjectName);	
+	}
+	
+	public boolean isTZnameValid(String ObjectName){
+		UC4TimezoneName uc4 = new UC4TimezoneName("TESTTZ");
+		return uc4.isValid(ObjectName);	
+	}
+	
+	public boolean isUsernameValid(String ObjectName){
+		UC4UserName uc4 = new UC4UserName("TEST/DEPT");
+		return uc4.isValid(ObjectName);	
+	}
 	
 	// Move a single object to a different folder
 	public boolean moveObject(String ObjectName, IFolder FolderSource, IFolder FolderTarget) throws IOException{
@@ -120,12 +147,6 @@ public class Common extends ObjectTemplate{
 		UC4ObjectName sourceName = new UC4ObjectName(SourceObjectName);
 		UC4ObjectName targetName = new UC4ObjectName(TargetObjectName);
 		String SourceObjectTitle = "";
-	//	List<SearchResultItem> items = getBrokerInstance().searches.searchObject(SourceObjectName);
-		// this method should always only be used on exact objects and not on * or ? expressions.. the items List should always yield exactly one element
-	//	if(items.size()==1){
-	//		SourceObjectTitle = items.get(0).getTitle();
-	//	}
-		
 		ObjectBroker broker = getBrokerInstance();
 		broker.common.reclaimObject(sourceName.getName());
 		RenameObject req = new RenameObject(sourceName,targetName,folder,SourceObjectTitle);
@@ -204,28 +225,50 @@ public class Common extends ObjectTemplate{
 			DeepRename req = new DeepRename();
 			req.setNamePattern(NewPatternName);
 			req.setCleanPattern(ExistingPatternName);
+			req.setAbortIfNameExists(AbortIfNameExistsMode.ALWAYS);
+			
 			sendGenericXMLRequestAndWait(req);
 			if (req.getMessageBox() == null) {
 				Say(Utils.getSuccessString("Object(s) with Pattern: "+ExistingPatternName+" Successfully renamed to Pattern: "+NewPatternName));
+				
 				return true;
 			}
 			return false;
 	}
 	
-	// Duplicate an existing object
-	public boolean duplicateObject(String SourceObjectName, String TargetObjectName, IFolder folder) throws IOException{
-				
-		UC4Object obj = openObject(SourceObjectName, true);
-		
-//		UC4ObjectName objName = null;
-//		if (obj.getName().indexOf('/') != -1) objName = new UC4UserName(obj.getName());
-//		else if (obj.getName().indexOf('-')  != -1) objName = new UC4HostName(obj.getName());
-//		else objName = new UC4ObjectName(obj.getName());		
+	public boolean deepRenameObjects(String ExistingPatternName, String NewPatternName, String abortIfNameExistMode, String includeFolderNamesMode) throws IOException{
 
-		UC4ObjectName DupObjName = null;
-		if (TargetObjectName.indexOf('/') != -1) DupObjName = new UC4UserName(TargetObjectName);
-		else if (TargetObjectName.indexOf('-')  != -1) DupObjName = new UC4HostName(TargetObjectName);
-		else DupObjName = new UC4ObjectName(TargetObjectName);		
+		DeepRename req = new DeepRename();
+		req.setNamePattern(NewPatternName);
+		req.setCleanPattern(ExistingPatternName);
+		if(abortIfNameExistMode != null && !abortIfNameExistMode.equals("")){
+			// possible values: ALWAYS / FIRST_FOLDER / NEVER
+			AbortIfNameExistsMode aMode = AbortIfNameExistsMode.valueOf(abortIfNameExistMode);
+			if(aMode != null){
+				req.setAbortIfNameExists(aMode);
+			}
+		}
+		
+		if(includeFolderNamesMode != null && !includeFolderNamesMode.equals("")){
+			// Possible Values: ALL / ALL_BUT_FIRST / NONE / ONLY_FIRST / SET_FIRST
+			IncludeFolderNamesMode iMode = IncludeFolderNamesMode.valueOf(includeFolderNamesMode);
+			if(iMode != null){
+				req.setIncludeFolderNames(iMode);
+			}
+		}
+
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Object(s) with Pattern: "+ExistingPatternName+" Successfully renamed to Pattern: "+NewPatternName));
+			return true;
+		}
+		return false;
+}
+	
+	public boolean duplicateObject(String SourceObjectName, String TargetObjectName, IFolder folder) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		UC4Object obj = openObject(SourceObjectName, true);
+		UC4ObjectName DupObjName = broker.common.getUC4ObjectNameFromString(SourceObjectName);
 
 		DuplicateObject req = new DuplicateObject(obj,DupObjName,folder);
 		sendGenericXMLRequestAndWait(req);
@@ -236,22 +279,68 @@ public class Common extends ObjectTemplate{
 		return false;
 	}
 	
-	// Open an Automic Object (of any kind)
-	public UC4Object openObject(String name, boolean readOnly) throws IOException {
-		//Say(" \t ++ Opening object: "+name);
-		UC4ObjectName objName = null;
-		if (name.indexOf('/') != -1) objName = new UC4UserName(name);
-		else if (name.indexOf('-')  != -1) objName = new UC4HostName(name);
-		else objName = new UC4ObjectName(name);		
-
-		OpenObject req = new OpenObject(objName,readOnly,true);
-		
-		sendGenericXMLRequestAndWait(req);
-		if (req.getMessageBox() == null) {
-			return req.getUC4Object();
+	// Duplicate an existing object
+	//	public boolean duplicateObject(String SourceObjectName, String TargetObjectName, IFolder folder) throws IOException{
+	//				
+	//		UC4Object obj = openObject(SourceObjectName, true);
+	//		
+	//		UC4ObjectName DupObjName = null;
+	//		if (TargetObjectName.indexOf('/') != -1) DupObjName = new UC4UserName(TargetObjectName);
+	//		else if (TargetObjectName.indexOf('-')  != -1) DupObjName = new UC4HostName(TargetObjectName);
+	//		else DupObjName = new UC4ObjectName(TargetObjectName);		
+	//
+	//		DuplicateObject req = new DuplicateObject(obj,DupObjName,folder);
+	//		sendGenericXMLRequestAndWait(req);
+	//		if (req.getMessageBox() == null) {
+	//			Say(Utils.getSuccessString(" \t ++ Object: "+obj.getName()+" Successfully saved in folder "+folder));
+	//			return true;
+	//		}
+	//		return false;
+	//	}
+	//
+	public String getObjectTypeFromName(String ObjectName) throws IOException{
+		if(ObjectName.contains("*") || ObjectName.contains("?")){
+			return null;
 		}
-		return null;
+		ObjectBroker broker = getBrokerInstance();
+		List<SearchResultItem> list = broker.searches.searchObject(ObjectName);
+		if(list.size()>0){
+			return list.get(0).getObjectType();	
+		}else{
+			return null;
+		}
 	}
+			
+	// Open an Automic Object (of any kind)
+		public UC4Object openObject(String name, boolean readOnly) throws IOException {
+			ObjectBroker broker = getBrokerInstance();
+			UC4ObjectName objName = broker.common.getUC4ObjectNameFromString(name);
+
+			OpenObject req = new OpenObject(objName,readOnly,true);
+			
+			sendGenericXMLRequestAndWait(req);
+			if (req.getMessageBox() == null) {
+				return req.getUC4Object();
+			}
+			return null;
+		}
+//	
+//	// Open an Automic Object (of any kind)
+//	public UC4Object openObject(String name, boolean readOnly) throws IOException {
+//		//Say(" \t ++ Opening object: "+name);
+//		UC4ObjectName objName = null;
+//		if (name.indexOf('/') != -1) objName = new UC4UserName(name);
+//		else if (name.indexOf('-')  != -1) objName = new UC4HostName(name);
+//		else objName = new UC4ObjectName(name);		
+//
+//		OpenObject req = new OpenObject(objName,readOnly,true);
+//		
+//		sendGenericXMLRequestAndWait(req);
+//		if (req.getMessageBox() == null) {
+//			return req.getUC4Object();
+//		}
+//		return null;
+//	}
 	
 	// Save an Automic Object (of any kind)
 	public boolean saveObject(UC4Object obj) throws IOException {
@@ -259,7 +348,7 @@ public class Common extends ObjectTemplate{
 		try{
 			req = new SaveObject(obj);
 		}catch(InvalidObjectException e){
-			System.out.println("dfglkfjfg");
+
 		}
 		
 		sendGenericXMLRequestAndWait(req);
@@ -272,28 +361,18 @@ public class Common extends ObjectTemplate{
 
 	// Resets the "open" flag in DB, forcing an already open object to be closed and available
 	public boolean reclaimObject(String ObjectName) throws TimeoutException, IOException{
-		if(ObjectName.contains("/")){
-			UC4UserName objName = new UC4UserName(ObjectName);
-			ResetOpenFlag req = new ResetOpenFlag(objName);
-			sendGenericXMLRequestAndWait(req);
-			if (req.getMessageBox() == null) {
-				return true;
-			}
-			return false;
-		}else{
-			UC4ObjectName objName = new UC4ObjectName(ObjectName);
-			ResetOpenFlag req = new ResetOpenFlag(objName);
-			sendGenericXMLRequestAndWait(req);
-			if (req.getMessageBox() == null) {
-				return true;
-			}
+		ObjectBroker broker = getBrokerInstance();
+		UC4ObjectName objName = broker.common.getUC4ObjectNameFromString(ObjectName);
+		ResetOpenFlag req = new ResetOpenFlag(objName);
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			return true;
 		}
 		return false;
 	}
 	
 	// close an Automic Object (of any kind)
 	public boolean closeObject(UC4Object obj) throws IOException {
-
 		CloseObject req = new CloseObject(obj);
 		sendGenericXMLRequestAndWait(req);
 		if (req.getMessageBox() == null) {
@@ -333,10 +412,8 @@ public class Common extends ObjectTemplate{
 	// Create an empty Automic Object (of any kind)
 	public boolean createObject(String name, Template template, IFolder fold) throws IOException {
 		//Say(" \t ++ Creating object: "+name+" of Type: "+template.getType());
-		UC4ObjectName objName = null;
-		if (name.indexOf('/') != -1) objName = new UC4UserName(name);
-		else if (template.isTimezone()) objName = new UC4TimezoneName(name);
-		else objName = new UC4ObjectName(name);		
+		ObjectBroker broker = getBrokerInstance();
+		UC4ObjectName objName = broker.common.getUC4ObjectNameFromString(name);
 
 		CreateObject req = new CreateObject(objName,template,fold);
 		sendGenericXMLRequestAndWait(req);
@@ -349,10 +426,8 @@ public class Common extends ObjectTemplate{
 
 	// Delete an Automic Object (of any kind)
 	public boolean deleteObject(String name, boolean ignoreError) throws IOException {
-
-		UC4ObjectName objName = null;
-		if (name.indexOf('/') != -1) objName = new UC4UserName(name);
-		else objName = new UC4ObjectName(name);
+		ObjectBroker broker = getBrokerInstance();
+		UC4ObjectName objName = broker.common.getUC4ObjectNameFromString(name);
 
 		DeleteObject req = new DeleteObject(objName);
 		
@@ -370,9 +445,8 @@ public class Common extends ObjectTemplate{
 	
 	// Delete an Automic Object (of any kind)
 	public boolean deleteObject(String name, IFolder fold, boolean ignoreError) throws IOException {
-		UC4ObjectName objName = null;
-		if (name.indexOf('/') != -1) objName = new UC4UserName(name);
-		else objName = new UC4ObjectName(name);
+		ObjectBroker broker = getBrokerInstance();
+		UC4ObjectName objName = broker.common.getUC4ObjectNameFromString(name);
 
 		DeleteObject req = new DeleteObject(objName,fold);
 		
