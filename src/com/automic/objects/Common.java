@@ -5,6 +5,7 @@ import java.io.InvalidObjectException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import com.automic.utils.Utils;
 import com.uc4.api.FolderListItem;
 import com.uc4.api.SearchResultItem;
@@ -17,6 +18,7 @@ import com.uc4.api.objects.IFolder;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
 import com.uc4.communication.TimeoutException;
+import com.uc4.communication.TraceListener;
 import com.uc4.communication.requests.CacheList;
 import com.uc4.communication.requests.CloseObject;
 import com.uc4.communication.requests.CreateObject;
@@ -46,6 +48,67 @@ public class Common extends ObjectTemplate{
 
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
+	}
+	
+	// ####################
+	// 
+	// Debug activation / deactivation Methods
+	//
+	// ####################
+	
+	public void enableDebug() {
+		this.connection.setTraceListener(new TraceListenerImpl());
+	}
+	
+	public void enableDebug(boolean ShowMsgSentToAE, boolean ShowMsgReceivedFromAE) {
+		
+		if(ShowMsgSentToAE && ShowMsgReceivedFromAE){this.connection.setTraceListener(new TraceListenerImpl());}
+		if(!ShowMsgSentToAE && !ShowMsgReceivedFromAE){this.connection.setTraceListener(null);}
+		if(ShowMsgSentToAE && !ShowMsgReceivedFromAE){this.connection.setTraceListener(new TraceListenerImplSentOnly());}
+		if(!ShowMsgSentToAE && ShowMsgReceivedFromAE){this.connection.setTraceListener(new TraceListenerImplRecOnly());}
+	}
+	
+	public void disableDebug() {
+		enableDebug(false,false); 
+	}
+
+	static class TraceListenerImpl implements TraceListener {
+
+		@Override
+		public void messageIn(String msg) {
+			System.out.println("Receive:");
+			System.out.println(msg);
+		}
+
+		@Override
+		public void messageOut(String msg) {
+			System.out.println("Send:");
+			System.out.println(msg);
+		}
+	}
+
+	static class TraceListenerImplRecOnly implements TraceListener {
+
+		@Override
+		public void messageIn(String msg) {
+			System.out.println("Receive:");
+			System.out.println(msg);
+		}
+
+		@Override
+		public void messageOut(String msg) {}
+	}
+	
+	static class TraceListenerImplSentOnly implements TraceListener {
+
+		@Override
+		public void messageIn(String msg) {}
+
+		@Override
+		public void messageOut(String msg) {
+			System.out.println("Send:");
+			System.out.println(msg);
+		}
 	}
 	
 	// ####################

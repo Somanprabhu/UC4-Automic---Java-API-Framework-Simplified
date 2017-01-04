@@ -5,6 +5,7 @@ import java.net.ConnectException;
 import java.nio.channels.UnresolvedAddressException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Properties;
 
 import com.automic.utils.Utils;
 import com.uc4.communication.Connection;
@@ -155,24 +156,39 @@ public final class ConnectionManager {
 		for(String Hostname : HostPortMap.keySet()){
 			
 			ArrayList<Integer> PortList = HostPortMap.get(Hostname);
+			
+			Properties Options = new Properties();
+			Options.setProperty("DIRECT", "YES");
+//			Options.setProperty("AGENTNAME", "API");
+//			Options.setProperty("HOSTNAME", "MyHost");
+//			Options.setProperty("REMOTE_ID", "MyID");
+//			Options.setProperty("SECRET_TYPE", "PW"); // PW or TK or ET
+//			Options.setProperty("ENCRYPTION", "YES");
+//			Options.setProperty("SKIP_VERSION_CHECK", "NO");
+//			Options.setProperty("DISABLE_NATIVE_TRACING", "NO");
+			//Options.setProperty("WORKFLOW_ID", "Id"); // ??
+			
 			for(int i=0;i<PortList.size();i++){
 				int Port = PortList.get(i);
 				try{
-					conn = Connection.open(Hostname, Port);
+					conn = Connection.open(Hostname, Port,Options);
 				}catch (UnresolvedAddressException e){
-					System.out.println(" -- Warning: Could Not Resolve Host or IP: "+Hostname);
+					System.out.println(" -- Warning: Unresolved Address Error: Could Not Resolve [Hostname/IP:Port]: [" + Hostname+":"+Port+"]");
+					System.out.println(" \t -- Message: " + e.getMessage());
 					//System.exit(999);
 					continue;
 				}catch (ConnectException c){
-					System.out.println(" -- Warning: Could Not Connect to [Hostname:Port]: [" + Hostname+":"+Port+"]");
+					System.out.println(" -- Warning: Connection Error: Could Not Connect to [Hostname/IP:Port]: [" + Hostname+":"+Port+"]");
+					System.out.println(" \t -- Message: " + c.getMessage());
 					//System.out.println(" --     Hint: is the host or IP reachable?");
 					continue;
 					//System.exit(998);
 				} catch (IOException e) {
-					System.out.println(" -- Unknown Error: Could Not Connect to Host / Port: " + Hostname+":"+Port);
+					System.out.println(" -- Warning IO Error: Could Not Connect to [Hostname/IP:Port]: [" + Hostname+":"+Port+"]");
+					System.out.println(" \t -- Message: " + e.getMessage());
 					continue;
 				}
-				System.out.println(" %% Info: Connection Successfully Established for [Hostname:Port]: [" + Hostname+":"+Port+"]\n");
+				System.out.println(" %% Info: Connection Successfully Established to [Hostname:Port]: [" + Hostname+":"+Port+"]\n");
 				ConnectionFound = true;
 				return conn;
 			}
