@@ -16,6 +16,8 @@ import com.uc4.api.objects.IFolder;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.api.objects.Variable;
 import com.uc4.communication.Connection;
+import com.uc4.communication.TimeoutException;
+import com.uc4.communication.requests.PreviewVariable;
 
 public class Variables extends ObjectTemplate{
 
@@ -146,6 +148,22 @@ public class Variables extends ObjectTemplate{
 		return broker.common.saveAndCloseObject(vara);				
 	}
 	
+	public ArrayList<String> getPossibleVaraValues(String VaraName, int ColumnNumber) throws TimeoutException, IOException{
+		ObjectBroker broker = getBrokerInstance();
+		PreviewVariable req = broker.variables.previewVariable(VaraName);
+		ArrayList<String> PossibleValues = new ArrayList<String>();
+		for(int i = 0;i<req.size();i++){PossibleValues.add(req.getRow(i)[ColumnNumber]);}
+		return PossibleValues;
+	}
+	
+	public PreviewVariable previewVariable(String VariableName) throws TimeoutException, IOException{
+		ObjectBroker broker = getBrokerInstance();
+		PreviewVariable req = new PreviewVariable(new UC4ObjectName(VariableName));
+		broker.common.sendGenericXMLRequestAndWait(req);
+		return req;
+
+		
+	}
 	public String getVariableType(Variable obj){
 		// THIS is the only way to check the type of Variable.. (v11.2 and before) 
 		// it is very ugly but it works :)

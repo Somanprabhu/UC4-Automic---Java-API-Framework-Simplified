@@ -174,18 +174,18 @@ public final class ConnectionManager {
 					conn = Connection.open(Hostname, Port,Options);
 				}catch (UnresolvedAddressException e){
 					System.out.println(" -- Warning: Unresolved Address Error: Could Not Resolve [Hostname/IP:Port]: [" + Hostname+":"+Port+"]");
-					System.out.println(" \t -- Message: " + e.getMessage());
+					//System.out.println(" \t -- Message: " + e.getMessage());
 					//System.exit(999);
 					continue;
 				}catch (ConnectException c){
 					System.out.println(" -- Warning: Connection Error: Could Not Connect to [Hostname/IP:Port]: [" + Hostname+":"+Port+"]");
-					System.out.println(" \t -- Message: " + c.getMessage());
+					//System.out.println(" \t -- Message: " + c.getMessage());
 					//System.out.println(" --     Hint: is the host or IP reachable?");
 					continue;
 					//System.exit(998);
 				} catch (IOException e) {
 					System.out.println(" -- Warning IO Error: Could Not Connect to [Hostname/IP:Port]: [" + Hostname+":"+Port+"]");
-					System.out.println(" \t -- Message: " + e.getMessage());
+					//System.out.println(" \t -- Message: " + e.getMessage());
 					continue;
 				}
 				System.out.println(" %% Info: Connection Successfully Established to [Hostname:Port]: [" + Hostname+":"+Port+"]\n");

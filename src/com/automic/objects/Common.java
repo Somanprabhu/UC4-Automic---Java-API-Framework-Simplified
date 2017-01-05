@@ -60,6 +60,14 @@ public class Common extends ObjectTemplate{
 		this.connection.setTraceListener(new TraceListenerImpl());
 	}
 	
+	public void enableDebug(int level) {
+		if(level == 0){this.connection.setTraceListener(null);}
+		if(level == 1){this.connection.setTraceListener(new TraceListenerImplSentOnly());}
+		if(level == 2){this.connection.setTraceListener(new TraceListenerImplRecOnly());}
+		if(level == 3){this.connection.setTraceListener(new TraceListenerImpl());}
+		if(level < 0 || level > 3){this.connection.setTraceListener(null);}
+	}
+	
 	public void enableDebug(boolean ShowMsgSentToAE, boolean ShowMsgReceivedFromAE) {
 		
 		if(ShowMsgSentToAE && ShowMsgReceivedFromAE){this.connection.setTraceListener(new TraceListenerImpl());}
