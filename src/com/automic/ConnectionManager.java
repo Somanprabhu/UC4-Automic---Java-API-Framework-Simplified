@@ -2,6 +2,8 @@ package com.automic;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.channels.UnresolvedAddressException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -105,7 +107,7 @@ public final class ConnectionManager {
 				System.out.println("-- Error: Login Failed. Unknown Runtime Error. Send the following stacktrace to vendor:");
 				e.printStackTrace();
 			}
-			
+			conn.getSessionInfo().getToken();
 			return null;
 		}
 		return sess;
@@ -144,8 +146,7 @@ public final class ConnectionManager {
 		return null;
 	}
 	
-	private static Connection getConnection(HashMap<String,HashMap<String,ArrayList<Integer>>> ConnectionHostPortMap, String ConnectionName) {
-		boolean ConnectionFound = false;
+	private static Connection getConnection(HashMap<String,HashMap<String,ArrayList<Integer>>> ConnectionHostPortMap, String ConnectionName, Properties ConnectionOptions) {
 		HashMap<String,ArrayList<Integer>> HostPortMap = ConnectionHostPortMap.get(ConnectionName);
 		if(HostPortMap == null || HostPortMap.isEmpty()){
 			System.out.println(" -- Error: Could not find Connection Named: " + ConnectionName +" in XML File.");
@@ -157,21 +158,12 @@ public final class ConnectionManager {
 			
 			ArrayList<Integer> PortList = HostPortMap.get(Hostname);
 			
-			Properties Options = new Properties();
-			Options.setProperty("DIRECT", "YES");
-//			Options.setProperty("AGENTNAME", "API");
-//			Options.setProperty("HOSTNAME", "MyHost");
-//			Options.setProperty("REMOTE_ID", "MyID");
-//			Options.setProperty("SECRET_TYPE", "PW"); // PW or TK or ET
-//			Options.setProperty("ENCRYPTION", "YES");
-//			Options.setProperty("SKIP_VERSION_CHECK", "NO");
-//			Options.setProperty("DISABLE_NATIVE_TRACING", "NO");
-			//Options.setProperty("WORKFLOW_ID", "Id"); // ??
+
 			
 			for(int i=0;i<PortList.size();i++){
 				int Port = PortList.get(i);
 				try{
-					conn = Connection.open(Hostname, Port,Options);
+					conn = Connection.open(Hostname, Port,ConnectionOptions);
 				}catch (UnresolvedAddressException e){
 					System.out.println(" -- Warning: Unresolved Address Error: Could Not Resolve [Hostname/IP:Port]: [" + Hostname+":"+Port+"]");
 					//System.out.println(" \t -- Message: " + e.getMessage());
@@ -188,8 +180,8 @@ public final class ConnectionManager {
 					//System.out.println(" \t -- Message: " + e.getMessage());
 					continue;
 				}
-				System.out.println(" %% Info: Connection Successfully Established to [Hostname:Port]: [" + Hostname+":"+Port+"]\n");
-				ConnectionFound = true;
+				
+				System.out.println(" %% Info: Connection Established to [Hostname:Port]: [" + Hostname+":"+Port+"] "+"\n");
 				return conn;
 			}
 		}
@@ -197,6 +189,30 @@ public final class ConnectionManager {
 		System.out.println(" -- Error: Could not establish connection on any host:port combination!");
 		System.exit(996);
 		return null;
+	}
+	private static Connection getConnection(HashMap<String,HashMap<String,ArrayList<Integer>>> ConnectionHostPortMap, String ConnectionName) throws UnknownHostException {
+		String HostNameLabel = "";
+		try{
+			InetAddress localhost = java.net.InetAddress.getLocalHost();
+			String hostName = localhost.getHostName();
+			HostNameLabel = localhost+"|"+hostName;
+		}catch (UnknownHostException e){
+			
+		}
+		
+		// Default Properties
+			Properties Options = new Properties();
+			Options.setProperty("DIRECT", "YES");
+//			Options.setProperty("AGENTNAME", "API");
+			Options.setProperty("HOSTNAME",HostNameLabel );
+			Options.setProperty("REMOTE_ID", "Java Api | "+System.getProperty("user.name"));
+//			Options.setProperty("SECRET_TYPE", "TK"); // PW or TK or ET
+//			Options.setProperty("ENCRYPTION", "YES");
+//			Options.setProperty("SKIP_VERSION_CHECK", "NO");
+//			Options.setProperty("DISABLE_NATIVE_TRACING", "NO");
+			//Options.setProperty("WORKFLOW_ID", "Id"); // ??
+			
+			return getConnection(ConnectionHostPortMap,ConnectionName,Options);
 	}
 	/**
 	 * 
@@ -227,21 +243,6 @@ public final class ConnectionManager {
 		System.exit(996);
 		return null;
 	}
-	
-//	private static Connection getConnection(String Hostname, int PortNum) throws IOException{
-//		try{
-//			conn = Connection.open(Hostname, PortNum);
-//		}catch (UnresolvedAddressException e){
-//			System.out.println(" -- ERROR: Could Not Resolve Host or IP: "+Hostname);
-//			System.exit(999);
-//			
-//		}catch (ConnectException c){
-//			System.out.println(" -- ERROR: Could Not Connect to Host: " + Hostname);
-//			System.out.println(" --     Hint: is the host or IP reachable?");
-//			System.exit(998);
-//		}
-//		return conn;
-//	}
 
 public static Connection connectToClientWithSSO(AECredentials credentials) throws IOException{
 		

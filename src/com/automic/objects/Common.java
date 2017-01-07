@@ -297,6 +297,8 @@ public class Common extends ObjectTemplate{
 			req.setNamePattern(NewPatternName);
 			req.setCleanPattern(ExistingPatternName);
 			req.setAbortIfNameExists(AbortIfNameExistsMode.ALWAYS);
+			// adding this now temporarily?
+			//req.setIncludeFolderNames(IncludeFolderNamesMode.NONE);
 			
 			sendGenericXMLRequestAndWait(req);
 			if (req.getMessageBox() == null) {
