@@ -12,6 +12,7 @@ import com.uc4.api.Time;
 import com.uc4.api.UC4ObjectName;
 import com.uc4.api.UC4TimezoneName;
 import com.uc4.api.objects.ServiceLevelObjective;
+import com.uc4.api.objects.SloSelection.Beneficiary;
 import com.uc4.api.objects.TaskState;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
@@ -88,11 +89,43 @@ public class ServiceLevelObjectives extends ObjectTemplate{
 		obj.fulfillment().setEmailRecipientFulfillment(EmailAdr);
 	}
 	
-//	public void setCsdfg(ServiceLevelObjective obj){
-//		obj.selection().addBeneficiary(Beneficiary);
-//		obj.selection().
-//	}
+	public void setExampleQuery(ServiceLevelObjective obj, String XMLQuery){	
+		obj.selection().setQuery(XMLQuery);
+	}
 	
+	public void setExampleQuery(ServiceLevelObjective obj){	
+		String XMLQUERY = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
+				+ "<queryTreeNode groupOperator=\"ANY\">"
+				+ "<node groupOperator=\"ALL\">"
+				+ "<node><criterion>"
+				+ "<attributeValue>OBJECT_NAME</attributeValue>"
+				+ "<operator>CONTAINS</operator>"
+				+ "<value>PSP</value></criterion></node>"
+				+ "<node><criterion>"
+                +"<attributeValue>OBJECT_TYPE</attributeValue>"
+                + "<operator>EQUALS</operator>"
+                + "<value>JOBS</value>"
+                + "</criterion></node>"
+                + "</node><node groupOperator=\"ALL\">"
+                +"<node><criterion>"
+                + "<attributeValue>OBJECT_NAME</attributeValue>"
+                + "<operator>CONTAINS</operator>"
+                + "<value>TEST</value></criterion></node><node>"
+                +"<criterion>"
+                + "<attributeValue>OBJECT_TYPE</attributeValue>"
+                + "<operator>EQUALS</operator>"
+                + "<value>JOBS</value></criterion></node></node></queryTreeNode>";
+		
+		obj.selection().setQuery(XMLQUERY);
+	}
+	
+	// Name: Key from custom attr variable defined in UC_CUSTOM_ATTRIBUTES (ex: &BU# or &TEAM#)
+	// Value: Key from the VARA Object referenced in UC_CUSTOM_ATTRIBUTES from Name
+	public void addBeneficary(ServiceLevelObjective obj, String Name, String Value){
+		Beneficiary b = new Beneficiary(Name, Value);
+		obj.selection().addBeneficiary(b);
+	}
+
 	public void setEmailOnViolation(ServiceLevelObjective obj, String EmailAdr){
 		obj.fulfillment().setEmailOnViolation(true);
 		obj.fulfillment().setEmailRecipientViolation(EmailAdr);
