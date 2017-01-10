@@ -243,6 +243,16 @@ private ObjectBroker broker;
 		return genericSearch(ser);
 	}
 	
+	public List<SearchResultItem> searchObjectExcludeFolders(String ObjectName, String fullPathName, boolean getSubfolders) throws IOException{
+		SearchObject ser = new SearchObject();
+		ser.selectAllObjectTypes();
+		ser.setTypeFOLD(false);
+		//ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
+		ser.setName(ObjectName);
+		ser.setSearchLocation(fullPathName, getSubfolders);
+		return genericSearch(ser);
+	}
+	
 	public List<SearchResultItem> searchJobflows(String ObjectName) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		SearchObject ser = new SearchObject();

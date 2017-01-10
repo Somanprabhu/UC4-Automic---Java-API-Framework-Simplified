@@ -34,6 +34,7 @@ import com.uc4.communication.requests.ExportObject;
 import com.uc4.communication.requests.ExportWithReferences;
 import com.uc4.communication.requests.FindReferencedObjects;
 import com.uc4.communication.requests.FolderList;
+import com.uc4.communication.requests.TransportObject;
 
 public class Exports extends ObjectTemplate{
 
@@ -69,6 +70,21 @@ private ObjectBroker broker;
 			Say(Utils.getSuccessString("Folders Successfully Exported."));
 			return true;
 		}
+		return false;
+	}
+	
+	public boolean  transportObject(String ObjectName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		UC4Object obj = broker.common.openObject(ObjectName, true);
+		if(obj == null){return false;}
+		TransportObject req = new TransportObject(obj);
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Object(s) Successfully Added to Transport Case."));
+			broker.common.closeObject(obj);
+			return true;
+		}
+		broker.common.closeObject(obj);
 		return false;
 	}
 	
