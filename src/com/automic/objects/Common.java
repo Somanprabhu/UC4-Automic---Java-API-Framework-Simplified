@@ -293,6 +293,11 @@ public class Common extends ObjectTemplate{
 	// Deep Rename ..
 	public boolean deepRenameObjects(String ExistingPatternName, String NewPatternName) throws IOException{
 
+		// Bug fix for Oracle DB. a * is mandatory in both names for Oracle DBs for some reason.
+		// adding * at the end of both, this should have no impact.
+			ExistingPatternName = ExistingPatternName +"*";
+			NewPatternName = NewPatternName +"*";
+			//System.out.println("DEBUG:" +ExistingPatternName  +":"+NewPatternName );
 			DeepRename req = new DeepRename();
 			req.setNamePattern(NewPatternName);
 			req.setCleanPattern(ExistingPatternName);

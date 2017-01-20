@@ -44,8 +44,8 @@ public class UC4TaskState{
 		if(s.equalsIgnoreCase("USER_201_299")){return TaskState.USER_201_299;}
 		if(s.equalsIgnoreCase("USER_300")){return TaskState.USER_300;}
 		if(s.equalsIgnoreCase("USER_510")){return TaskState.USER_510;}
-		if(s.equalsIgnoreCase("WAITING_AGENT")){return TaskState.USER_690;}
-		if(s.equalsIgnoreCase("")){return TaskState.WAITING_AGENT;}
+		if(s.equalsIgnoreCase("USER_690")){return TaskState.USER_690;}
+		if(s.equalsIgnoreCase("WAITING_AGENT")){return TaskState.WAITING_AGENT;}
 		if(s.equalsIgnoreCase("WAITING_AGENT_OR_AGENTGROUP")){return TaskState.WAITING_AGENT_OR_AGENTGROUP;}
 		if(s.equalsIgnoreCase("WAITING_AGENTGROUP")){return TaskState.WAITING_AGENTGROUP;}
 		if(s.equalsIgnoreCase("WAITING_EXTERNAL")){return TaskState.WAITING_EXTERNAL;}

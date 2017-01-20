@@ -26,6 +26,9 @@ private ObjectBroker broker;
 	
 	public List<SearchResultItem> genericSearch(SearchObject ser) throws TimeoutException, IOException{
 		connection.sendRequestAndWait(ser);
+//		if(ser.getMessageBox() != null){
+//			System.out.println("DEBUG: " + ser.getMessageBox().getText());
+//		}
 		Iterator<SearchResultItem> it =  ser.resultIterator();
 		List<SearchResultItem> results = new ArrayList<SearchResultItem>();
 		while(it.hasNext()){
@@ -282,7 +285,7 @@ private ObjectBroker broker;
 			if("CPIT".matches(ObjectTypes)){ser.setTypeCPIT(true);}
 			if("DASH".matches(ObjectTypes)){ser.setTypeDASH(true);}
 			if("DOCU".matches(ObjectTypes)){ser.setTypeDOCU(true);}
-			if("JOBP".matches(ObjectTypes)){ser.setTypeExecuteable();}
+			if("EXEC".matches(ObjectTypes)){ser.setTypeExecuteable();}
 			if("FILTER".matches(ObjectTypes)){ser.setTypeFILTER(true);}
 			if("FOLD".matches(ObjectTypes)){ser.setTypeFOLD(true);}
 			if("HOST".matches(ObjectTypes)){ser.setTypeHOST(true);}

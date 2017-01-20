@@ -118,6 +118,7 @@ public class Executions extends ObjectTemplate{
 	    public String call() throws Exception {
 	       // Thread.sleep(4000); // Just to demo a long running task of 4 seconds.
 	    	int RunID = executeObjectNow(this.ObjectName);
+	    	//System.out.println("DEBUG: Runid: " + RunID);
 	        return Integer.toString(RunID);
 	    }
 	}
@@ -149,12 +150,15 @@ public class Executions extends ObjectTemplate{
 	        try {
 	           // System.out.println("Started..");
 	        	String RunID = future.get(Timeout, TimeUnit.SECONDS);
+	        	//System.out.println("DEBUG IT IS: "+ RunID);
 	            RUNID = Integer.parseInt(RunID);
-	            return RUNID;
+	           // executor.shutdownNow();
+	           // return RUNID;
 	        } catch (TimeoutException e) {
 	            future.cancel(true);
 	            //System.out.println(" -- Error. TimeOut Occured.");
 	            RUNID = -10;
+	            
 	        }
 
 	        executor.shutdownNow();
@@ -171,7 +175,7 @@ public class Executions extends ObjectTemplate{
             RUNID = Integer.parseInt(RunID);
             return RUNID;
         } catch (TimeoutException e) {
-            future.cancel(true);
+            future.cancel(true); 
             //System.out.println(" -- Error. TimeOut Occured.");
             RUNID = -10;
         }

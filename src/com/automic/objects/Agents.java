@@ -116,6 +116,15 @@ public class Agents extends ObjectTemplate{
 		return getAgentListWithNameAndTypeFilter(".*",TypeFilter);
 	}
 	
+	public AgentListItem getAgentListItemFromName(String Name) throws IOException {
+		ArrayList<AgentListItem> arr = getAgentListWithNameAndTypeFilter(Name,".*");
+		if(arr.size()==1){
+			return arr.get(0);
+		}else{
+			return null;
+		}
+	}
+	
 	public AgentList getSimpleAgentList() throws TimeoutException, IOException{
 		AgentList req = new AgentList();
 		sendGenericXMLRequestAndWait(req);
