@@ -3,8 +3,10 @@ package com.automic.objects;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import com.automic.utils.Utils;
+import com.uc4.api.FolderListItem;
 import com.uc4.api.Template;
 import com.uc4.api.UC4ObjectName;
 import com.uc4.api.UC4TimezoneName;
@@ -33,6 +35,12 @@ public class Folders extends ObjectTemplate{
 		FolderTree tree = new FolderTree();
 		this.connection.sendRequestAndWait(tree);
 		return tree.root();		
+	}
+	
+	public FolderTree getFolderTree() throws IOException{
+		FolderTree tree = new FolderTree();
+		this.connection.sendRequestAndWait(tree);
+		return tree;	
 	}
 	
 	// Returns a list of ALL Folders (including folders in folders, folders in folders in folders etc.)
@@ -72,13 +80,7 @@ public class Folders extends ObjectTemplate{
 	}
 	
 	public IFolder getNoFolderFolder() throws IOException{
-		 ArrayList<IFolder> allFolders = getAllFolders(false);
-		 for(IFolder folder : allFolders){
-			 if(folder.getType().equalsIgnoreCase("NFOLD")){return folder;}
-			 // for CLient 0, NOFOLD is actually CLNT.. ?!
-			 if(folder.getType().equalsIgnoreCase("CLNT")){return folder;}
-		 }
-		 return null;
+		return getFolderTree().getNoFolder();
 	}
 	
 	public IFolder getFavoritesFolder() throws IOException{
@@ -115,12 +117,15 @@ public class Folders extends ObjectTemplate{
 	
 	// Returns a folder by name, can be passed a Full path or just a folder name
 	public IFolder getFolderByName(String FolderName) throws IOException{
-		// Bug Fix: '/' isnt enough to establish that a full path is passed..
-		 if(FolderName.contains("-") || (FolderName.contains("/")&& !FolderName.contains("No Folder"))){
-			 return getFolderByFullPathName(FolderName);
-		 }
-		 if(FolderName.contains("No Folder")){
+		
+		 if(FolderName.contains("<No Folder>") || FolderName.contains("<no folder>") || FolderName.contains("<NO FOLDER>")
+				 || FolderName.equalsIgnoreCase("NO FOLDER")){
 			 return getNoFolderFolder();
+		 }
+		 
+		// Bug Fix: '/' isnt enough to establish that a full path is passed..
+		 if(FolderName.matches("\\d{4}") || FolderName.contains("-") || (FolderName.contains("/") && !FolderName.contains("No Folder"))){
+			 return getFolderByFullPathName(FolderName);
 		 }
 		
 		ArrayList<IFolder> foundFolders = new ArrayList<IFolder>();
@@ -173,10 +178,42 @@ public class Folders extends ObjectTemplate{
 	}
 	
 	// Returns a FolderList = the content of a given folder
+	public FolderList getFolderContentWithTypes(IFolder folder, List<String> ObjectTypes) throws IOException{	
+		FolderList objectsInRootFolder = new FolderList(folder,ObjectTypes);
+		connection.sendRequestAndWait(objectsInRootFolder);
+		return objectsInRootFolder;
+	}
+	
+	// Returns a FolderList = the content of a given folder
 	public FolderList getFolderContent(IFolder folder) throws IOException{
 		FolderList objectsInRootFolder = new FolderList(folder);
 		connection.sendRequestAndWait(objectsInRootFolder);
 		return objectsInRootFolder;
+	}
+	
+	public FolderList showFolderContent(IFolder folder) throws IOException{
+		FolderList objectsInRootFolder = new FolderList(folder);
+		connection.sendRequestAndWait(objectsInRootFolder);
+		if(objectsInRootFolder != null){
+			Iterator<FolderListItem> it = objectsInRootFolder.iterator();
+			while(it.hasNext()){
+				FolderListItem item = it.next();
+				String NAME = item.getName();
+				if(NAME.equals("LOGIN.WIN01")){System.out.println("Content Found: " + item.getName()+":"+item.getTitle()+":"+folder.getName());}
+				//System.out.println("Content Found: " + item.getName()+":"+item.getTitle());
+			}
+		}
+		return objectsInRootFolder;
+	}
+	
+	public void showSubFolders(IFolder folder) throws IOException{
+		Iterator<IFolder> subfolderIT = folder.subfolder();
+		if(subfolderIT!=null){
+			while(subfolderIT.hasNext()){
+				IFolder f = subfolderIT.next();
+				System.out.println("Subfolder:" + f.getName()+":"+f.getType() );
+			}
+		}
 	}
 	
 	// Same as above, requires only a folder name to run

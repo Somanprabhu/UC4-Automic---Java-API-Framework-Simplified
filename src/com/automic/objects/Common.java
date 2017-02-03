@@ -346,12 +346,12 @@ public class Common extends ObjectTemplate{
 	public boolean duplicateObject(String SourceObjectName, String TargetObjectName, IFolder folder) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		UC4Object obj = openObject(SourceObjectName, true);
-		UC4ObjectName DupObjName = broker.common.getUC4ObjectNameFromString(SourceObjectName);
+		UC4ObjectName DupObjName = broker.common.getUC4ObjectNameFromString(TargetObjectName);
 
 		DuplicateObject req = new DuplicateObject(obj,DupObjName,folder);
 		sendGenericXMLRequestAndWait(req);
 		if (req.getMessageBox() == null) {
-			Say(Utils.getSuccessString(" \t ++ Object: "+obj.getName()+" Successfully saved in folder "+folder));
+			Say(Utils.getSuccessString("Object: "+obj.getName()+" Successfully saved in folder "+folder));
 			return true;
 		}
 		return false;

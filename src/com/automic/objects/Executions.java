@@ -330,4 +330,14 @@ public class Executions extends ObjectTemplate{
 		}
 		return allComments;
 	}
+	
+	public ArrayList<String> getReportTypeListAsArray(ReportTypeList repList){
+		ArrayList<String> list = new ArrayList<String>();
+		Iterator<String> it = repList.iterator();
+		while(it.hasNext()){
+			String rep = it.next();
+			list.add(rep);
+		}
+		return list;
+	}
 }

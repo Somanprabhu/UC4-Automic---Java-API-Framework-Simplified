@@ -16,7 +16,7 @@ public class Utils {
 	}
 	
 	public static String getErrorString(MessageBox msg){
-		String s = "\t -- "+msg.getText().toString();
+		String s = "\t -- Error:"+msg.getText().toString();
 		return s;
 	}
 	
@@ -27,6 +27,10 @@ public class Utils {
 	
 	public static String getWarningString(String s){
 		return "\t %% Warning: "+s;
+	}
+	
+	public static String getDebugString(String s){
+		return "\t %% DEBUG: "+s;
 	}
 	
 	public static String getSuccessString(String s){

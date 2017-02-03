@@ -40,16 +40,21 @@ public class ActivityWindow extends ObjectTemplate{
 	
 	// return the content of the activity window
 	public List<Task> getActivityWindowContent(TaskFilter taskFilter) throws IOException {		
-		ActivityList list = new ActivityList(taskFilter);
-		connection.sendRequestAndWait(list);		
-		List<Task> tasks = new ArrayList<Task>();
-		for (Task t : list) {
-			tasks.add(t);
-			
+		if(taskFilter !=null){
+			ActivityList list = new ActivityList(taskFilter);
+			connection.sendRequestAndWait(list);		
+			List<Task> tasks = new ArrayList<Task>();
+			for (Task t : list) {
+				tasks.add(t);
+				
+			}
+			return tasks;
+		}else{
+			return getActivityWindowContent();
 		}
-		return tasks;
+
 	}
-		
+	
 	// return the content of the activity window
 	public List<Task> getActivityWindowContent() throws IOException {		
 		TaskFilter taskFilter = new TaskFilter();
