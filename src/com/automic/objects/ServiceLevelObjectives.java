@@ -84,6 +84,8 @@ public class ServiceLevelObjectives extends ObjectTemplate{
 		return true;
 	}
 	
+	// following method not yet available in UI
+	@Deprecated
 	public void setEmailOnFulfill(ServiceLevelObjective obj, String EmailAdr){
 		obj.fulfillment().setEmailOnFulfillment(true);
 		obj.fulfillment().setEmailRecipientFulfillment(EmailAdr);
@@ -126,6 +128,8 @@ public class ServiceLevelObjectives extends ObjectTemplate{
 		obj.selection().addBeneficiary(b);
 	}
 
+	// following method not yet available in UI
+	@Deprecated
 	public void setEmailOnViolation(ServiceLevelObjective obj, String EmailAdr){
 		obj.fulfillment().setEmailOnViolation(true);
 		obj.fulfillment().setEmailRecipientViolation(EmailAdr);
