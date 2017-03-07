@@ -38,10 +38,12 @@ public class Agents extends ObjectTemplate{
 		UC4HostName agent = new UC4HostName(AgentName);
 		StartHost req = new StartHost(agent);
 		sendGenericXMLRequestAndWait(req);
-		
+		showMessages();
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Agent: "+AgentName+" Successfully Started."));
 			return true;
+		}else{
+			Say(Utils.getErrorString("Agent: "+AgentName+" could not be started: " + req.getMessageBox().getText()));
 		}
 		return false;
 	}
@@ -49,10 +51,12 @@ public class Agents extends ObjectTemplate{
 	public boolean disconnectAgent(AgentListItem item) throws IOException{
 		DisconnectHost req = new DisconnectHost(item);
 		sendGenericXMLRequestAndWait(req);
-		
+		showMessages();
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Agent: "+item.getName()+" Successfully Shutdown."));
 			return true;
+		}else{
+			Say(Utils.getErrorString("Agent: "+item.getName()+" could not be Disconnected: " + req.getMessageBox().getText()));
 		}
 		return false;
 	}
@@ -60,10 +64,12 @@ public class Agents extends ObjectTemplate{
 	public boolean renewAgentTransferKey(AgentListItem item) throws IOException{
 		RenewTransferKey req = new RenewTransferKey(item);
 		sendGenericXMLRequestAndWait(req);
-		
+		showMessages();
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Agent: "+item.getName()+" Transfer Key Renewed."));
 			return true;
+		}else{
+			Say(Utils.getErrorString("Agent: "+item.getName()+" could not be renewed (transfer key): " + req.getMessageBox().getText()));
 		}
 		return false;
 	}
@@ -71,10 +77,12 @@ public class Agents extends ObjectTemplate{
 	public boolean disconnectAgent(String AgentName) throws IOException{
 		DisconnectHost req = new DisconnectHost(getAgentListItemByName(AgentName));
 		sendGenericXMLRequestAndWait(req);
-		
+		showMessages();
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Agent: "+AgentName+" Successfully Disconnected."));
 			return true;
+		}else{
+			Say(Utils.getErrorString("Agent: "+AgentName+" could not be Disconnected: " + req.getMessageBox().getText()));
 		}
 		return false;
 	}
@@ -83,10 +91,12 @@ public class Agents extends ObjectTemplate{
 		UC4HostName agent = new UC4HostName(AgentName);
 		TerminateHost req = new TerminateHost(agent);
 		sendGenericXMLRequestAndWait(req);
-		
+		showMessages();
 		if (req.getMessageBox() == null) {
-			Say(Utils.getSuccessString("Agent: "+AgentName+" Successfully Shutdown."));
+			Say(Utils.getSuccessString("Agent: "+AgentName+" Successfully Terminated."));
 			return true;
+		}else{
+			Say(Utils.getErrorString("Agent: "+AgentName+" could not be Terminated: " + req.getMessageBox().getText()));
 		}
 		return false;
 	}
