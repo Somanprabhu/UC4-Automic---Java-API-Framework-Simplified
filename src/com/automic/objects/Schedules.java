@@ -60,6 +60,8 @@ public class Schedules extends ObjectTemplate{
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString(""));
 			return req;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -69,6 +71,8 @@ public class Schedules extends ObjectTemplate{
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString(""));
 			return req;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -79,6 +83,8 @@ public class Schedules extends ObjectTemplate{
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString(""));
 			return req;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -89,6 +95,8 @@ public class Schedules extends ObjectTemplate{
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString(""));
 			return req;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -99,6 +107,8 @@ public class Schedules extends ObjectTemplate{
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString(""));
 			return req;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -109,6 +119,8 @@ public class Schedules extends ObjectTemplate{
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString(""));
 			return req;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -143,6 +155,8 @@ public class Schedules extends ObjectTemplate{
 		if (req.getMessageBox() == null) {
 			//Say(Utils.getSuccessString(""));
 			return req.getScheduleTask();
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return null;
 	}

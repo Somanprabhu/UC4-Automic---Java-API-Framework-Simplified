@@ -36,6 +36,8 @@ public class Statistics  extends ObjectTemplate{
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString(""));
 			return req;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -48,6 +50,8 @@ public class Statistics  extends ObjectTemplate{
 			Iterator<StatisticSearchItem> it = req.iterator();
 			StatisticSearchItem lastItem = it.next();
 			return lastItem;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return null;
 	}
@@ -58,6 +62,8 @@ public class Statistics  extends ObjectTemplate{
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString(""));
 			return req;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -123,6 +129,8 @@ public void setGenericStatisticsPlatformFilter(GenericStatistics req, String Pla
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString(""));
 			return req;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -137,6 +145,8 @@ public void setGenericStatisticsPlatformFilter(GenericStatistics req, String Pla
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString(""));
 			return req;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -153,6 +163,8 @@ public void setGenericStatisticsPlatformFilter(GenericStatistics req, String Pla
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString(""));
 			return req;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req;
 	}

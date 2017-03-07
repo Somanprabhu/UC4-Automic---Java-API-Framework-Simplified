@@ -45,8 +45,9 @@ public class Users extends ObjectTemplate{
 		UserList req = new UserList();
 		sendGenericXMLRequestAndWait(req);
 		if (req.getMessageBox() == null) {
-			Say("");
 			return req;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -63,6 +64,8 @@ public class Users extends ObjectTemplate{
 		sendGenericXMLRequestAndWait(req);
 		if (req.getMessageBox() == null) {
 			return req;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -294,6 +297,8 @@ public class Users extends ObjectTemplate{
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("User: "+UserName+" successfully moved to Client: "+client));
 			return true;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return false;
 	}

@@ -82,6 +82,8 @@ public class Storages extends ObjectTemplate{
 		if (req.getMessageBox() == null) {
 			Say("");
 			return req;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -100,6 +102,8 @@ public class Storages extends ObjectTemplate{
 				if (req.getMessageBox() != null) {
 					//System.out.println("Error occured:"+req.getMessageBox().getText());
 					return req;
+				}else{
+					Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 				}
 				return req;
 	}

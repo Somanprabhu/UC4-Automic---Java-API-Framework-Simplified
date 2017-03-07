@@ -57,6 +57,8 @@ private ObjectBroker broker;
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Folder Successfully Exported."));
 			return true;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return false;
 	}
@@ -69,6 +71,8 @@ private ObjectBroker broker;
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Folders Successfully Exported."));
 			return true;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return false;
 	}
@@ -83,6 +87,8 @@ private ObjectBroker broker;
 			Say(Utils.getSuccessString("Object(s) Successfully Added to Transport Case."));
 			broker.common.closeObject(obj);
 			return true;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		broker.common.closeObject(obj);
 		return false;
@@ -97,6 +103,8 @@ private ObjectBroker broker;
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Object(s) Successfully Exported."));
 			return true;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return false;
 	}
@@ -112,6 +120,8 @@ private ObjectBroker broker;
 			System.out.println(item.getFolder());
 			Say(Utils.getSuccessString("Object(s) Successfully Exported."));
 			return true;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return false;
 	}
@@ -157,6 +167,8 @@ private ObjectBroker broker;
 		if (req.getMessageBox() == null) {
 			//Say(Utils.getSuccessString("Object(s) Successfully Exported."));
 			return true;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return false;
 	}
@@ -235,6 +247,8 @@ private ObjectBroker broker;
 				ObjArray.add(it.next());
 			}
 			return ObjArray;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return ObjArray;
 	}
@@ -248,6 +262,8 @@ private ObjectBroker broker;
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Object(s) Successfully Exported."));
 			return true;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return false;
 	}
@@ -263,6 +279,8 @@ private ObjectBroker broker;
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Objects "+" Successfully Exported to File: "+FilePathForExport.toString()));
 			return true;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return false;
 	}

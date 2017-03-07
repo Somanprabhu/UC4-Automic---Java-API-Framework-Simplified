@@ -25,6 +25,8 @@ public class TransportCases extends ObjectTemplate {
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Transport Case Cleared Successfully."));
 			return true;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return false;
 	}
@@ -35,6 +37,8 @@ public class TransportCases extends ObjectTemplate {
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Object: "+obj.getName()+" was successfully added to Transport Case."));
 			return true;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return false;
 	}

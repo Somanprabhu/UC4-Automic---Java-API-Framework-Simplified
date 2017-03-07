@@ -20,6 +20,8 @@ public class Forecasts extends ObjectTemplate{
 		sendGenericXMLRequestAndWait(req);		
 		if (req.getMessageBox() == null) {
 			return req;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req;
 	}

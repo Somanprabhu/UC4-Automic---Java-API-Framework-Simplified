@@ -27,6 +27,8 @@ public class AutomationEngine extends ObjectTemplate{
 		
 		if (req.getMessageBox() == null) {
 			return req;
+		}else{
+			Say(Utils.getErrorString("Error: " + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -39,6 +41,8 @@ public class AutomationEngine extends ObjectTemplate{
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Process: "+ProcessName+" Successfully Started."));
 			return true;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return false;
 	}
@@ -50,6 +54,8 @@ public class AutomationEngine extends ObjectTemplate{
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Client: "+connection.getSessionInfo().getClient()+" Successfully Resumed."));
 			return true;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return false;
 	}
@@ -61,6 +67,8 @@ public class AutomationEngine extends ObjectTemplate{
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Client: "+connection.getSessionInfo().getClient()+" Successfully Stopped."));
 			return true;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return false;
 	}
@@ -84,13 +92,15 @@ public class AutomationEngine extends ObjectTemplate{
 	}
 	
 	public GetDatabaseInfo getCentralDBInfo() throws IOException{
-		GetDatabaseInfo info = new GetDatabaseInfo();
-		sendGenericXMLRequestAndWait(info);
+		GetDatabaseInfo req = new GetDatabaseInfo();
+		sendGenericXMLRequestAndWait(req);
 		
-		if (info.getMessageBox() == null) {
-			return info;
+		if (req.getMessageBox() == null) {
+			return req;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
-		return info;
+		return req;
 		
 	}
 }

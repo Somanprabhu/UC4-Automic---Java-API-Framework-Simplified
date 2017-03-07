@@ -30,6 +30,8 @@ private ObjectBroker broker;
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Object(s) Successfully Imported."));
 			return true;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return false;
 	}

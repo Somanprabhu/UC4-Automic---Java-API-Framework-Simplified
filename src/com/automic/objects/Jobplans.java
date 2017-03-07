@@ -55,6 +55,8 @@ private ObjectBroker broker;
 		
 		if (req.getMessageBox() == null) {
 			return req.getJobPlanTask();
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return null;
 	}

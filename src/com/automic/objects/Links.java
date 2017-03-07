@@ -51,6 +51,8 @@ public class Links extends ObjectTemplate{
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Link to Object: "+item.getName()+" Successfully Created in Folder: "+TargetFolder.fullPath()));
 			return true;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return false;
 	}
@@ -62,6 +64,8 @@ public class Links extends ObjectTemplate{
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Link to: "+item.getName()+" Successfully Deleted"));
 			return true;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return false;
 	}

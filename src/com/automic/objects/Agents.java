@@ -38,7 +38,7 @@ public class Agents extends ObjectTemplate{
 		UC4HostName agent = new UC4HostName(AgentName);
 		StartHost req = new StartHost(agent);
 		sendGenericXMLRequestAndWait(req);
-		showMessages();
+
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Agent: "+AgentName+" Successfully Started."));
 			return true;
@@ -51,7 +51,7 @@ public class Agents extends ObjectTemplate{
 	public boolean disconnectAgent(AgentListItem item) throws IOException{
 		DisconnectHost req = new DisconnectHost(item);
 		sendGenericXMLRequestAndWait(req);
-		showMessages();
+
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Agent: "+item.getName()+" Successfully Shutdown."));
 			return true;
@@ -64,7 +64,7 @@ public class Agents extends ObjectTemplate{
 	public boolean renewAgentTransferKey(AgentListItem item) throws IOException{
 		RenewTransferKey req = new RenewTransferKey(item);
 		sendGenericXMLRequestAndWait(req);
-		showMessages();
+
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Agent: "+item.getName()+" Transfer Key Renewed."));
 			return true;
@@ -77,7 +77,7 @@ public class Agents extends ObjectTemplate{
 	public boolean disconnectAgent(String AgentName) throws IOException{
 		DisconnectHost req = new DisconnectHost(getAgentListItemByName(AgentName));
 		sendGenericXMLRequestAndWait(req);
-		showMessages();
+		//showMessages();
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Agent: "+AgentName+" Successfully Disconnected."));
 			return true;
@@ -91,7 +91,7 @@ public class Agents extends ObjectTemplate{
 		UC4HostName agent = new UC4HostName(AgentName);
 		TerminateHost req = new TerminateHost(agent);
 		sendGenericXMLRequestAndWait(req);
-		showMessages();
+
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Agent: "+AgentName+" Successfully Terminated."));
 			return true;
@@ -107,10 +107,6 @@ public class Agents extends ObjectTemplate{
 	}
 	
 	public AgentAssignment getAgentAssignmentFromObject(UC4Object object){return (AgentAssignment) object;}
-	
-	//public void createOpenAgentClientAssignment(String AgentClientAssignmentName, IFolder FolderLocation){
-		// Stub method. Needs to be created!!
-	//}
 	
 	public boolean isAgentActive(AgentListItem agent) throws IOException {
 		return agent.isActive();

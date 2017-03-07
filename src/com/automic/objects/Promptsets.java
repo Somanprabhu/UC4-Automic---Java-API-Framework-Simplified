@@ -41,15 +41,15 @@ public class Promptsets extends ObjectTemplate{
 	 * @deprecated
 	 * Not sure how this is supposed to work? cant get it to work..
 	 */
-	public void getPromptSetHelp(String VariableName, String PromptSetName, UC4Object object) throws TimeoutException, IOException{
-		ObjectBroker broker = getBrokerInstance();
-		UC4ObjectName PrptName = new UC4ObjectName("PRPT.TEST.1");
-		PromptInputHelp prpthelp = new PromptInputHelp("PCK.AUTOMIC_AMAZON.PRV.VARA.INSTANCE_TYPE", PrptName, "*", 0,object);
-		
-		broker.common.sendGenericXMLRequestAndWait(prpthelp);
-		System.out.println("Debug:"+prpthelp.size());
-		
-	}
+//	public void getPromptSetHelp(String VariableName, String PromptSetName, UC4Object object) throws TimeoutException, IOException{
+//		ObjectBroker broker = getBrokerInstance();
+//		UC4ObjectName PrptName = new UC4ObjectName("PRPT.TEST.1");
+//		PromptInputHelp prpthelp = new PromptInputHelp("PCK.AUTOMIC_AMAZON.PRV.VARA.INSTANCE_TYPE", PrptName, "*", 0,object);
+//		
+//		broker.common.sendGenericXMLRequestAndWait(prpthelp);
+//		//System.out.println("Debug:"+prpthelp.size());
+//		
+//	}
 	
 	public PromptSet getPromptSetFromObject(UC4Object object){return (PromptSet) object;}
 	

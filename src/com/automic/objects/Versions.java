@@ -29,6 +29,8 @@ private ObjectBroker broker;
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Object: "+VersionControlObject.getSavedName()+" Successfully restored in version: "+VersionControlObject.getVersionNumber()));
 			return true;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return false;
 	}

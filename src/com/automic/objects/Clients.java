@@ -189,6 +189,8 @@ public class Clients extends ObjectTemplate{
 			if (req.getMessageBox() == null) {
 				Say(Utils.getSuccessString("Client: "+connection.getSessionInfo().getClient()+" Successfully Stopped."));
 				return true;
+			}else{
+				Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 			}
 			return false;			
 		}
@@ -200,6 +202,8 @@ public class Clients extends ObjectTemplate{
 			if (req.getMessageBox() == null) {
 				Say(Utils.getSuccessString("Client: "+connection.getSessionInfo().getClient()+" Successfully Started."));
 				return true;
+			}else{
+				Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 			}
 			return false;		
 		}
@@ -210,6 +214,8 @@ public class Clients extends ObjectTemplate{
 			if (req.getMessageBox() == null) {
 				Say(Utils.getSuccessString("Client: "+Client.getClient()+" Successfully Stopped."));
 				return true;
+			}else{
+				Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 			}
 			return false;	
 		}
@@ -221,6 +227,8 @@ public class Clients extends ObjectTemplate{
 			if (req.getMessageBox() == null) {
 				Say(Utils.getSuccessString("Client: "+Client.getClient()+" Successfully Started."));
 				return true;
+			}else{
+				Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 			}
 			return false;	
 		}
@@ -231,6 +239,8 @@ public class Clients extends ObjectTemplate{
 			
 			if (req.getMessageBox() == null) {
 				return req;
+			}else{
+				Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 			}
 			return req;	
 		}

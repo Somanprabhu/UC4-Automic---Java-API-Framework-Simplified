@@ -44,6 +44,8 @@ public class Executions extends ObjectTemplate{
 			if (req.getMessageBox() == null) {
 				Say(Utils.getSuccessString("Object with RUNID: "+rundId+" Successfully Cancelled."));
 				return true;
+			}else{
+				Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 			}
 			return false;
 		}
@@ -82,6 +84,8 @@ public class Executions extends ObjectTemplate{
 				if (req.getMessageBox() == null) {
 					Say(Utils.getSuccessString("Object: "+name+"++ Successfully executed with Run ID: "+req.getRunID()));
 					return req.getRunID();
+				}else{
+					Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 				}
 				return req.getRunID();
 				// RunID is 0 if failed.
@@ -96,6 +100,8 @@ public class Executions extends ObjectTemplate{
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Object: "+name+" Successfully executed with Run ID: "+req.getRunID()));
 			return req.getRunID();
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req.getRunID();
 		// RunID is 0 if failed.
@@ -223,6 +229,8 @@ public class Executions extends ObjectTemplate{
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Object: "+name+" Successfully executed with Run ID: "+req.getRunID()));
 			return req.getRunID();
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req.getRunID();
 	}
@@ -237,6 +245,8 @@ public class Executions extends ObjectTemplate{
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString("Object: "+name+" Successfully executed with Run ID: "+req.getRunID()));
 			return req.getRunID();
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req.getRunID();
 	}
@@ -248,6 +258,8 @@ public class Executions extends ObjectTemplate{
 		
 		if (req.getMessageBox() == null) {
 			return req.latestRunID();
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req.latestRunID();
 	}
@@ -258,6 +270,8 @@ public class Executions extends ObjectTemplate{
 		
 		if (req.getMessageBox() == null) {
 			return req;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -268,6 +282,8 @@ public class Executions extends ObjectTemplate{
 		
 		if (req.getMessageBox() == null) {
 			return req;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -277,6 +293,8 @@ public class Executions extends ObjectTemplate{
 		sendGenericXMLRequestAndWait(req);
 		if (req.getMessageBox() == null) {
 			return req;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -286,6 +304,8 @@ public class Executions extends ObjectTemplate{
 		sendGenericXMLRequestAndWait(req);
 		if (req.getMessageBox() == null) {
 			return req;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -295,6 +315,8 @@ public class Executions extends ObjectTemplate{
 		sendGenericXMLRequestAndWait(req);
 		if (req.getMessageBox() == null) {
 			return req;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -304,6 +326,8 @@ public class Executions extends ObjectTemplate{
 		sendGenericXMLRequestAndWait(req);
 		if (req.getMessageBox() == null) {
 			return req;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -313,6 +337,8 @@ public class Executions extends ObjectTemplate{
 		sendGenericXMLRequestAndWait(req);
 		if (req.getMessageBox() == null) {
 			return true;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return false;
 	}

@@ -44,7 +44,7 @@ public class Jobs extends ObjectTemplate {
 		job.attributes().setHost(Hostname);
 		job.attributes().setLogin(LoginName);
 		job.attributes().setQueue(QueueName);
-		job.setProcess("echo something");
+		job.setProcess("echo Job Is Running!");
 
 		return broker.common.saveObject(job);
 	}
