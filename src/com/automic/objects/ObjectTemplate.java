@@ -45,8 +45,6 @@ public class ObjectTemplate implements IResponseHandler{
 			if (req.getMessageBox() != null) {
 				if(showResponse){System.out.println(Utils.getErrorString(req.getMessageBox()));}
 				return null;
-			}else{
-				Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 			}
 			return req;
 		}
@@ -59,7 +57,7 @@ public class ObjectTemplate implements IResponseHandler{
 				if(showResponse){System.out.println(Utils.getErrorString(req.getMessageBox()));}
 				return null;
 			}else{
-				Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
+				
 			}
 			return req;
 		}

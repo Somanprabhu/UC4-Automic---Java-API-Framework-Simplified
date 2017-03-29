@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.automic.utils.Utils;
 import com.uc4.api.FolderListItem;
+import com.uc4.api.InvalidUC4NameException;
 import com.uc4.api.SearchResultItem;
 import com.uc4.api.Template;
 import com.uc4.api.UC4HostName;
@@ -125,6 +126,21 @@ public class Common extends ObjectTemplate{
 	//
 	// ####################
 	
+	public ArrayList<Template> getTemplateListAvailable() throws IOException{
+		ArrayList<Template> AllTemplates = new ArrayList<Template>();
+		ObjectBroker broker = getBrokerInstance();
+		IFolder RootFolder = broker.folders.getRootFolder();
+		TemplateList req = new TemplateList(RootFolder);
+		sendGenericXMLRequestAndWait(req);
+		if(req!=null){
+			Iterator<Template> it = req.iterator();
+			while(it.hasNext()){
+				Template myT = it.next();
+				AllTemplates.add(myT);
+			}
+		}
+		return AllTemplates;	
+	}
 	
 	public String getContainingFolderAsString(UC4ObjectName name) throws IOException{
 		GetObjectProperties props = new GetObjectProperties(name);
@@ -142,7 +158,7 @@ public class Common extends ObjectTemplate{
 		ObjectBroker broker = getBrokerInstance();
 		String TYPE = broker.common.getObjectTypeFromName(ObjectName);
 	
-		if (TYPE.equalsIgnoreCase("USER")){
+		if (TYPE.equalsIgnoreCase("USER") || TYPE.equalsIgnoreCase("USRG")){
 			return new UC4UserName(ObjectName);
 		}
 		
@@ -488,15 +504,43 @@ public class Common extends ObjectTemplate{
 	}
 	
 	// Create an empty Automic Object (of any kind)
-	public boolean createObject(String name, Template template, IFolder fold) throws IOException {
+	public boolean createObject(String ObjectName, Template template, IFolder fold) throws IOException {
 		//Say(" \t ++ Creating object: "+name+" of Type: "+template.getType());
 		ObjectBroker broker = getBrokerInstance();
-		UC4ObjectName objName = broker.common.getUC4ObjectNameFromString(name);
-
-		CreateObject req = new CreateObject(objName,template,fold);
+		CreateObject req = null;
+		if(template.equals(Template.USER) || template.equals(Template.USRG)){
+			try{
+				UC4UserName name = new UC4UserName(ObjectName);
+				req = new CreateObject(name,template,fold);
+			}catch(InvalidUC4NameException e){
+				System.out.println(" \t -- Error. Name Passed has the Wrong Format. A User or UserGroup should be named: USER/DEPARTMENT.");
+			}
+			
+		}
+		else if(template.equals(Template.HSTA) || template.equals(Template.HOSTG)){
+			try{
+				UC4HostName name = new UC4HostName(ObjectName);
+				req = new CreateObject(name,template,fold);
+			}catch(InvalidUC4NameException e){
+				System.out.println(" \t -- Error. Name Passed has the Wrong Format. A Host or HostGroup is limited to 32 characters.");
+			}
+		}
+		else if(template.equals(Template.TZ) || template.equals(Template.TZ_CET) || template.equals(Template.TZ_CST) || template.equals(Template.TZ_EST)
+				|| template.equals(Template.TZ_GMT)|| template.equals(Template.TZ_PST)|| template.equals(Template.TZ_SYD)){
+			try{
+				UC4TimezoneName name = new UC4TimezoneName(ObjectName);
+				req = new CreateObject(name,template,fold);
+			}catch(InvalidUC4NameException e){
+				System.out.println(" \t -- Error. Name Passed has the Wrong Format. A Timezone is limited to 8 characters.");
+			}
+		}else{
+			UC4ObjectName name = new UC4ObjectName(ObjectName);
+			req = new CreateObject(name,template,fold);
+		}
+		
 		sendGenericXMLRequestAndWait(req);
 		if(req.getMessageBox() == null){
-			Say(Utils.getSuccessString("Object: "+name+" Successfully created (Type: "+template.getType()+")"));
+			Say(Utils.getSuccessString("Object: "+ObjectName+" Successfully created (Type: "+template.getType()+")"));
 			return true;
 		}
 		return false;

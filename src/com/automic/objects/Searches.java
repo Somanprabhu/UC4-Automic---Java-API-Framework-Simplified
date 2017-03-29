@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.automic.utils.Utils;
 import com.uc4.api.QuickSearchItem;
 import com.uc4.api.SearchResultItem;
+import com.uc4.api.objects.IFolder;
 import com.uc4.communication.Connection;
 import com.uc4.communication.TimeoutException;
 import com.uc4.communication.requests.QuickSearch;
@@ -26,9 +28,9 @@ private ObjectBroker broker;
 	
 	public List<SearchResultItem> genericSearch(SearchObject ser) throws TimeoutException, IOException{
 		connection.sendRequestAndWait(ser);
-//		if(ser.getMessageBox() != null){
-//			System.out.println("DEBUG: " + ser.getMessageBox().getText());
-//		}
+		if(ser.getMessageBox() != null){
+			System.out.println("Error: " + ser.getMessageBox().getText());
+		}
 		Iterator<SearchResultItem> it =  ser.resultIterator();
 		List<SearchResultItem> results = new ArrayList<SearchResultItem>();
 		while(it.hasNext()){
@@ -117,6 +119,7 @@ private ObjectBroker broker;
 		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
 		ser.setName(ObjectName);
 		ser.setTypeJOBS(true);
+		//ser.setTypeCITC(true);
 		return genericSearch(ser);
 	}
 	
@@ -281,7 +284,7 @@ private ObjectBroker broker;
 		ObjectBroker broker = getBrokerInstance();
 		SearchObject ser = new SearchObject();
 		ser.unselectAllObjectTypes();
-		if(ObjectTypes==null || ObjectTypes.equals("")){
+		if(ObjectTypes==null || ObjectTypes.equals("") || ObjectTypes.equals(".*")|| ObjectTypes.equals(".+")){
 			ser.selectAllObjectTypes();
 			
 		}else{
@@ -323,10 +326,18 @@ private ObjectBroker broker;
 			if("XSL".matches(ObjectTypes)){ser.setTypeXSL(true);}
 		}
 		
+		
 		if(FullPathLocation == null || FullPathLocation.equals("")){
 			ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), SubFolders);
 		}else{
-			ser.setSearchLocation(FullPathLocation, SubFolders);
+			IFolder folder = broker.folders.getFolderByName(FullPathLocation);
+			if(folder != null){
+				ser.setSearchLocation(folder.fullPath(), SubFolders);
+			}else{
+				Say(Utils.getErrorString("Folder Could not be located: "+ FullPathLocation));
+				return null;
+			}
+			
 		}
 		
 		ser.setName(ObjectName);

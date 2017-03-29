@@ -37,7 +37,7 @@ public class Statistics  extends ObjectTemplate{
 			Say(Utils.getSuccessString(""));
 			return req;
 		}else{
-			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
+			Say(Utils.getErrorString("Error: "  + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -51,7 +51,7 @@ public class Statistics  extends ObjectTemplate{
 			StatisticSearchItem lastItem = it.next();
 			return lastItem;
 		}else{
-			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
+			Say(Utils.getErrorString("Error: "  + req.getMessageBox().getText()));
 		}
 		return null;
 	}
@@ -63,7 +63,7 @@ public class Statistics  extends ObjectTemplate{
 			Say(Utils.getSuccessString(""));
 			return req;
 		}else{
-			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
+			Say(Utils.getErrorString("Error: "  + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -126,11 +126,12 @@ public void setGenericStatisticsPlatformFilter(GenericStatistics req, String Pla
 	//"paltform1, platform 2"
 	public GenericStatistics getGenericStatistics(GenericStatistics req) throws TimeoutException, IOException{
 		sendGenericXMLRequestAndWait(req);
+		
 		if (req.getMessageBox() == null) {
 			Say(Utils.getSuccessString(""));
 			return req;
 		}else{
-			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
+			Say(Utils.getErrorString("Error: "  + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -146,7 +147,7 @@ public void setGenericStatisticsPlatformFilter(GenericStatistics req, String Pla
 			Say(Utils.getSuccessString(""));
 			return req;
 		}else{
-			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
+			Say(Utils.getErrorString("Error: "  + req.getMessageBox().getText()));
 		}
 		return req;
 	}
@@ -164,7 +165,7 @@ public void setGenericStatisticsPlatformFilter(GenericStatistics req, String Pla
 			Say(Utils.getSuccessString(""));
 			return req;
 		}else{
-			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
+			Say(Utils.getErrorString("Error: "  + req.getMessageBox().getText()));
 		}
 		return req;
 	}

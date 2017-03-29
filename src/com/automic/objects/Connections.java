@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.uc4.api.Template;
 import com.uc4.api.objects.DatabaseConnection;
 import com.uc4.api.objects.IFolder;
+import com.uc4.api.objects.OCVPanel;
 import com.uc4.api.objects.RAConnection;
 import com.uc4.api.objects.SAPConnection;
 import com.uc4.api.objects.UC4Object;
@@ -35,10 +36,17 @@ public class Connections extends ObjectTemplate{
 			broker.common.createObject(EventName, Template.CONN_SAP, FolderLocation);
 		}
 		
-		// below method is probably wrong...
-//		public void createRAConnection(String EventName, IFolder FolderLocation) throws IOException{
-//			ObjectBroker broker = getBrokerInstance();
-//			broker.common.createObject(EventName, Template.CONN_SQL, FolderLocation);
-//		}
+	public void initiateConnFTP(RAConnection obj){
+		OCVPanel ocv = obj.ocvValues();
+		ocv.setValue("activeMode", "true", false, false);
+		ocv.setValue("hostName", "my.host", false, false);
+		ocv.setValue("operation", "FTP", false, false);
+		ocv.setValue("password", "PassWord", false, false);
+		ocv.setValue("port", "2121", false, false);
+		ocv.setValue("remoteServerVerification", "true", false, false);
+		ocv.setValue("useFtpProxy", "false", false, false);
+		ocv.setValue("userId", "bsp", false, false);
+		ocv.setValue("useSocksProxy", "false", false, false);
+	}
 	
 }
