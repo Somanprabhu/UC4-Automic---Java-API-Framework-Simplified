@@ -151,8 +151,64 @@ public class Hostgroups extends ObjectTemplate{
 	public boolean addHostItemToHostgroup(HostGroup hostgroup, HostGroupItem item) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		hostgroup.addHost(item);
+		
 		return broker.common.saveAndCloseObject(hostgroup);
 	}
+	
+	public ArrayList<HostGroupItem> identifyHostItemInHostgroup(HostGroup hostgroup, HostGroupItem HGItem) throws IOException{
+		ArrayList<HostGroupItem> ItemsThatMatch = new ArrayList<HostGroupItem>();
+		
+		Iterator<HostGroupItem> it = hostgroup.hosts();
+		while(it.hasNext()){
+			HostGroupItem item = it.next();
+//			System.out.println("\nDEBUG:" + item.getName() +":"+HGItem.getName()+":");
+//			System.out.println("DEBUG:" + item.getProductVersion() +":"+HGItem.getProductVersion()+":");
+//			System.out.println("DEBUG:" + item.getHardware() +":"+HGItem.getHardware()+":");
+//			System.out.println("DEBUG:" + item.getSoftware() +":"+HGItem.getSoftware()+":");
+//			System.out.println("DEBUG:" + item.getSoftwareVersion() +":"+HGItem.getSoftwareVersion()+":");
+//			System.out.println("DEBUG:" + item.getArchive1() +":"+HGItem.getArchive1()+":");
+//			System.out.println("DEBUG:" + item.getArchive2() +":"+HGItem.getArchive2()+":");
+//			System.out.println("DEBUG:" + item.getRole() +":"+HGItem.getRole()+":");
+			if(
+					item.getName().equals(HGItem.getName()) &&
+					item.getProductVersion().equals(HGItem.getProductVersion()) &&	
+					item.getHardware().equals(HGItem.getHardware()) &&
+					item.getSoftware().equals(HGItem.getSoftware()) &&
+					item.getSoftwareVersion().equals(HGItem.getSoftwareVersion()) &&
+					item.getArchive1().equals(HGItem.getArchive1()) &&
+					item.getArchive2().equals(HGItem.getArchive2()) &&
+					item.getRole().equals(HGItem.getRole()) 
+					){
+				ItemsThatMatch.add(item);
+			}
+
+		}
+		
+		return ItemsThatMatch;
+	}
+	
+	public boolean removeHostItemFromHostgroup(HostGroup hostgroup, HostGroupItem HGItem) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		Iterator<HostGroupItem> it = hostgroup.hosts();
+		while(it.hasNext()){
+			HostGroupItem item = it.next();
+			if(
+					item.getName().equals(HGItem.getName()) &&
+					item.getProductVersion().equals(HGItem.getProductVersion()) &&	
+					item.getHardware().equals(HGItem.getHardware()) &&
+					item.getSoftware().equals(HGItem.getSoftware()) &&
+					item.getSoftwareVersion().equals(HGItem.getSoftwareVersion()) &&
+					item.getArchive1().equals(HGItem.getArchive1()) &&
+					item.getArchive2().equals(HGItem.getArchive2()) &&
+					item.getRole().equals(HGItem.getRole()) 
+					){
+				it.remove();
+				}
+
+			}
+		return broker.common.saveAndCloseObject(hostgroup);
+	}
+	
 	
 	public boolean addHostsToHostgroup(String hostgroup, String HostnameFilter) throws IOException{
 		ObjectBroker broker = getBrokerInstance();

@@ -109,6 +109,48 @@ private ObjectBroker broker;
 		return false;
 	}
 	
+	public boolean exportObjects(UC4ObjectName[] objectNames, File FilePathForExport) throws IOException{
+		
+		ExportObject req = new ExportObject(objectNames,FilePathForExport);
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Objects "+" Successfully Exported to File: "+FilePathForExport.toString()));
+			return true;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
+		}
+		return false;
+	}
+	
+	public boolean exportObjects(UC4ObjectName[] objectNames, String FilePathForExport) throws IOException{
+		File file = new File(FilePathForExport);
+		ExportObject req = new ExportObject(objectNames,file);
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Objects "+" Successfully Exported to File: "+FilePathForExport.toString()));
+			return true;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
+		}
+		return false;
+	}
+	
+	public boolean  exportObjects(SearchResultItem item, String FilePathForExport) throws IOException{
+		String ObjectName = item.getName();
+		UC4ObjectName objName = getBrokerInstance().common.getUC4ObjectNameFromString(ObjectName);
+		
+		File file = new File(FilePathForExport);
+		ExportObject req = new ExportObject(objName,file);
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Object(s) Successfully Exported."));
+			return true;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
+		}
+		return false;
+	}
+	
 	public boolean  exportObject(SearchResultItem item, String FilePathForExport) throws IOException{
 		String ObjectName = item.getName();
 		UC4ObjectName objName = getBrokerInstance().common.getUC4ObjectNameFromString(ObjectName);
@@ -117,7 +159,6 @@ private ObjectBroker broker;
 		ExportObject req = new ExportObject(objName,file);
 		sendGenericXMLRequestAndWait(req);
 		if (req.getMessageBox() == null) {
-			System.out.println(item.getFolder());
 			Say(Utils.getSuccessString("Object(s) Successfully Exported."));
 			return true;
 		}else{
@@ -270,19 +311,6 @@ private ObjectBroker broker;
 	
 	public void  exportObject(FolderListItem item, String FilePathForExport) throws IOException{
 		exportObject(item.getName(), FilePathForExport);
-	}
-
-	public boolean exportObjects(UC4ObjectName[] objectNames, String FilePathForExport) throws IOException{
-		File file = new File(FilePathForExport);
-		ExportObject req = new ExportObject(objectNames,file);
-		sendGenericXMLRequestAndWait(req);
-		if (req.getMessageBox() == null) {
-			Say(Utils.getSuccessString("Objects "+" Successfully Exported to File: "+FilePathForExport.toString()));
-			return true;
-		}else{
-			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
-		}
-		return false;
 	}
 	
 	public void exportFolderContent(FolderList ItemList, String FilePathForExport)throws IOException{

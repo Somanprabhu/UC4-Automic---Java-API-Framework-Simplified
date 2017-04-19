@@ -43,6 +43,10 @@ private ObjectBroker broker;
 	
 	public ArrayList<QuickSearchItem> quickSearch(QuickSearch ser) throws TimeoutException, IOException{
 		connection.sendRequestAndWait(ser);
+		if(ser.getMessageBox()!=null){
+			Say(Utils.getErrorString(ser.getMessageBox().getText()));
+			return new ArrayList<QuickSearchItem>();
+		}
 		Iterator<QuickSearchItem> it =  ser.iterator();
 		ArrayList<QuickSearchItem> results = new ArrayList<QuickSearchItem>();
 		while(it.hasNext()){
@@ -436,6 +440,7 @@ private ObjectBroker broker;
 	
 	public ArrayList<QuickSearchItem> quickSearch(String ObjectName) throws IOException{
 		QuickSearch exp = new QuickSearch(ObjectName);
+
 		return (ArrayList<QuickSearchItem>) quickSearch(exp);
 	}
 }

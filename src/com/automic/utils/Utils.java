@@ -16,17 +16,21 @@ public class Utils {
 	}
 	
 	public static String getErrorString(MessageBox msg){
-		String s = "\t -- Error:"+msg.getText().toString();
+		String s = "\t -- Error: "+msg.getText().toString();
 		return s;
 	}
 	
 	public static String getErrorString(String msg){
-		String s = "\t -- "+msg;
+		String s = "\t -- Error: "+msg;
 		return s;
 	}
 	
 	public static String getWarningString(String s){
 		return "\t %% Warning: "+s;
+	}
+	
+	public static String getInfoString(String s){
+		return "\t %% "+s;
 	}
 	
 	public static String getDebugString(String s){

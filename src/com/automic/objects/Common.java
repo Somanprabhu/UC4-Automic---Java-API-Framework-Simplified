@@ -415,6 +415,8 @@ public class Common extends ObjectTemplate{
 			sendGenericXMLRequestAndWait(req);
 			if (req.getMessageBox() == null) {
 				return req.getUC4Object();
+			}else{
+				//System.out.println("" + req.getMessageBox().getText());
 			}
 			return null;
 		}

@@ -181,7 +181,7 @@ public final class ConnectionManager {
 					continue;
 				}
 				
-				System.out.println(" %% Info: Connection Established to [Hostname:Port]: [" + Hostname+":"+Port+"] "+"\n");
+				//System.out.println(" %% Info: Connection Established to [Hostname:Port]: [" + Hostname+":"+Port+"] "+"\n");
 				return conn;
 			}
 		}

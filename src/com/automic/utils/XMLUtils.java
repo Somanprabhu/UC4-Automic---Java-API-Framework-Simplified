@@ -68,11 +68,14 @@ public class XMLUtils {
 		DocumentBuilder builder = domFactory.newDocumentBuilder(); 
 		Document doc = builder.parse(xmlfile); 
 		NodeList nList = doc.getElementsByTagName("Folder");
-		
-		Node nNode = nList.item(0);
-		NamedNodeMap  nnm = nNode.getAttributes();
-		return nNode.getTextContent();
-	
+		if(nList.getLength()!=0){
+			Node nNode = nList.item(0);
+			NamedNodeMap  nnm = nNode.getAttributes();
+			return nNode.getTextContent();
+		}else{
+			return "";
+		}
+
 	}
 
 	public static String getObjectTypeFromXmlFile(String FilePath) throws IOException{

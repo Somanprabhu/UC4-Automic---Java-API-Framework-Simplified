@@ -28,7 +28,7 @@ private ObjectBroker broker;
 		sendGenericXMLRequestAndWait(req);
 		
 		if (req.getMessageBox() == null) {
-			Say(Utils.getSuccessString("Object(s) Successfully Imported."));
+			Say(Utils.getSuccessString("Object(s) Successfully Imported into Folder ["+folder.fullPath()+"] (Object Overwrite: "+overwriteObject+", Link Overwrite: "+overwriteFolderLinks+")."));
 			return true;
 		}else{
 			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
