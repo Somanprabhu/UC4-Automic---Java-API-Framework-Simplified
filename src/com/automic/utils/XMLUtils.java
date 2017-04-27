@@ -120,15 +120,20 @@ public class XMLUtils {
 	}
 	
 	public static File stripFolderFromXmlFile(String FilePath) throws IOException{
+		
+		//System.out.println("DEBUG: Reading from file: " + FilePath);
+		//System.out.println("DEBUG: Writing into file: " + FilePath+"_TMP.xml");
+		
 		File inputFile = new File(FilePath);
 		File tempFile = new File(FilePath+"_TMP.xml");
 
 		BufferedReader reader = new BufferedReader(new FileReader(inputFile));
 		BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
 
+		
 		String lineToRemove = "<Folder>";
 		String currentLine;
-
+		//System.out.println("DEBUG: Reading XML File now: " + inputFile);
 		while((currentLine = reader.readLine()) != null) {
 		    // trim newline when comparing with lineToRemove
 		    String trimmedLine = currentLine.trim();
@@ -137,7 +142,11 @@ public class XMLUtils {
 		}
 		writer.close(); 
 		reader.close(); 
-		boolean successful = tempFile.renameTo(inputFile);
+		//System.out.println("DEBUG: Finished Writing.");
+		//boolean successful = tempFile.renameTo(inputFile);
+		//if(!successful){
+			//System.out.println(" \t Error, could not rename file from: "+tempFile.getAbsolutePath() +" to: " + inputFile.getAbsolutePath());
+		//}
 		return tempFile;
 	}
 }
