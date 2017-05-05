@@ -73,7 +73,7 @@ public class ActivityWindow extends ObjectTemplate{
 			Say(Utils.getSuccessString("Task "+ RunID +" Deactivated."));
 			return true;
 		}else{
-			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
+			//Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return false;
 	}
@@ -259,7 +259,7 @@ public class ActivityWindow extends ObjectTemplate{
 			Say(Utils.getSuccessString("Task "+ RunID +" Cancelled."));
 			return true;
 		}else{
-			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
+			//Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return false;
 	}

@@ -173,6 +173,7 @@ public class Users extends ObjectTemplate{
 		broker.common.createObject(Username, Template.USER,destFolder);
 		User user = getUserFromObject(broker.common.openObject(Username, false));
 		user.attributes().setPassword(Password);
+		
 		user.attributes().setActive(true);
 		user.attributes().setLocked(false);
 		UserRight all = new UserRight();
@@ -298,7 +299,8 @@ public class Users extends ObjectTemplate{
 			Say(Utils.getSuccessString("User: "+UserName+" successfully moved to Client: "+client));
 			return true;
 		}else{
-			//Say(Utils.getErrorString("Error: "  + req.getMessageBox().getText()));
+			//System.out.println("DEBUG:"+req.getMessageBox().getText());
+			Say(Utils.getErrorString("Error: "  + req.getMessageBox().getText()));
 		}
 		return false;
 	}

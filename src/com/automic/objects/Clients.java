@@ -57,8 +57,13 @@ public class Clients extends ObjectTemplate{
 			broker.common.createObject(tmp.getName(), clntTemplate, RootFolder);
 			
 			//Rename temporary object to the client number, this action creates the new client.
-			return broker.common.renameObject(tmp, new UC4ObjectName(Integer.toString(client)), RootFolder, title);
-
+			boolean status =  broker.common.renameObject(tmp, new UC4ObjectName(Integer.toString(client)), RootFolder, title);
+			if(!status){
+				broker.common.deleteObject(tmp.getName(), false);
+				return status;
+			}
+			return status;
+			
 		}
 		
 		public Client getCurrentClient() throws IOException{

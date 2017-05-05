@@ -158,6 +158,7 @@ public class Common extends ObjectTemplate{
 		ObjectBroker broker = getBrokerInstance();
 		String TYPE = broker.common.getObjectTypeFromName(ObjectName);
 	
+		//System.out.println("DEBUG: TYPE: " + TYPE);
 		if (TYPE.equalsIgnoreCase("USER") || TYPE.equalsIgnoreCase("USRG")){
 			return new UC4UserName(ObjectName);
 		}
@@ -551,6 +552,9 @@ public class Common extends ObjectTemplate{
 	// Delete an Automic Object (of any kind)
 	public boolean deleteObject(String name, boolean ignoreError) throws IOException {
 		ObjectBroker broker = getBrokerInstance();
+//		if(name.contains("/")){
+//			UC4UserName objname = 
+//		}
 		UC4ObjectName objName = broker.common.getUC4ObjectNameFromString(name);
 
 		DeleteObject req = new DeleteObject(objName);
