@@ -116,6 +116,16 @@ private ObjectBroker broker;
 		return genericSearch(ser);
 	}
 	
+	public List<SearchResultItem> searchQueues(String ObjectName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		SearchObject ser = new SearchObject();
+		ser.unselectAllObjectTypes();
+		ser.setSearchLocation(broker.folders.getRootFolder().fullPath(), true);
+		ser.setName(ObjectName);
+		ser.setTypeQUEUE(true);
+		return genericSearch(ser);
+	}
+	
 	public List<SearchResultItem> searchJobs(String ObjectName) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		SearchObject ser = new SearchObject();

@@ -137,6 +137,8 @@ private ObjectBroker broker;
 		
 		// Declaring all created jobs as JobPlanTasks (including START and END points)
 		JobPlanTask taskStart = jobPlan.getStartTask();
+		
+		//taskStart.earliest().setBreakPoint(true);
 		JobPlanTask taskEnd = jobPlan.getEndTask();
 		JobPlanTask task1 = getTaskFromName("TEST.SAMPLE.JOB1");
 		JobPlanTask task2 = getTaskFromName("TEST.SAMPLE.JOB2");

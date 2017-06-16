@@ -140,9 +140,21 @@ public class Agents extends ObjectTemplate{
 		return req;
 	}
 	
+	public AgentListItem getAgent(String AgentName) throws IOException {
+		AgentList list = new AgentList();
+		
+		connection.sendRequestAndWait(list);
+		if (list.getMessageBox() != null) {
+			System.out.println(" -- "+list.getMessageBox().getText().toString().replace("\n", ""));
+		}
+		return list.getAgentByName(new UC4HostName(AgentName));
+		//return objList;
+	}
+	
 	public ArrayList<AgentListItem> getAgentListWithNameAndTypeFilter(String NameFilter, String TypeFilter) throws IOException {
 		ArrayList<AgentListItem> objList = new ArrayList<AgentListItem>();
 		AgentList list = new AgentList();
+		
 		connection.sendRequestAndWait(list);
 		if (list.getMessageBox() != null) {
 			System.out.println(" -- "+list.getMessageBox().getText().toString().replace("\n", ""));
