@@ -236,6 +236,24 @@ public class Hostgroups extends ObjectTemplate{
 		return broker.common.saveAndCloseObject(hostgroup);
 	}
 	
+	public boolean addHostToHostgroupIfNoExist(HostGroup hostgroup, String AgentName) throws IOException{
+		ObjectBroker broker = getBrokerInstance();
+		boolean AgentAlreadyIn = false;
+		Iterator<HostGroupItem> it = hostgroup.hosts();
+		while (it.hasNext()){
+			HostGroupItem item = it.next();
+			String Name = item.getName();
+			if(Name.equalsIgnoreCase(AgentName)){AgentAlreadyIn=true;}
+		}
+		if(!AgentAlreadyIn){
+			HostGroupItem newItem = new HostGroupItem(AgentName);
+			hostgroup.addHost(newItem);
+			return broker.common.saveAndCloseObject(hostgroup);
+		}
+		return false;
+		
+	}
+	
 	// Method below might seem a bit complex.. however it is necessary because the Java API provides no easy way to remove a host 
 	// from a host group.
 	// the idea: 

@@ -78,17 +78,22 @@ public class AutomationEngine extends ObjectTemplate{
 		ServerList list = new ServerList();
 		connection.sendRequestAndWait(list);
 		for (ServerListItem item : list) {
-			System.out.println("INFO:"+item.getName()+":"+item.getType()+":"+item.getVersion());	
+			// Bug Fix: if the 1st process of the list is turned off, it returns nothing..
+			if(item.getVersion()!= null && !item.getVersion().equals("")){
+				System.out.println("INFO:"+item.getName()+":"+item.getType()+":"+item.getVersion());
+			}
 		}
 	}
 	public String getServerVersion() throws IOException{
 		ServerList list = new ServerList();
 		connection.sendRequestAndWait(list);
 		for (ServerListItem item : list) {
-			return item.getVersion();	
+			// Bug Fix: if the 1st process of the list is turned off, it returns nothing..
+			if(item.getVersion()!= null && !item.getVersion().equals("")){
+				return item.getVersion();	
+			}
 		}
 		return null;
-		
 	}
 	
 	public GetDatabaseInfo getCentralDBInfo() throws IOException{
