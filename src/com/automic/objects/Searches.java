@@ -31,6 +31,7 @@ private ObjectBroker broker;
 		if(ser.getMessageBox() != null){
 			System.out.println("Error: " + ser.getMessageBox().getText());
 		}
+		//System.out.println("DEBUG: "+ser.size());
 		Iterator<SearchResultItem> it =  ser.resultIterator();
 		List<SearchResultItem> results = new ArrayList<SearchResultItem>();
 		while(it.hasNext()){

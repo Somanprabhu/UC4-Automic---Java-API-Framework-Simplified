@@ -50,7 +50,6 @@ public class XMLUtils {
 		newRoot.appendChild(doc.createTextNode(FolderPath.substring(4)));
 		//newRoot.appendChild(doc.getFirstChild());
 		FirstChild.appendChild(newRoot);
-		
 
 		// output to wrapped.xml
 		Transformer transformer = TransformerFactory.newInstance().newTransformer();

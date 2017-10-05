@@ -34,6 +34,7 @@ public class Jobs extends ObjectTemplate {
 		job.attributes().setPriority(priority);
 		return broker.common.saveObject(job);
 	}
+	
 
 	// Modify a property of a Job object
 	public boolean setJobBasics(UC4Object object, UC4HostName Hostname,

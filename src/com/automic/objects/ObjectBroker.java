@@ -48,6 +48,7 @@ public class ObjectBroker {
 	public ServiceLevelObjectives servicelevelobjectives;
 	public AgentAssignments agentassignments;
 	public Templates templates;
+	public Rules rules;
 	
 	public ObjectBroker(Connection conn, boolean verbose){
 		this.connection = conn;
@@ -93,6 +94,7 @@ public class ObjectBroker {
 		exports = new Exports(this.connection,verbose);
 		servicelevelobjectives = new ServiceLevelObjectives(this.connection, verbose);
 		agentassignments = new AgentAssignments(this.connection,verbose);
+		rules = new Rules(this.connection,verbose);
 		templates = new Templates(this.connection,verbose);
 	}
 	

@@ -15,6 +15,7 @@ import com.uc4.api.UC4UserName;
 import com.uc4.api.VersionControlListItem;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.communication.Connection;
+import com.uc4.communication.TimeoutException;
 import com.uc4.communication.requests.RestoreObjectVersion;
 import com.uc4.communication.requests.VersionControlList;
 
@@ -80,6 +81,11 @@ private ObjectBroker broker;
 		if(vcl.size() == 0){return 0;}
 		VersionControlListItem lastVersion = vcl.iterator().next();
 		return lastVersion.getVersionNumber();
+	}
+	
+	public VersionControlList getObjectVersions(UC4ObjectName name) throws TimeoutException, IOException {
+		VersionControlList req = new VersionControlList(name);
+		return (VersionControlList) getBrokerInstance().common.sendGenericXMLRequestAndWait(req);
 	}
 	
 	public VersionControlList getObjectVersions(String ObjectName) throws IOException{

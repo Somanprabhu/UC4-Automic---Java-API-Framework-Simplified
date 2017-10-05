@@ -46,8 +46,9 @@ public class ActivityWindow extends ObjectTemplate{
 			List<Task> tasks = new ArrayList<Task>();
 			for (Task t : list) {
 				tasks.add(t);
-				
 			}
+			//System.out.println("size:"+tasks.size());
+			//System.out.println("Debug:"+tasks.get(0).getRunID());
 			return tasks;
 		}else{
 			return getActivityWindowContent();
@@ -170,12 +171,12 @@ public class ActivityWindow extends ObjectTemplate{
 		Iterator<TaskPromptSetName> it0 = prptNames.iterator();
 		while(it0.hasNext()){
 			TaskPromptSetName tName = it0.next();
-
+			//System.out.println("DEBUG: " + tName.getName().getName());
 			// getting all Vars for the given promptset
 			HashMap<String, String> AllVarsFromInput = map.get(tName.getName().getName());
 			// IF there is no entry for the prompt then skip.
 			if(AllVarsFromInput != null){
-				System.out.println("\t %% Promptset Found:" + tName);
+				System.out.println("\n\t %% Promptset Found:" + tName);
 				// Get the prompt's content
 				TaskPromptSetContent req = new TaskPromptSetContent(tName, RunID);
 				sendGenericXMLRequestAndWait(req);
@@ -184,9 +185,10 @@ public class ActivityWindow extends ObjectTemplate{
 				while(it1.hasNext()){
 					// Get the values to update and update them.
 					PromptElement elmt = it1.next();
-					String NewValue = AllVarsFromInput.get(elmt.getVariable());
+					String VariableName = "&"+elmt.getVariable();
+					String NewValue = AllVarsFromInput.get(VariableName);
 					elmt.setValue(NewValue);
-					System.out.println("\t %% Update of PromptSet entry "+tName+": [Variable Name | Variable Value]: "+" [ "+elmt.getVariable()+" | "+elmt.getValue()+" ]");
+					System.out.println("\t\t %% Update of PromptSet entry "+tName+": [Variable Name | Variable Value]: "+" [ "+VariableName+" | "+elmt.getValue()+" ]");
 					//System.out.println("New Value Found!" + NewValue);	
 				}	
 				AlLContents.add(req);
@@ -196,12 +198,13 @@ public class ActivityWindow extends ObjectTemplate{
 		TaskPromptSetContent[] ContentstockArr = new TaskPromptSetContent[AlLContents.size()];
 		ContentstockArr = AlLContents.toArray(ContentstockArr);
 		if(ContentstockArr.length>0){
+			System.out.println("\n\t %% Submitting Prompt(s) Now.");
 			SubmitPrompt sumbit = new SubmitPrompt(prptNames, ContentstockArr);
 			sendGenericXMLRequestAndWait(sumbit);
 			if(sumbit.getMessageBox() != null){
-				System.out.println(sumbit.getMessageBox().getText());
+				System.out.println("\t -- Error during Prompt Submission: "+sumbit.getMessageBox().getText());
 			}else{
-				System.out.println("\t %% Done!");
+				System.out.println("\t %% Prompts Successfully Submitted.");
 			}
 		}
 	}
