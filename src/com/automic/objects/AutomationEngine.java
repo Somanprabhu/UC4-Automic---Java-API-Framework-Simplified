@@ -1,11 +1,16 @@
 package com.automic.objects;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.automic.utils.Utils;
 import com.uc4.api.systemoverview.ServerListItem;
 import com.uc4.communication.Connection;
+import com.uc4.communication.TimeoutException;
 import com.uc4.communication.requests.GetDatabaseInfo;
+import com.uc4.communication.requests.GetRestEndpoints;
+import com.uc4.communication.requests.GetRestEndpoints.RestEndpoint;
 import com.uc4.communication.requests.ResumeClient;
 import com.uc4.communication.requests.ServerList;
 import com.uc4.communication.requests.StartServer;
@@ -106,6 +111,26 @@ public class AutomationEngine extends ObjectTemplate{
 			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
 		return req;
+		
+	}
+	
+	public ArrayList<RestEndpoint> GetRestEndpointsInfo() throws TimeoutException, IOException {
+		GetRestEndpoints req = new 	GetRestEndpoints();
+		sendGenericXMLRequestAndWait(req);
+		
+		if (req.getMessageBox() == null) {
+			Iterator<RestEndpoint> it = req.iterator();
+			ArrayList<RestEndpoint> allEndpoints = new ArrayList<RestEndpoint>();
+			while(it.hasNext()) {
+				RestEndpoint re = it.next();
+				
+				allEndpoints.add(re);
+			}
+			return allEndpoints;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
+		}
+		return null;
 		
 	}
 }
