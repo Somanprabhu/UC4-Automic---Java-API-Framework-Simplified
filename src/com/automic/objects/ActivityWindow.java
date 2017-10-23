@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import com.automic.utils.Utils;
+import com.uc4.api.StatisticSearchItem;
 import com.uc4.api.Task;
 import com.uc4.api.TaskFilter;
 import com.uc4.api.TaskPromptSetName;
@@ -18,6 +19,7 @@ import com.uc4.communication.requests.ActivityList;
 import com.uc4.communication.requests.AddComment;
 import com.uc4.communication.requests.AdoptTask;
 import com.uc4.communication.requests.CancelTask;
+import com.uc4.communication.requests.ChildStatistics;
 import com.uc4.communication.requests.DeactivateTask;
 import com.uc4.communication.requests.ModifyTaskState;
 import com.uc4.communication.requests.QuitTask;
@@ -26,6 +28,7 @@ import com.uc4.communication.requests.SubmitPrompt;
 import com.uc4.communication.requests.SuspendTask;
 import com.uc4.communication.requests.TaskPromptSetContent;
 import com.uc4.communication.requests.TaskPromptSetNames;
+import com.uc4.communication.requests.TaskStatistics;
 import com.uc4.communication.requests.XMLRequest;
 
 public class ActivityWindow extends ObjectTemplate{
@@ -66,6 +69,48 @@ public class ActivityWindow extends ObjectTemplate{
 		return getActivityWindowContent(taskFilter);
 	}
 		
+	public ArrayList<StatisticSearchItem> getTaskStatistics(int RunID, int taskNum) throws IOException {		
+		ArrayList<StatisticSearchItem> arr = new ArrayList<StatisticSearchItem>();
+		
+		TaskStatistics req = new TaskStatistics(RunID,taskNum); // force
+		sendGenericXMLRequestAndWait(req);
+		
+		Iterator<StatisticSearchItem> it = req.iterator();
+		while(it.hasNext()) {
+			StatisticSearchItem item = it.next();
+			arr.add(item);
+		}
+		return arr;
+	}
+	
+	public ArrayList<StatisticSearchItem> getTaskStatistics(int RunID) throws IOException {		
+		ArrayList<StatisticSearchItem> arr = new ArrayList<StatisticSearchItem>();
+		
+		TaskStatistics req = new TaskStatistics(RunID); // force
+		sendGenericXMLRequestAndWait(req);
+		
+		Iterator<StatisticSearchItem> it = req.iterator();
+		while(it.hasNext()) {
+			StatisticSearchItem item = it.next();
+			arr.add(item);
+		}
+		return arr;
+	}
+	
+	public ArrayList<StatisticSearchItem> getChildStatistics(int RunID) throws IOException {		
+		ArrayList<StatisticSearchItem> arr = new ArrayList<StatisticSearchItem>();
+		
+		ChildStatistics req = new ChildStatistics(RunID); // force
+		sendGenericXMLRequestAndWait(req);
+		
+		Iterator<StatisticSearchItem> it = req.iterator();
+		while(it.hasNext()) {
+			StatisticSearchItem item = it.next();
+			arr.add(item);
+		}
+		return arr;
+	}
+	
 	public boolean deactivateTask(int RunID, boolean force) throws IOException {		
 		DeactivateTask req = new DeactivateTask(RunID, force); // force
 		sendGenericXMLRequestAndWait(req);

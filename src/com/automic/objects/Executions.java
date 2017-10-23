@@ -374,19 +374,19 @@ public class Executions extends ObjectTemplate{
 		sendGenericXMLRequest(req);
 		int RUNID = req.latestRunID();
 		return getReportContent(RUNID, ReportType);
-		
 	}
 	
 	public ArrayList<String> getReportContent(int RunID, String ReportType) throws com.uc4.communication.TimeoutException, IOException{
-		// Array Containing every page of the Repoert
+		// Array Containing every page of the Report
 		ArrayList<String> AllPages = new ArrayList<String>();
 		Report req = new Report(RunID,ReportType);
 		
 		sendGenericXMLRequestAndWait(req);
+		
 		int TotalNumOfPages = req.getNumberOfPages();
 		
 		int initVal = req.getCurrentPage();
-		for(int i=initVal;i<TotalNumOfPages;i++) {
+		for(int i=initVal;i<=TotalNumOfPages;i++) {
 			AllPages.add(req.getReport());
 			req.nextPage(i);
 			// This is the trick to switching page... after the call to nextPage, the request needs to be sent to AE again.

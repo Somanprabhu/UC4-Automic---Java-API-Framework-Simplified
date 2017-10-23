@@ -154,6 +154,31 @@ public class Common extends ObjectTemplate{
 		return broker.folders.getFolderByFullPathName(ObjectName);
 	}
 	
+	public boolean checkNameIsValid(String ObjectName) {
+		try {
+			UC4UserName uName = new UC4UserName(ObjectName);
+		}catch(InvalidUC4NameException e0) {
+			try {
+				UC4HostName hName = new UC4HostName(ObjectName);
+			}catch(InvalidUC4NameException e1) {
+				try {
+					UC4TimezoneName hName = new UC4TimezoneName(ObjectName);
+				}catch(InvalidUC4NameException e2) {
+					try {
+						UC4ObjectName hName = new UC4ObjectName(ObjectName);
+					}catch(InvalidUC4NameException e3) {
+						return false;
+					}
+					return true;
+				}
+				return true;
+			}
+			return true;
+		}
+		return true;
+		
+		
+	}
 	public UC4ObjectName getUC4ObjectNameFromString(String ObjectName) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		String TYPE = broker.common.getObjectTypeFromName(ObjectName);
@@ -175,17 +200,17 @@ public class Common extends ObjectTemplate{
 	}
 	
 	public boolean isHostnameValid(String ObjectName){
-		UC4HostName uc4 = new UC4HostName("TESTHOSTNAME");
+		UC4HostName uc4 = new UC4HostName(ObjectName);
 		return uc4.isValid(ObjectName);	
 	}
 	
 	public boolean isTZnameValid(String ObjectName){
-		UC4TimezoneName uc4 = new UC4TimezoneName("TESTTZ");
+		UC4TimezoneName uc4 = new UC4TimezoneName(ObjectName);
 		return uc4.isValid(ObjectName);	
 	}
 	
 	public boolean isUsernameValid(String ObjectName){
-		UC4UserName uc4 = new UC4UserName("TEST/DEPT");
+		UC4UserName uc4 = new UC4UserName(ObjectName);
 		return uc4.isValid(ObjectName);	
 	}
 	
@@ -409,8 +434,13 @@ public class Common extends ObjectTemplate{
 	// Open an Automic Object (of any kind)
 		public UC4Object openObject(String name, boolean readOnly) throws IOException {
 			ObjectBroker broker = getBrokerInstance();
-			UC4ObjectName objName = broker.common.getUC4ObjectNameFromString(name);
-
+			UC4ObjectName objName = null;
+			try {
+				objName = broker.common.getUC4ObjectNameFromString(name);
+			}catch (InvalidUC4NameException e) {
+				return null;
+			}
+			
 			OpenObject req = new OpenObject(objName,readOnly,true);
 			
 			sendGenericXMLRequestAndWait(req);

@@ -114,23 +114,23 @@ public class AutomationEngine extends ObjectTemplate{
 		
 	}
 	
-	public ArrayList<RestEndpoint> GetRestEndpointsInfo() throws TimeoutException, IOException {
-		GetRestEndpoints req = new 	GetRestEndpoints();
-		sendGenericXMLRequestAndWait(req);
-		
-		if (req.getMessageBox() == null) {
-			Iterator<RestEndpoint> it = req.iterator();
-			ArrayList<RestEndpoint> allEndpoints = new ArrayList<RestEndpoint>();
-			while(it.hasNext()) {
-				RestEndpoint re = it.next();
-				
-				allEndpoints.add(re);
-			}
-			return allEndpoints;
-		}else{
-			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
-		}
-		return null;
-		
-	}
+//	public ArrayList<RestEndpoint> GetRestEndpointsInfo() throws TimeoutException, IOException {
+//		GetRestEndpoints req = new 	GetRestEndpoints();
+//		sendGenericXMLRequestAndWait(req);
+//		
+//		if (req.getMessageBox() == null) {
+//			Iterator<RestEndpoint> it = req.iterator();
+//			ArrayList<RestEndpoint> allEndpoints = new ArrayList<RestEndpoint>();
+//			while(it.hasNext()) {
+//				RestEndpoint re = it.next();
+//				
+//				allEndpoints.add(re);
+//			}
+//			return allEndpoints;
+//		}else{
+//			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
+//		}
+//		return null;
+//		
+//	}
 }
