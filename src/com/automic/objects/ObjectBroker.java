@@ -41,6 +41,14 @@ public class ObjectBroker {
 	public Dashboards dashboards;
 	public SAPQueueManager sapqueuemanager;
 	public Statistics statistics;
+	public Searches searches;
+	public Versions versions;
+	public Imports imports;
+	public Exports exports;
+	public ServiceLevelObjectives servicelevelobjectives;
+	public AgentAssignments agentassignments;
+	public Templates templates;
+	public Rules rules;
 	
 	public ObjectBroker(Connection conn, boolean verbose){
 		this.connection = conn;
@@ -80,7 +88,16 @@ public class ObjectBroker {
 		dashboards = new Dashboards(this.connection,verbose);
 		sapqueuemanager = new SAPQueueManager(this.connection,verbose);
 		statistics = new Statistics(this.connection,verbose);
+		searches = new Searches(this.connection,verbose);
+		versions = new Versions(this.connection,verbose);
+		imports = new Imports(this.connection,verbose);
+		exports = new Exports(this.connection,verbose);
+		servicelevelobjectives = new ServiceLevelObjectives(this.connection, verbose);
+		agentassignments = new AgentAssignments(this.connection,verbose);
+		rules = new Rules(this.connection,verbose);
+		templates = new Templates(this.connection,verbose);
 	}
+	
 	public void setConnection(Connection conn){
 		this.connection = conn;
 	}

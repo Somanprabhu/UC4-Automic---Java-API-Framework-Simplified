@@ -16,6 +16,8 @@ import com.uc4.api.objects.IFolder;
 import com.uc4.api.objects.UC4Object;
 import com.uc4.api.objects.Variable;
 import com.uc4.communication.Connection;
+import com.uc4.communication.TimeoutException;
+import com.uc4.communication.requests.PreviewVariable;
 
 public class Variables extends ObjectTemplate{
 
@@ -28,53 +30,57 @@ public class Variables extends ObjectTemplate{
 	
 	public Variable getJobFromObject(UC4Object object){return (Variable) object;}
 	
-	public void createStaticVariable(String VariableName, IFolder FolderLocation) throws IOException{
+	public boolean createStaticVariable(String VariableName, IFolder FolderLocation) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
-		broker.common.createObject(VariableName, Template.VARA, FolderLocation);
+		return broker.common.createObject(VariableName, Template.VARA, FolderLocation);
 	}
-	public void createBackendVariable(String VariableName, IFolder FolderLocation) throws IOException{
+	
+	public boolean createBackendVariable(String VariableName, IFolder FolderLocation) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
-		broker.common.createObject(VariableName, Template.VARA_BACKEND, FolderLocation);
+		return broker.common.createObject(VariableName, Template.VARA_BACKEND, FolderLocation);
 	}
-	public void createFilelistVariable(String VariableName, IFolder FolderLocation) throws IOException{
+	public boolean createFilelistVariable(String VariableName, IFolder FolderLocation) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
-		broker.common.createObject(VariableName, Template.VARA_FILELIST, FolderLocation);
+		return broker.common.createObject(VariableName, Template.VARA_FILELIST, FolderLocation);
 	}
-	public void createMultiVariable(String VariableName, IFolder FolderLocation) throws IOException{
+	public boolean createMultiVariable(String VariableName, IFolder FolderLocation) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
-		broker.common.createObject(VariableName, Template.VARA_MULTI, FolderLocation);
+		return broker.common.createObject(VariableName, Template.VARA_MULTI, FolderLocation);
 	}
-	public void createSecSQLVariable(String VariableName, IFolder FolderLocation) throws IOException{
+	public boolean createSecSQLVariable(String VariableName, IFolder FolderLocation) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
-		broker.common.createObject(VariableName, Template.VARA_SEC_SQL, FolderLocation);
+		return broker.common.createObject(VariableName, Template.VARA_SEC_SQL, FolderLocation);
 	}
-	public void createSecSQLIVariable(String VariableName, IFolder FolderLocation) throws IOException{
+	public boolean createSecSQLIVariable(String VariableName, IFolder FolderLocation) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
-		broker.common.createObject(VariableName, Template.VARA_SEC_SQLI, FolderLocation);
+		return broker.common.createObject(VariableName, Template.VARA_SEC_SQLI, FolderLocation);
 	}
-	public void createSQLVariable(String VariableName, IFolder FolderLocation) throws IOException{
+	public boolean createSQLVariable(String VariableName, IFolder FolderLocation) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
-		broker.common.createObject(VariableName, Template.VARA_SQL, FolderLocation);
+		return broker.common.createObject(VariableName, Template.VARA_SQL, FolderLocation);
 	}
-	public void createSQLIVariable(String VariableName, IFolder FolderLocation) throws IOException{
+	public boolean createSQLIVariable(String VariableName, IFolder FolderLocation) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
-		broker.common.createObject(VariableName, Template.VARA_SQLI, FolderLocation);
+		return broker.common.createObject(VariableName, Template.VARA_SQLI, FolderLocation);
 	}
 
 	public ArrayList<UC4Object> getAllVariables() throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		return broker.common.getAllObjects(ObjectTypeEnum.VARA);
 	}
+	
 	public ArrayList<UC4Object> getAllVariablesWithFilter(String filter) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		return broker.common.getAllObjectsWithNameFilter(ObjectTypeEnum.VARA,filter);
 	}
+	
 	public Variable getVariableFromName(String VarName) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		Variable Var = (Variable) broker.common.openObject(VarName, false);
 		return Var;
 	}
-	public void updateValueInVariable(Variable var, String key, String value, boolean keepABackup) throws IOException{
+	
+	public boolean updateValueInVariable(Variable var, String key, String value, boolean keepABackup) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		if(keepABackup){
 			String timeStamp = new SimpleDateFormat("yyyyMMdd.HHmm").format(new Date());
@@ -82,8 +88,9 @@ public class Variables extends ObjectTemplate{
 		}
 		var.remove(key);
 		var.add(key,value);
-		broker.common.saveAndCloseObject(var);				
+		return broker.common.saveAndCloseObject(var);				
 	}
+	
 	public void ShowVariableContent(Variable var){
 		Iterator<String> it = var.keyIterator();
 		System.out.println(" ++ Content for Variable: "+var.getName());
@@ -92,7 +99,8 @@ public class Variables extends ObjectTemplate{
 			System.out.println("  => " +key+" : "+var.get(key));
 		}
 	}
-	public void createBackendVariable(String Name, IFolder folder, String HostAgent, String Login, String Result, 
+	
+	public boolean createBackendVariable(String Name, IFolder folder, String HostAgent, String Login, String Result, 
 			ArrayList<BackendCommand> windowsCommands,  ArrayList<BackendCommand> unixCommands) throws IOException {
 		
 		ObjectBroker broker = getBrokerInstance();
@@ -100,7 +108,7 @@ public class Variables extends ObjectTemplate{
 		Variable vara = (Variable) broker.common.openObject(Name,true); 
 		BackendVariable backend = vara.backend();	
 		
-		Say(" %% Setting backend info ... ");
+		//Say(" %% Setting backend info ... ");
 		
 		backend.setHost(new UC4HostName(HostAgent));
 		backend.setLogin(new UC4ObjectName(Login));
@@ -118,26 +126,44 @@ public class Variables extends ObjectTemplate{
 			backend.addUnixCommand(cmd);
 		}
 
-		System.out.println(" ++ Backend Variable Created");
+		//System.out.println(" ++ Backend Variable Created");
 		
-		broker.common.saveAndCloseObject(vara);				
+		return broker.common.saveAndCloseObject(vara);				
 		
 	}
-	public void addWinCommandToBackendVariable(String Variablename, BackendCommand WinCmd) throws IOException{
+	
+	public boolean addWinCommandToBackendVariable(String Variablename, BackendCommand WinCmd) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		Variable vara = (Variable) broker.common.openObject(Variablename, true);
 		BackendVariable backend = vara.backend();	
 		backend.addWindowsCommand(WinCmd);
-		broker.common.saveAndCloseObject(vara);				
+		return broker.common.saveAndCloseObject(vara);				
 	}
-	public void addUnixCommandToBackendVariable(String Variablename, BackendCommand WinCmd) throws IOException{
+	
+	public boolean addUnixCommandToBackendVariable(String Variablename, BackendCommand WinCmd) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		Variable vara = (Variable) broker.common.openObject(Variablename, true);
 		BackendVariable backend = vara.backend();	
 		backend.addUnixCommand(WinCmd);
-		broker.common.saveAndCloseObject(vara);				
+		return broker.common.saveAndCloseObject(vara);				
 	}
 	
+	public ArrayList<String> getPossibleVaraValues(String VaraName, int ColumnNumber) throws TimeoutException, IOException{
+		ObjectBroker broker = getBrokerInstance();
+		PreviewVariable req = broker.variables.previewVariable(VaraName);
+		ArrayList<String> PossibleValues = new ArrayList<String>();
+		for(int i = 0;i<req.size();i++){PossibleValues.add(req.getRow(i)[ColumnNumber]);}
+		return PossibleValues;
+	}
+	
+	public PreviewVariable previewVariable(String VariableName) throws TimeoutException, IOException{
+		ObjectBroker broker = getBrokerInstance();
+		PreviewVariable req = new PreviewVariable(new UC4ObjectName(VariableName));
+		broker.common.sendGenericXMLRequestAndWait(req);
+		return req;
+
+		
+	}
 	public String getVariableType(Variable obj){
 		// THIS is the only way to check the type of Variable.. (v11.2 and before) 
 		// it is very ugly but it works :)

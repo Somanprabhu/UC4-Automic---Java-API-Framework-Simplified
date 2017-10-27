@@ -14,9 +14,11 @@ public class Documentations extends ObjectTemplate {
 	public Documentations(Connection conn, boolean verbose) {
 		super(conn, verbose);
 	}
+	
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}
+	
 	public Documentation getDocumentationFromObject(UC4Object object){return (Documentation) object;}
 	
 	public void createDocumentation(String DocumentationName, IFolder FolderLocation) throws IOException{

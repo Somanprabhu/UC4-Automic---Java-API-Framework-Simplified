@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.automic.utils.Utils;
 import com.uc4.api.Template;
 import com.uc4.api.UC4HostName;
 import com.uc4.api.objects.AgentAssignment;
@@ -18,6 +19,7 @@ import com.uc4.communication.TimeoutException;
 import com.uc4.communication.requests.AgentGroupList;
 import com.uc4.communication.requests.AgentList;
 import com.uc4.communication.requests.DisconnectHost;
+import com.uc4.communication.requests.RenewTransferKey;
 import com.uc4.communication.requests.SetHostAuthorizations;
 import com.uc4.communication.requests.StartHost;
 import com.uc4.communication.requests.TerminateHost;
@@ -32,46 +34,71 @@ public class Agents extends ObjectTemplate{
 		return new ObjectBroker(this.connection,true);
 	}
 
-	public void startAgent(String AgentName) throws IOException{
+	public boolean startAgent(String AgentName) throws IOException{
 		UC4HostName agent = new UC4HostName(AgentName);
 		StartHost req = new StartHost(agent);
-		connection.sendRequestAndWait(req);
-		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		sendGenericXMLRequestAndWait(req);
+
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Agent: "+AgentName+" Successfully Started."));
+			return true;
 		}else{
-			Say(" ++ Agent: "+AgentName+" Successfully Started.");
+			Say(Utils.getErrorString("Agent: "+AgentName+" could not be started: " + req.getMessageBox().getText()));
 		}
+		return false;
 	}
 	
-	public void disconnectAgent(AgentListItem item) throws IOException{
+	public boolean disconnectAgent(AgentListItem item) throws IOException{
 		DisconnectHost req = new DisconnectHost(item);
-		connection.sendRequestAndWait(req);
-		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		sendGenericXMLRequestAndWait(req);
+
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Agent: "+item.getName()+" Successfully Shutdown."));
+			return true;
 		}else{
-			Say(" ++ Agent: "+item.getName()+" Successfully Shutdown.");
+			Say(Utils.getErrorString("Agent: "+item.getName()+" could not be Disconnected: " + req.getMessageBox().getText()));
 		}
+		return false;
 	}
 	
-	public void disconnectAgent(String AgentName) throws IOException{
+	public boolean renewAgentTransferKey(AgentListItem item) throws IOException{
+		RenewTransferKey req = new RenewTransferKey(item);
+		sendGenericXMLRequestAndWait(req);
+
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Agent: "+item.getName()+" Transfer Key Renewed."));
+			return true;
+		}else{
+			Say(Utils.getErrorString("Agent: "+item.getName()+" could not be renewed (transfer key): " + req.getMessageBox().getText()));
+		}
+		return false;
+	}
+	
+	public boolean disconnectAgent(String AgentName) throws IOException{
 		DisconnectHost req = new DisconnectHost(getAgentListItemByName(AgentName));
-		connection.sendRequestAndWait(req);
-		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		sendGenericXMLRequestAndWait(req);
+		//showMessages();
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Agent: "+AgentName+" Successfully Disconnected."));
+			return true;
 		}else{
-			Say(" ++ Agent: "+AgentName+" Successfully Shutdown.");
+			Say(Utils.getErrorString("Agent: "+AgentName+" could not be Disconnected: " + req.getMessageBox().getText()));
 		}
+		return false;
 	}
 	
-	public void TerminateAgent(String AgentName) throws IOException{
+	public boolean TerminateAgent(String AgentName) throws IOException{
 		UC4HostName agent = new UC4HostName(AgentName);
 		TerminateHost req = new TerminateHost(agent);
-		connection.sendRequestAndWait(req);
-		if (req.getMessageBox() != null) {
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		sendGenericXMLRequestAndWait(req);
+
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Agent: "+AgentName+" Successfully Terminated."));
+			return true;
 		}else{
-			Say(" ++ Agent: "+AgentName+" Successfully Shutdown.");
+			Say(Utils.getErrorString("Agent: "+AgentName+" could not be Terminated: " + req.getMessageBox().getText()));
 		}
+		return false;
 	}
 	
 	public void createAgentClientAssignment(String AgentClientAssignmentName, IFolder FolderLocation) throws IOException{
@@ -80,10 +107,6 @@ public class Agents extends ObjectTemplate{
 	}
 	
 	public AgentAssignment getAgentAssignmentFromObject(UC4Object object){return (AgentAssignment) object;}
-	
-	//public void createOpenAgentClientAssignment(String AgentClientAssignmentName, IFolder FolderLocation){
-		// Stub method. Needs to be created!!
-	//}
 	
 	public boolean isAgentActive(AgentListItem agent) throws IOException {
 		return agent.isActive();
@@ -98,9 +121,40 @@ public class Agents extends ObjectTemplate{
 	public ArrayList<AgentListItem> getAgentListWithTypeFilter(String TypeFilter) throws IOException {
 		return getAgentListWithNameAndTypeFilter(".*",TypeFilter);
 	}
+	
+	public AgentListItem getAgentListItemFromName(String Name) throws IOException {
+		ArrayList<AgentListItem> arr = getAgentListWithNameAndTypeFilter(Name,".*");
+		if(arr.size()==1){
+			return arr.get(0);
+		}else{
+			return null;
+		}
+	}
+	
+	public AgentList getSimpleAgentList() throws TimeoutException, IOException{
+		AgentList req = new AgentList();
+		sendGenericXMLRequestAndWait(req);
+		if (req.getMessageBox() == null) {
+			return req;
+		}
+		return req;
+	}
+	
+	public AgentListItem getAgent(String AgentName) throws IOException {
+		AgentList list = new AgentList();
+		
+		connection.sendRequestAndWait(list);
+		if (list.getMessageBox() != null) {
+			System.out.println(" -- "+list.getMessageBox().getText().toString().replace("\n", ""));
+		}
+		return list.getAgentByName(new UC4HostName(AgentName));
+		//return objList;
+	}
+	
 	public ArrayList<AgentListItem> getAgentListWithNameAndTypeFilter(String NameFilter, String TypeFilter) throws IOException {
 		ArrayList<AgentListItem> objList = new ArrayList<AgentListItem>();
 		AgentList list = new AgentList();
+		
 		connection.sendRequestAndWait(list);
 		if (list.getMessageBox() != null) {
 			System.out.println(" -- "+list.getMessageBox().getText().toString().replace("\n", ""));

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.automic.utils.ObjectTypeEnum;
+import com.automic.utils.Utils;
 import com.uc4.api.Template;
 import com.uc4.api.UC4ObjectName;
 import com.uc4.api.objects.IFolder;
@@ -31,10 +32,11 @@ private ObjectBroker broker;
 	}
 	
 	public JobPlan getJobPlanFromObject(UC4Object object){return (JobPlan) object;}
-	public void setPriority(UC4Object object, int priority) throws IOException{
+	
+	public boolean setPriority(UC4Object object, int priority) throws IOException{
 		JobPlan jobp = (JobPlan) object;
 		jobp.attributes().setPriority(priority);
-		broker.common.saveObject(jobp);
+		return broker.common.saveObject(jobp);
 	}
 	
 	public ArrayList<UC4Object> getAllJobPlans() throws IOException{
@@ -48,15 +50,21 @@ private ObjectBroker broker;
 	}
 	
 	public JobPlanTask getTaskFromName(String name) throws IOException {
-		//System.out.print("Add JobPlan task "+name+" ... "); 
-		AddJobPlanTask add = new AddJobPlanTask(new UC4ObjectName(name));
-		connection.sendRequestAndWait(add);
-		if (add.getMessageBox() != null) {
-			System.out.println(" -- "+add.getMessageBox().getText().toString().replace("\n", ""));
+		AddJobPlanTask req = new AddJobPlanTask(new UC4ObjectName(name));
+		sendGenericXMLRequestAndWait(req);
+		
+		if (req.getMessageBox() == null) {
+			return req.getJobPlanTask();
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
-		return add.getJobPlanTask();
+		return null;
 	}
 	
+	/**
+	 * @deprecated replaced by getTasksFromNameAndJobPlan
+	 * 
+	 */
 	public JobPlanTask getTaskFromNameAndJobPlan(JobPlan jobPlan, String TaskName) throws IOException{
 		Iterator<JobPlanTask> it = jobPlan.taskIterator();
 		while(it.hasNext()){
@@ -66,6 +74,19 @@ private ObjectBroker broker;
 			}
 		}
 		return null;
+	}
+	
+	public ArrayList<JobPlanTask> getTasksFromNameAndJobPlan(JobPlan jobPlan, String TaskName) throws IOException{
+		Iterator<JobPlanTask> it = jobPlan.taskIterator();
+		ArrayList<JobPlanTask> TaskLists = new ArrayList<JobPlanTask>();
+		
+		while(it.hasNext()){
+			JobPlanTask jpt = it.next();
+			if(jpt.getTaskName().equals(TaskName)){
+				TaskLists.add(jpt);
+			}
+		}
+		return TaskLists;
 	}
 	
 	public ArrayList<Job> getAllJobsFromJobPlan(JobPlan jobPlan) throws IOException{
@@ -83,17 +104,20 @@ private ObjectBroker broker;
 	public void createEmptyWorkPlan(String WorkplanName, IFolder folder) throws IOException{
 		broker.common.createObject(WorkplanName, Template.JOBP, folder);
 	}
+	
 	public void createEmptyIFWorkPlan(String WorkplanName, IFolder folder) throws IOException{
 		broker.common.createObject(WorkplanName, Template.JOBP_IF, folder);
 	}
+	
 	public void createEmptyFOREACHWorkPlan(String WorkplanName, IFolder folder) throws IOException{
 		broker.common.createObject(WorkplanName, Template.JOBP_FOREACH, folder);
 	}
+	
 	public WorkflowIF getIFWorkflowFromObject(UC4Object object){return (WorkflowIF) object;}
 	public WorkflowLoop getFOREACHWorkflowFromObject(UC4Object object){return (WorkflowLoop) object;}
 	public JobPlan getWorkflowFromObject(UC4Object object){return (JobPlan) object;}
 	
-	// The following method is provided as an example
+	// The following method is provided as an example but not of any use otherwise
 	public void createSampleWorkPlan(IFolder folder) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		
@@ -113,6 +137,8 @@ private ObjectBroker broker;
 		
 		// Declaring all created jobs as JobPlanTasks (including START and END points)
 		JobPlanTask taskStart = jobPlan.getStartTask();
+		
+		//taskStart.earliest().setBreakPoint(true);
 		JobPlanTask taskEnd = jobPlan.getEndTask();
 		JobPlanTask task1 = getTaskFromName("TEST.SAMPLE.JOB1");
 		JobPlanTask task2 = getTaskFromName("TEST.SAMPLE.JOB2");
@@ -154,12 +180,13 @@ private ObjectBroker broker;
 		broker.common.saveObject(jobPlan);
 		broker.common.closeObject(jobPlan);
 	}
+	
 	private void setXY(JobPlanTask task, int X, int Y){
 		task.setX(X);
 		task.setY(Y);
 	}
 	
-	// Added the following method to quickly create a large workplan.
+	// Added the following method to quickly create a large workplan. Same remark as below, only provided as an example
 	public void createLargeWorkPlan(String WorkPlanName, IFolder folder, Template template, String JobNamePrefix,int NumberOfJobs, int NumberOfJobsPerLine) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
 		
@@ -188,7 +215,6 @@ private ObjectBroker broker;
 			}
 		
 		// Handling positioning, Adding the dependencies between jobs, END and START points
-
 		int X = 2; int Y = 1;
 		
 		for(int i=0;i<JobPlans.size();i++){
@@ -200,7 +226,6 @@ private ObjectBroker broker;
 				Y=Y+1;
 			}else{
 				X=X+1;
-				//Y=Y;
 			}
 		}
 		

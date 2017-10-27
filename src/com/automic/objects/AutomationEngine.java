@@ -1,10 +1,16 @@
 package com.automic.objects;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 
+import com.automic.utils.Utils;
 import com.uc4.api.systemoverview.ServerListItem;
 import com.uc4.communication.Connection;
+import com.uc4.communication.TimeoutException;
 import com.uc4.communication.requests.GetDatabaseInfo;
+import com.uc4.communication.requests.GetRestEndpoints;
+import com.uc4.communication.requests.GetRestEndpoints.RestEndpoint;
 import com.uc4.communication.requests.ResumeClient;
 import com.uc4.communication.requests.ServerList;
 import com.uc4.communication.requests.StartServer;
@@ -22,42 +28,54 @@ public class AutomationEngine extends ObjectTemplate{
 	
 	public ServerList showWPandCPList() throws IOException{
 		ServerList req = new ServerList();
-		connection.sendRequestAndWait(req);
-		if(req.getMessageBox()!=null){
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		sendGenericXMLRequestAndWait(req);
+		
+		if (req.getMessageBox() == null) {
+			return req;
+		}else{
+			Say(Utils.getErrorString("Error: " + req.getMessageBox().getText()));
 		}
 		return req;
-		
 	}
+	
 	// Below: Process name should be the full WP or CP process name, ex: UC4#WP002 (which can be obtained by method showWPandCPList())
-	public void startCPorWP(String ProcessName) throws IOException{
+	public boolean startCPorWP(String ProcessName) throws IOException{
 		StartServer req = new StartServer(ProcessName);
-		connection.sendRequestAndWait(req);
-		if(req.getMessageBox()!=null){
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		sendGenericXMLRequestAndWait(req);
+		
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Process: "+ProcessName+" Successfully Started."));
+			return true;
 		}else{
-			Say(" ++ Process: "+ProcessName+" Successfully Started.");
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
+		return false;
 	}
 	
-	public void resumeClient() throws IOException{
+	public boolean resumeClient() throws IOException{
 		ResumeClient req = new ResumeClient();
-		connection.sendRequestAndWait(req);
-		if(req.getMessageBox()!=null){
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		sendGenericXMLRequestAndWait(req);
+		
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Client: "+connection.getSessionInfo().getClient()+" Successfully Resumed."));
+			return true;
 		}else{
-			Say(" ++ Client: "+connection.getSessionInfo().getClient()+" Successfully Resumed.");
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
+		return false;
 	}
 	
-	public void suspendClient() throws IOException{
+	public boolean suspendClient() throws IOException{
 		SuspendClient req = new SuspendClient();
-		connection.sendRequestAndWait(req);
-		if(req.getMessageBox()!=null){
-			System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+		sendGenericXMLRequestAndWait(req);
+		
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Client: "+connection.getSessionInfo().getClient()+" Successfully Stopped."));
+			return true;
 		}else{
-			Say(" ++ Client: "+connection.getSessionInfo().getClient()+" Successfully Stopped.");
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
+		return false;
 	}
 	
 	// Get the version of CPs, WPs etc.
@@ -65,25 +83,54 @@ public class AutomationEngine extends ObjectTemplate{
 		ServerList list = new ServerList();
 		connection.sendRequestAndWait(list);
 		for (ServerListItem item : list) {
-			System.out.println("INFO:"+item.getName()+":"+item.getType()+":"+item.getVersion());	
+			// Bug Fix: if the 1st process of the list is turned off, it returns nothing..
+			if(item.getVersion()!= null && !item.getVersion().equals("")){
+				System.out.println("INFO:"+item.getName()+":"+item.getType()+":"+item.getVersion());
+			}
 		}
 	}
 	public String getServerVersion() throws IOException{
 		ServerList list = new ServerList();
 		connection.sendRequestAndWait(list);
 		for (ServerListItem item : list) {
-			return item.getVersion();	
+			// Bug Fix: if the 1st process of the list is turned off, it returns nothing..
+			if(item.getVersion()!= null && !item.getVersion().equals("")){
+				return item.getVersion();	
+			}
 		}
 		return null;
-		
 	}
 	
 	public GetDatabaseInfo getCentralDBInfo() throws IOException{
-		GetDatabaseInfo info = new GetDatabaseInfo();
-		connection.sendRequestAndWait(info);
-		if (info.getMessageBox() != null) {
-			System.out.println(" -- "+info.getMessageBox().getText().toString().replace("\n", ""));
+		GetDatabaseInfo req = new GetDatabaseInfo();
+		sendGenericXMLRequestAndWait(req);
+		
+		if (req.getMessageBox() == null) {
+			return req;
+		}else{
+			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 		}
-		return info;
+		return req;
+		
 	}
+	
+//	public ArrayList<RestEndpoint> GetRestEndpointsInfo() throws TimeoutException, IOException {
+//		GetRestEndpoints req = new 	GetRestEndpoints();
+//		sendGenericXMLRequestAndWait(req);
+//		
+//		if (req.getMessageBox() == null) {
+//			Iterator<RestEndpoint> it = req.iterator();
+//			ArrayList<RestEndpoint> allEndpoints = new ArrayList<RestEndpoint>();
+//			while(it.hasNext()) {
+//				RestEndpoint re = it.next();
+//				
+//				allEndpoints.add(re);
+//			}
+//			return allEndpoints;
+//		}else{
+//			Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
+//		}
+//		return null;
+//		
+//	}
 }

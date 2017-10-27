@@ -17,8 +17,8 @@ public class Includes extends ObjectTemplate{
 	}
 	public Include getJobGroupFromObject(UC4Object object){return (Include) object;}
 	
-	public void createInclude(String JGroupName, IFolder FolderLocation) throws IOException{
+	public boolean createInclude(String JGroupName, IFolder FolderLocation) throws IOException{
 		ObjectBroker broker = getBrokerInstance();
-		broker.common.createObject(JGroupName, Template.JOBI, FolderLocation);
+		return broker.common.createObject(JGroupName, Template.JOBI, FolderLocation);
 	}
 }

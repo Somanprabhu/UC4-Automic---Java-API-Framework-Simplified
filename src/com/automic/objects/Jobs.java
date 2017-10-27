@@ -27,16 +27,17 @@ public class Jobs extends ObjectTemplate {
 
 	public Job getJobFromObject(UC4Object object){return (Job) object;}
 	// Modify a property of a Job object
-	public void setJobPriority(UC4Object object, int priority)
+	public boolean setJobPriority(UC4Object object, int priority)
 			throws IOException {
 		ObjectBroker broker = getBrokerInstance();
 		Job job = (Job) object;
 		job.attributes().setPriority(priority);
-		broker.common.saveObject(job);
+		return broker.common.saveObject(job);
 	}
+	
 
 	// Modify a property of a Job object
-	public void setJobBasics(UC4Object object, UC4HostName Hostname,
+	public boolean setJobBasics(UC4Object object, UC4HostName Hostname,
 			UC4ObjectName LoginName, UC4ObjectName QueueName)
 			throws IOException {
 		ObjectBroker broker = getBrokerInstance();
@@ -44,9 +45,9 @@ public class Jobs extends ObjectTemplate {
 		job.attributes().setHost(Hostname);
 		job.attributes().setLogin(LoginName);
 		job.attributes().setQueue(QueueName);
-		job.setProcess("echo something");
+		job.setProcess("echo Job Is Running!");
 
-		broker.common.saveObject(job);
+		return broker.common.saveObject(job);
 	}
 
 	public ArrayList<UC4Object> getAllJobs() throws IOException {
@@ -57,8 +58,7 @@ public class Jobs extends ObjectTemplate {
 	public ArrayList<UC4Object> getAllJobsWithFilter(String filter)
 			throws IOException {
 		ObjectBroker broker = getBrokerInstance();
-		return broker.common.getAllObjectsWithNameFilter(ObjectTypeEnum.JOBS,
-				filter);
+		return broker.common.getAllObjectsWithNameFilter(ObjectTypeEnum.JOBS,filter);
 	}
 
 	// Created for testing purposes only..
@@ -103,32 +103,33 @@ public class Jobs extends ObjectTemplate {
 	}
 
 	// Create an Object
-	public void createJob(String JobName, Template template, IFolder folder)
+	public boolean createJob(String JobName, Template template, IFolder folder)
 			throws IOException {
 		ObjectBroker broker = getBrokerInstance();
-		broker.common.createObject(JobName, template, folder);
+		return broker.common.createObject(JobName, template, folder);
 	}
 	
-	public void createJob(String JobName, String TemplateName, IFolder folder)
+	public boolean createJob(String JobName, String TemplateName, IFolder folder)
 			throws IOException {
 		ObjectBroker broker = getBrokerInstance();
-		Template template = com.automic.utils.Utils.convertStringToTemplate(TemplateName);
+		Template template = Template.getTemplateFor(TemplateName.toUpperCase());
 		if ( template == null){
 			System.out.println(" -- Error! Template Name " + TemplateName +" Does Not Seem To Match Any Existing Template..");
+			return false;
 		}else{
-		broker.common.createObject(JobName, template, folder);
+		return broker.common.createObject(JobName, template, folder);
 		}
 	}
 
 	// Save an Job
-	public void saveJob(UC4Object Job) throws IOException {
+	public boolean saveJob(UC4Object Job) throws IOException {
 		ObjectBroker broker = getBrokerInstance();
-		broker.common.saveObject(Job);
+		return broker.common.saveObject(Job);
 	}
 
 	// Delete a Job
-	public void deleteJob(UC4ObjectName jobName) throws IOException {
+	public boolean deleteJob(UC4ObjectName jobName) throws IOException {
 		ObjectBroker broker = getBrokerInstance();
-		broker.common.deleteObject(jobName.getName(), false);
+		return broker.common.deleteObject(jobName.getName(), false);
 	}
 }

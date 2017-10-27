@@ -2,28 +2,68 @@ package com.automic.objects;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import com.automic.AECredentials;
+import com.automic.ConnectionManager;
+import com.automic.utils.Utils;
 import com.uc4.api.SearchResultItem;
+import com.uc4.api.Template;
+import com.uc4.api.UC4ObjectName;
 import com.uc4.api.objects.Client;
+import com.uc4.api.objects.IFolder;
 import com.uc4.api.systemoverview.ClientListItem;
 import com.uc4.communication.Connection;
 import com.uc4.communication.TimeoutException;
 import com.uc4.communication.requests.ClientList;
+import com.uc4.communication.requests.FolderTree;
 import com.uc4.communication.requests.ResumeClient;
 import com.uc4.communication.requests.SearchObject;
 import com.uc4.communication.requests.SuspendClient;
+import com.uc4.communication.requests.TemplateList;
 
 public class Clients extends ObjectTemplate{
 
 		public Clients(Connection conn, boolean verbose) {
 			super(conn, verbose);
-			
 		}
 		
 		private ObjectBroker getBrokerInstance(){
 			return new ObjectBroker(this.connection,true);
+		}
+		
+//		public boolean createClient(int ClientNumber){
+//			ObjectBroker broker = getBrokerInstance();
+//			broker.common.createObject(name, Template., fold)
+//		}
+		
+		public boolean createClient(int client, String title) throws TimeoutException, IOException {
+			//Get folder tree
+			
+			ObjectBroker broker = getBrokerInstance();
+			IFolder RootFolder = broker.folders.getRootFolder();
+				
+			//Get client template
+			TemplateList req = new TemplateList(RootFolder);
+			sendGenericXMLRequestAndWait(req);
+		
+			Template clntTemplate = req.getTemplate("CLNT");
+			
+			//Create temporary CLNT object
+			UC4ObjectName tmp = new UC4ObjectName("TMP."+client);
+			broker.common.createObject(tmp.getName(), clntTemplate, RootFolder);
+			
+			//Rename temporary object to the client number, this action creates the new client.
+			boolean status =  broker.common.renameObject(tmp, new UC4ObjectName(Integer.toString(client)), RootFolder, title);
+			if(!status){
+				broker.common.deleteObject(tmp.getName(), false);
+				return status;
+			}
+			return status;
+			
 		}
 		
 		public Client getCurrentClient() throws IOException{
@@ -33,17 +73,33 @@ public class Clients extends ObjectTemplate{
 			return client;
 		}
 		
-		public void setClientSetting(String SettingName, String SettingValue) throws IOException{
+		public boolean setCurrentClientSetting(String SettingName, String SettingValue) throws IOException{
 			ObjectBroker broker = getBrokerInstance();
 			String name = connection.getSessionInfo().getClient();
 			Client client = (Client) broker.common.openObject(name,true);
 			//client.setSetting("AUTO_FORECAST_DAYS", "10");
 			client.setSetting(SettingName, SettingValue);
-			broker.common.saveObject(client);
-			broker.common.closeObject(client);
+			return broker.common.saveAndCloseObject(client);
 		}
 		
-		public String getClientSetting(String SettingName) throws IOException{
+		public boolean setClientSetting(AECredentials creds, String SettingName, String SettingValue) throws IOException{
+			
+			// 0 - initiate a new connection & broker to a different client
+			Connection ConnToClient = ConnectionManager.connectToClient(creds);
+			ObjectBroker BrokerToClient = new ObjectBroker(ConnToClient,true);
+			
+			// 1 - get the client name from new connection
+			String name = ConnToClient.getSessionInfo().getClient();
+			
+			// 2 - open the Client via the new broker
+			Client client = (Client) BrokerToClient.common.openObject(name,false);
+
+			// 3 - set the Client Setting and save
+			client.setSetting(SettingName, SettingValue);	
+			return BrokerToClient.common.saveAndCloseObject(client);
+		}
+		
+		public String getCurrentClientSetting(String SettingName) throws IOException{
 			ObjectBroker broker = getBrokerInstance();
 			String name = connection.getSessionInfo().getClient();
 			Client client = (Client) broker.common.openObject(name,true);
@@ -53,44 +109,145 @@ public class Clients extends ObjectTemplate{
 			return SettingValue;
 		}
 		
-		public void suspendCurrentClient() throws TimeoutException, IOException{
+		public HashMap<String, String> getCurrentClientSettings() throws IOException{
+			
+			HashMap<String, String> SettingsMap = new HashMap<String, String>();
+			
+			ObjectBroker broker = getBrokerInstance();
+			String name = connection.getSessionInfo().getClient();
+			Client client = (Client) broker.common.openObject(name,true);
+			
+			Iterator<String> settingIterator = client.settingNames();
+			while(settingIterator.hasNext()){
+				String SettingName = settingIterator.next();
+				String SettingValue = client.getSetting(SettingName);
+				SettingsMap.put(SettingName, SettingValue);
+			}
+			
+			return SettingsMap;
+		}
+		
+		public HashMap<String, String> getClientSettings(AECredentials creds) throws IOException{
+			
+			HashMap<String, String> SettingsMap = new HashMap<String, String>();
+			
+			// 0 - initiate a new connection & broker to a different client
+			Connection ConnToClient = ConnectionManager.connectToClient(creds);
+			ObjectBroker BrokerToClient = new ObjectBroker(ConnToClient,true);
+			String name = ConnToClient.getSessionInfo().getClient();
+			
+			Client client = (Client) BrokerToClient.common.openObject(name,true);
+			
+			Iterator<String> settingIterator = client.settingNames();
+			while(settingIterator.hasNext()){
+				String SettingName = settingIterator.next();
+				String SettingValue = client.getSetting(SettingName);
+				SettingsMap.put(SettingName, SettingValue);
+			}
+			
+			return SettingsMap;
+		}
+		
+		public boolean clearCurrentClientSettings() throws IOException{
+			
+			ObjectBroker broker = getBrokerInstance();
+			String name = connection.getSessionInfo().getClient();
+			Client client = (Client) broker.common.openObject(name,false);
+			client.clearSettings();
+			broker.common.saveObject(client);
+			return broker.common.saveAndCloseObject(client);
+		}
+		
+		public boolean clearClientSettings(AECredentials creds) throws IOException{
+			
+			// 0 - initiate a new connection & broker to a different client
+			Connection ConnToClient = ConnectionManager.connectToClient(creds);
+			ObjectBroker BrokerToClient = new ObjectBroker(ConnToClient,true);
+			String name = ConnToClient.getSessionInfo().getClient();
+			
+			Client client = (Client) BrokerToClient.common.openObject(name,false);
+			client.clearSettings();
+
+			return BrokerToClient.common.saveAndCloseObject(client);
+		}
+		
+		public String getClientSetting(AECredentials creds, String SettingName) throws IOException{
+			// 0 - initiate a new connection & broker to a different client
+			Connection ConnToClient = ConnectionManager.connectToClient(creds);
+			ObjectBroker BrokerToClient = new ObjectBroker(ConnToClient,true);
+			
+			// 1 - get the client name from new connection
+			String name = ConnToClient.getSessionInfo().getClient();
+			
+			// 2 - open the Client via the new broker
+			Client client = (Client) BrokerToClient.common.openObject(name,true);
+
+			String SettingValue = client.getSetting(SettingName);
+
+			return SettingValue;
+		}
+		
+		public boolean suspendCurrentClient() throws TimeoutException, IOException{
 			SuspendClient req = new SuspendClient();
-			connection.sendRequestAndWait(req);
-			if (req.getMessageBox() != null) {
-				System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+			sendGenericXMLRequestAndWait(req);
+			
+			if (req.getMessageBox() == null) {
+				Say(Utils.getSuccessString("Client: "+connection.getSessionInfo().getClient()+" Successfully Stopped."));
+				return true;
 			}else{
-				Say(" ++ Client: "+connection.getSessionInfo().getClient()+" Successfully Stopped.");
+				Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 			}
+			return false;			
 		}
 		
-		public void resumeCurrentClient() throws TimeoutException, IOException{
+		public boolean resumeCurrentClient() throws TimeoutException, IOException{
 			ResumeClient req = new ResumeClient();
-			connection.sendRequestAndWait(req);
-			if (req.getMessageBox() != null) {
-				System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+			sendGenericXMLRequestAndWait(req);
+			
+			if (req.getMessageBox() == null) {
+				Say(Utils.getSuccessString("Client: "+connection.getSessionInfo().getClient()+" Successfully Started."));
+				return true;
 			}else{
-				Say(" ++ Client: "+connection.getSessionInfo().getClient()+" Successfully Started.");
+				Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 			}
+			return false;		
 		}
 		
-		public void suspendAClient(ClientListItem Client) throws TimeoutException, IOException{
+		public boolean suspendAClient(ClientListItem Client) throws TimeoutException, IOException{
 			SuspendClient req = new SuspendClient(Client);
-			connection.sendRequestAndWait(req);
-			if (req.getMessageBox() != null) {
-				System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+			sendGenericXMLRequestAndWait(req);
+			if (req.getMessageBox() == null) {
+				Say(Utils.getSuccessString("Client: "+Client.getClient()+" Successfully Stopped."));
+				return true;
 			}else{
-				Say(" ++ Client: "+Client.getClient()+" Successfully Stopped.");
+				Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 			}
+			return false;	
 		}
 		
-		public void resumeAClient(ClientListItem Client) throws TimeoutException, IOException{
+		public boolean resumeAClient(ClientListItem Client) throws TimeoutException, IOException{
 			ResumeClient req = new ResumeClient(Client);
-			connection.sendRequestAndWait(req);
-			if (req.getMessageBox() != null) {
-				System.out.println(" -- "+req.getMessageBox().getText().toString().replace("\n", ""));
+			sendGenericXMLRequestAndWait(req);
+			
+			if (req.getMessageBox() == null) {
+				Say(Utils.getSuccessString("Client: "+Client.getClient()+" Successfully Started."));
+				return true;
 			}else{
-				Say(" ++ Client: "+Client.getClient()+" Successfully Started.");
+				Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
 			}
+			return false;	
+		}
+	
+		public ClientList getSimpleClientList() throws TimeoutException, IOException{
+			ClientList req = new ClientList();
+			sendGenericXMLRequestAndWait(req);
+			
+			if (req.getMessageBox() == null) {
+				return req;
+			}else{
+				Say(Utils.getErrorString("Error:"  + req.getMessageBox().getText()));
+			}
+			return req;	
 		}
 		
 		public ArrayList<ClientListItem> getClientList() throws TimeoutException, IOException{
@@ -104,6 +261,7 @@ public class Clients extends ObjectTemplate{
 			}
 			return clients;
 		}
+		
 		public void displayClientList(ArrayList<ClientListItem> clients) throws TimeoutException, IOException{
 			System.out.println("\nNumber Of Clients Defined: "+clients.size());
 			//System.out.println("Client:[Client Name]:[Client Title]:[Client Active]:[# Of Objects In Client]:[# of Users In Client]");

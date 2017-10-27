@@ -3,7 +3,10 @@ package com.automic.objects;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
+import com.automic.utils.Utils;
+import com.uc4.api.FolderListItem;
 import com.uc4.api.Template;
 import com.uc4.api.UC4ObjectName;
 import com.uc4.api.UC4TimezoneName;
@@ -25,12 +28,19 @@ public class Folders extends ObjectTemplate{
 	private ObjectBroker getBrokerInstance(){
 		return new ObjectBroker(this.connection,true);
 	}
+	
 	public IFolder getFolderFromObject(UC4Object object){return (IFolder) object;}
 	
 	public IFolder getRootFolder() throws IOException{
 		FolderTree tree = new FolderTree();
 		this.connection.sendRequestAndWait(tree);
 		return tree.root();		
+	}
+	
+	public FolderTree getFolderTree() throws IOException{
+		FolderTree tree = new FolderTree();
+		this.connection.sendRequestAndWait(tree);
+		return tree;	
 	}
 	
 	// Returns a list of ALL Folders (including folders in folders, folders in folders in folders etc.)
@@ -43,13 +53,12 @@ public class Folders extends ObjectTemplate{
 			IFolder myFolder, boolean onlyExtractFolderObjects) {
 		if(onlyExtractFolderObjects){
 			if( myFolder.getType().equals("FOLD")){folderList.add(myFolder);}
-			if( myFolder.getType().equals("FOLD") && myFolder.subfolder() != null){
-				
+			if( myFolder.getType().equals("FOLD") && myFolder.subfolder() != null){	
 				Iterator<IFolder> it0 = myFolder.subfolder();
 				while (it0.hasNext()){
 					addFoldersToList(folderList,it0.next(),onlyExtractFolderObjects);
 				}
-				}
+			}
 		}else{
 			folderList.add(myFolder);
 			if(  myFolder.subfolder() != null){
@@ -57,7 +66,7 @@ public class Folders extends ObjectTemplate{
 				while (it0.hasNext()){
 					addFoldersToList(folderList,it0.next(),onlyExtractFolderObjects);
 				}
-				}
+			}
 		}
 
 	}
@@ -71,13 +80,7 @@ public class Folders extends ObjectTemplate{
 	}
 	
 	public IFolder getNoFolderFolder() throws IOException{
-		 ArrayList<IFolder> allFolders = getAllFolders(false);
-		 for(IFolder folder : allFolders){
-			 if(folder.getType().equalsIgnoreCase("NFOLD")){return folder;}
-			 // for CLient 0, NOFOLD is actually CLNT.. ?!
-			 if(folder.getType().equalsIgnoreCase("CLNT")){return folder;}
-		 }
-		 return null;
+		return getFolderTree().getNoFolder();
 	}
 	
 	public IFolder getFavoritesFolder() throws IOException{
@@ -114,12 +117,15 @@ public class Folders extends ObjectTemplate{
 	
 	// Returns a folder by name, can be passed a Full path or just a folder name
 	public IFolder getFolderByName(String FolderName) throws IOException{
-		// Bug Fix: '/' isnt enough to establish that a full path is passed..
-		 if(FolderName.contains("-") || (FolderName.contains("/")&& !FolderName.contains("No Folder"))){
-			 return getFolderByFullPathName(FolderName);
-		 }
-		 if(FolderName.contains("No Folder")){
+		
+		 if(FolderName.contains("<No Folder>") || FolderName.contains("<no folder>") || FolderName.contains("<NO FOLDER>")
+				 || FolderName.equalsIgnoreCase("NO FOLDER")){
 			 return getNoFolderFolder();
+		 }
+		 
+		// Bug Fix: '/' isnt enough to establish that a full path is passed..
+		 if(FolderName.matches("\\d{4}") || FolderName.contains("-") || (FolderName.contains("/") && !FolderName.contains("No Folder"))){
+			 return getFolderByFullPathName(FolderName);
 		 }
 		
 		ArrayList<IFolder> foundFolders = new ArrayList<IFolder>();
@@ -131,16 +137,17 @@ public class Folders extends ObjectTemplate{
 		 }
 		 if(foundFolders.size() == 1){return foundFolders.get(0);}
 		 else{
-			 System.out.println(" -- Error: "+foundFolders.size()+" Folder(s) Found corresponding to name: " + FolderName);
-			 if(foundFolders.size() == 0){
-				 System.out.println("  => Are you sure the Folder specified exists in the Target Client?");
+			 System.out.println(Utils.getWarningString(foundFolders.size()+" Folder(s) Found corresponding to name: " + FolderName));
+			 if(foundFolders.size() == 0){ 
+				 // No folder found
+				 System.out.println(Utils.getWarningString("=> Are you sure the Folder specified exists in the Target Client?"));
 			 }else{
+				 // Too many folders found
 				 for(int i=0;i<foundFolders.size();i++){
 					 System.out.println("  ----> "+foundFolders.get(i).fullPath());
 				 }
-				 System.out.println("  => Please select only one folder. HINT: Try passing the full path name. Ex: \"0002/CUSTOM.DEMOS/ARCHIVE/ABC/JOBS\" or \"SWINVM1 - 0002/CUSTOM.DEMOS/ARCHIVE/ABC/JOBS\"");
+				 System.out.println(Utils.getWarningString("  => Please select only one folder. HINT: Try passing the full path name. Ex: \"0002/CUSTOM.DEMOS/ARCHIVE/ABC/JOBS\" or \"SWINVM1 - 0002/CUSTOM.DEMOS/ARCHIVE/ABC/JOBS\""));
 			 }
-			 System.exit(1);
 		 }
 		 return null;
 	}
@@ -148,6 +155,8 @@ public class Folders extends ObjectTemplate{
 	// below method takes as an input either "AEV10 - 0005/UC4.APPLICATIONS/JFORUM_BREN"
 	// or simply: "0005/UC4.APPLICATIONS/JFORUM_BREN"
 	public IFolder getFolderByFullPathName(String FolderName) throws IOException{
+		if(FolderName.contains("<No Folder>")){return getNoFolderFolder();}
+		
 		 ArrayList<IFolder> allFolders = getAllFolders(true);
 		 for(IFolder folder : allFolders){
 			 String FullPath = "";
@@ -158,12 +167,21 @@ public class Folders extends ObjectTemplate{
 			 }else{
 				 FullPath = folder.fullPath().trim();
 			 }
+		
 			 if(FullPath.equalsIgnoreCase(FolderName.trim())){
+				 
 				 return folder;
 			}
 		 }
-
+		 
 		 return null;
+	}
+	
+	// Returns a FolderList = the content of a given folder
+	public FolderList getFolderContentWithTypes(IFolder folder, List<String> ObjectTypes) throws IOException{	
+		FolderList objectsInRootFolder = new FolderList(folder,ObjectTypes);
+		connection.sendRequestAndWait(objectsInRootFolder);
+		return objectsInRootFolder;
 	}
 	
 	// Returns a FolderList = the content of a given folder
@@ -173,31 +191,55 @@ public class Folders extends ObjectTemplate{
 		return objectsInRootFolder;
 	}
 	
+	public FolderList showFolderContent(IFolder folder) throws IOException{
+		FolderList objectsInRootFolder = new FolderList(folder);
+		connection.sendRequestAndWait(objectsInRootFolder);
+		if(objectsInRootFolder != null){
+			Iterator<FolderListItem> it = objectsInRootFolder.iterator();
+			while(it.hasNext()){
+				FolderListItem item = it.next();
+				String NAME = item.getName();
+				if(NAME.equals("LOGIN.WIN01")){System.out.println("Content Found: " + item.getName()+":"+item.getTitle()+":"+folder.getName());}
+				//System.out.println("Content Found: " + item.getName()+":"+item.getTitle());
+			}
+		}
+		return objectsInRootFolder;
+	}
+	
+	public void showSubFolders(IFolder folder) throws IOException{
+		Iterator<IFolder> subfolderIT = folder.subfolder();
+		if(subfolderIT!=null){
+			while(subfolderIT.hasNext()){
+				IFolder f = subfolderIT.next();
+				System.out.println("Subfolder:" + f.getName()+":"+f.getType() );
+			}
+		}
+	}
+	
 	// Same as above, requires only a folder name to run
 	public FolderList getFolderContentByName(String FolderName) throws IOException{	
 		return this.getFolderContent(this.getFolderByName(FolderName));
 	}
 	
 	// Delete a Folder
-	public void deleteFolder(IFolder fold) throws IOException {
+	public boolean deleteFolder(IFolder fold) throws IOException {
 		//System.out.print("Deleting folder "+ fold.getName() + " ... ");
-		DeleteObject delete = new DeleteObject(fold);
-		connection.sendRequestAndWait(delete);	
-		if (delete.getMessageBox() != null) {
-			System.out.println(" -- "+delete.getMessageBox().getText().toString().replace("\n", ""));
-			//System.out.println("Failed to delete object:"+fold.fullPath());
-		}else{
-			Say("\t ++ Folder: "+fold.fullPath()+" Successfully Deleted.");
-		}
-	}
-	// Create a Folder
-	public void createFolder(String FolderName, IFolder fold) throws IOException {
+		DeleteObject req = new DeleteObject(fold);
+		sendGenericXMLRequestAndWait(req);
 		
-		getBrokerInstance().common.createObject(FolderName, "FOLD", fold);
-
+		if (req.getMessageBox() == null) {
+			Say(Utils.getSuccessString("Folder: "+fold.fullPath()+" Successfully Deleted."));
+			return true;
+		}
+		return false;
 	}
 	
-	// Create an empty Automic Object (of any kind)
+	// Create a Folder
+	public boolean createFolder(String FolderName, IFolder fold) throws IOException {
+		return getBrokerInstance().common.createObject(FolderName, "FOLD", fold);
+	}
+	
+	@Deprecated
 	public boolean createFolderSilently(String name, IFolder fold) throws IOException {
 		UC4ObjectName objName = null;
 		if (name.indexOf('/') != -1) objName = new UC4UserName(name);
@@ -219,16 +261,22 @@ public class Folders extends ObjectTemplate{
 	
 	// Returns a list of ALL Folders (including folders in folders, folders in folders in folders etc.)
 	public ArrayList<IFolder> getFoldersRecursively(IFolder rootFolder, boolean OnlyExtractFolderObjects ) throws IOException{
+		
 		ArrayList<IFolder> FolderList = new ArrayList<IFolder>();
 		if(!OnlyExtractFolderObjects){FolderList.add(getRootFolder());}
-		
+		FolderList.add(rootFolder);
 		Iterator<IFolder> it = rootFolder.subfolder();
-		while (it.hasNext()){
-			IFolder myFolder = it.next();
-			if(! myFolder.getName().equals("<No Folder>")){
-				addFoldersToList(FolderList,myFolder,OnlyExtractFolderObjects);
+		
+		if(it != null){
+			while (it.hasNext()){
+				IFolder myFolder = it.next();
+				if(! myFolder.getName().equals("<No Folder>")){
+					addFoldersToList(FolderList,myFolder,OnlyExtractFolderObjects);
+				}
 			}
 		}
+	
 		return FolderList; 
 	}
+	
 }

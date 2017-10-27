@@ -38,10 +38,10 @@ public class ExportImportFactory extends FactoryTemplate{
 		
 		IFolder folderSource = SourceBroker.folders.getFolderByFullPathName(FolderFullPathSource);
 		FolderList listSource = SourceBroker.folders.getFolderContent(folderSource);
-		SourceBroker.common.exportFolderContent(listSource, FilePath);
+		SourceBroker.exports.exportFolderContent(listSource, FilePath);
 		
 		IFolder folderTarget = TargetBroker.folders.getFolderByFullPathName(FolderFullPathTarget);
-		TargetBroker.common.importObjects(FilePath, folderTarget, true, true);
+		TargetBroker.imports.importObjects(FilePath, folderTarget, true, true);
 		FolderList listTarget = TargetBroker.folders.getFolderContent(folderTarget);
 		System.out.println("Target Folder is: " + folderTarget.fullPath());
 		Iterator<FolderListItem> it = listTarget.iterator();
